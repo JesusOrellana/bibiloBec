@@ -1,0 +1,46 @@
+.btn-maincolor {
+  color: #fff;
+  background-color: #1796c0;
+  border-color: #1796c0;
+}
+
+.footer {
+  background-color: #ebebebdc;
+}
+
+.footer-basic {
+  padding: 40px 0;
+  background-color: #ffffff;
+  color: #0b396c
+}
+
+.footer-basic ul {
+  padding: 0;
+  list-style: none;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.footer-basic li {
+  padding: 0 10px;
+}
+
+.footer-basic ul a {
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.footer-basic ul a:hover {
+  opacity: 1;
+}
+
+.footer-basic .copyright {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 15px;
+  color: #0a386b;
+  margin-bottom: 0;
+}

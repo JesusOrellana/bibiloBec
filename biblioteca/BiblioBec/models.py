@@ -15,7 +15,9 @@ class Categoria(models.Model):
     class Meta:
         managed = False
         db_table = 'categoria'
-
+        
+    def __str__(self):
+        return self.descripcion
 
 class DetalleSolicitudPrestamo(models.Model):
     fecha_devolucion = models.DateField()
@@ -29,7 +31,9 @@ class DetalleSolicitudPrestamo(models.Model):
         managed = False
         db_table = 'detalle_solicitud_prestamo'
         unique_together = (('id_ejemplar', 'numero_solicitud'),)
-
+        
+    def __str__(self):
+        return self.numero_solicitud
 
 class Ejemplar(models.Model):
     id_ejem = models.IntegerField(primary_key=True)
@@ -43,7 +47,9 @@ class Ejemplar(models.Model):
     class Meta:
         managed = False
         db_table = 'ejemplar'
-
+        
+    def __str__(self):
+        return self.id_ejem
 
 class Libro(models.Model):
     isbn = models.CharField(primary_key=True, max_length=200)
@@ -54,11 +60,14 @@ class Libro(models.Model):
     edicion = models.CharField(max_length=250)
     categoria_id_cate = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='categoria_id_cate')
     tipo_documento_id_tipo_doc = models.ForeignKey('TipoDocumento', models.DO_NOTHING, db_column='tipo_documento_id_tipo_doc')
+    tipo_medio = models.ForeignKey('TipoMedio', models.DO_NOTHING, db_column='id_medio')
 
     class Meta:
         managed = False
         db_table = 'libro'
-
+        
+    def __str__(self):
+        return self.titulo
 
 class Prestamo(models.Model):
     numero_pres = models.IntegerField(primary_key=True)
@@ -70,7 +79,9 @@ class Prestamo(models.Model):
     class Meta:
         managed = False
         db_table = 'prestamo'
-
+        
+    def __str__(self):
+        return self.numero_pres
 
 class Reserva(models.Model):
     numero_res = models.IntegerField(primary_key=True)
@@ -83,7 +94,9 @@ class Reserva(models.Model):
     class Meta:
         managed = False
         db_table = 'reserva'
-
+        
+    def __str__(self):
+        return self.numero_res
 
 class SolicitudPrestamo(models.Model):
     numero_solicitud = models.IntegerField(primary_key=True)
@@ -94,7 +107,9 @@ class SolicitudPrestamo(models.Model):
     class Meta:
         managed = False
         db_table = 'solicitud_prestamo'
-
+        
+    def __str__(self):
+        return self.numero_solicitud
 
 class TipoDocumento(models.Model):
     id_tipo_doc = models.IntegerField(primary_key=True)
@@ -103,17 +118,32 @@ class TipoDocumento(models.Model):
     class Meta:
         managed = False
         db_table = 'tipo_documento'
+        
+    def __str__(self):
+        return self.descripcion
 
+class TipoMedio(models.Model):
+    id_medio = models.IntegerField(primary_key=True)
+    descripcion = models.CharField(max_length=150)
+
+    class Meta:
+        managed = False
+        db_table = 'tipo_medio'
+
+    def __str__(self):
+        return self.descripcion
 
 class TipoPrestamo(models.Model):
-    id_tipo = models.BooleanField()
+    tipo_prestamo_id = models.IntegerField(primary_key=True)
     tipo = models.CharField(max_length=35)
-    tipo_prestamo_id = models.FloatField(primary_key=True)
+
 
     class Meta:
         managed = False
         db_table = 'tipo_prestamo'
 
+    def __str__(self):
+        return self.tipo
 
 class TipoUsuario(models.Model):
     id_tipo = models.IntegerField(primary_key=True)
@@ -122,7 +152,9 @@ class TipoUsuario(models.Model):
     class Meta:
         managed = False
         db_table = 'tipo_usuario'
-
+        
+    def __str__(self):
+        return self.tipo
 
 class Usuario(models.Model):
     rut_usr = models.CharField(primary_key=True, max_length=9)
@@ -140,3 +172,6 @@ class Usuario(models.Model):
     class Meta:
         managed = False
         db_table = 'usuario'
+        
+    def __str__(self):
+        return self.correo

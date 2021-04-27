@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from .forms import CategoriaForm
 # Create your views here.
 
 def index(request):
@@ -22,3 +22,11 @@ def solicitudes(request):
         request,
         'solicitudes.html',
     )
+
+# vistas de documentos
+
+def create_doc(request):
+    data = {
+        'form': CategoriaForm
+    }
+    return render(request, 'documento/create_doc.html', data)

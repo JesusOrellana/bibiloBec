@@ -42,7 +42,6 @@ class Ejemplar(models.Model):
     stock = models.IntegerField()
     stock_disponible = models.IntegerField()
     stock_ocupado = models.IntegerField(blank=True, null=True)
-    libro_isbn = models.ForeignKey('Libro', models.DO_NOTHING, db_column='libro_isbn')
 
     class Meta:
         managed = False
@@ -57,11 +56,12 @@ class Libro(models.Model):
     autor = models.CharField(max_length=250)
     editorial = models.CharField(max_length=250)
     fecha_publicacion = models.DateField()
-    edicion = models.CharField(max_length=250)
+    edicion = models.IntegerField()
+    imagen = models.ImageField(upload_to="imagenes")
     categoria_id_cate = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='categoria_id_cate')
     tipo_documento_id_tipo_doc = models.ForeignKey('TipoDocumento', models.DO_NOTHING, db_column='tipo_documento_id_tipo_doc')
     tipo_medio = models.ForeignKey('TipoMedio', models.DO_NOTHING, db_column='id_medio')
-
+    id_ejem = models.ForeignKey('Ejemplar', models.DO_NOTHING, db_column='id_ejem')
     class Meta:
         managed = False
         db_table = 'libro'
@@ -164,8 +164,8 @@ class Usuario(models.Model):
     direccion = models.CharField(max_length=100)
     telefono = models.IntegerField()
     correo = models.CharField(max_length=150)
-    foto = models.CharField(max_length=1, blank=True, null=True)
-    huella = models.CharField(max_length=1, blank=True, null=True)
+    foto = models.ImageField(upload_to="imagenes")
+    huella = models.ImageField(upload_to="imagenes")
     tipo_usuario_id_tipo = models.ForeignKey(TipoUsuario, models.DO_NOTHING, db_column='tipo_usuario_id_tipo')
     password = models.CharField(max_length=20)
 

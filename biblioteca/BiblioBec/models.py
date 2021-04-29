@@ -42,7 +42,7 @@ class Ejemplar(models.Model):
     stock = models.IntegerField()
     stock_disponible = models.IntegerField()
     stock_ocupado = models.IntegerField(blank=True, null=True)
-
+    isbn = models.ForeignKey('Libro', models.DO_NOTHING, db_column='isbn')
     class Meta:
         managed = False
         db_table = 'ejemplar'
@@ -57,11 +57,10 @@ class Libro(models.Model):
     editorial = models.CharField(max_length=250)
     fecha_publicacion = models.DateField()
     edicion = models.IntegerField()
-    imagen = models.ImageField(upload_to="imagenes")
+    imagen = models.ImageField(upload_to="imagenes", null=True, blank=True)
     categoria_id_cate = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='categoria_id_cate')
     tipo_documento_id_tipo_doc = models.ForeignKey('TipoDocumento', models.DO_NOTHING, db_column='tipo_documento_id_tipo_doc')
     tipo_medio = models.ForeignKey('TipoMedio', models.DO_NOTHING, db_column='id_medio')
-    id_ejem = models.ForeignKey('Ejemplar', models.DO_NOTHING, db_column='id_ejem')
     class Meta:
         managed = False
         db_table = 'libro'

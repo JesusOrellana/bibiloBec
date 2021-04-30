@@ -99,7 +99,11 @@ def create_doc(request):
         tipo_me = HttpResponse(request.POST.get('tipo_medio',''))
         edi = HttpResponse(request.POST.get('edicion',''))
         """
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 88abea396e483ce119f38cca9e0b615a07fbfc9e
         agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen)
         data = {
             'form': DocumentoForm(),
@@ -129,6 +133,7 @@ def lista_doc():
             'data':i,
             'imagen':str(base64.b64encode(i[9].read()),'utf-8')
         })
+<<<<<<< HEAD
 
     return documentos
 
@@ -183,3 +188,9 @@ def listado_libro():
         })
     
     return lista
+=======
+    
+    return documentos
+
+
+>>>>>>> 88abea396e483ce119f38cca9e0b615a07fbfc9e

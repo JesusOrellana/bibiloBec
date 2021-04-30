@@ -14,4 +14,9 @@ class EjemplarForm(forms.ModelForm):
 
     class Meta:
         model = Ejemplar
+<<<<<<< HEAD
         fields = '__all__'
+=======
+        fields = '__all__'
+
+>>>>>>> 88abea396e483ce119f38cca9e0b615a07fbfc9e

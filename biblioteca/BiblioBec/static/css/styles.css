@@ -14,13 +14,11 @@
 }
 
 .footer-basic {
-  padding: 40px 0;
   background-color: #ffffff;
   color: #0b396c
 }
 
 .footer-basic ul {
-  padding: 0;
   list-style: none;
   text-align: center;
   font-size: 18px;
@@ -49,3 +47,4 @@
   color: #0a386b;
   margin-bottom: 0;
 }
+

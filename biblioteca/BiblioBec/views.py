@@ -16,10 +16,44 @@ def index(request):
     )
 
 def catalogo(request):
-   
+
+    data = { 
+        'libros': lista_doc()
+    }
     return render(
         request,
         'catalogo.html',
+        data
+    )
+
+def catalogo_audio(request):
+    data = { 
+        'audios': listado_audios()
+    }
+    return render(
+        request,
+        'libros/catalogo_audio.html',
+        data
+    )
+
+def catalogo_video(request):
+    data = { 
+        'videos': listado_videos()
+    }
+    return render(
+        request,
+        'libros/catalogo_videos.html',
+        data
+    )
+
+def catalogo_libro(request):
+    data = { 
+        'libro': listado_libro()
+    }
+    return render(
+        request,
+        'libros/catalogo_libros.html',
+        data
     )
 
 def solicitudes(request):
@@ -65,7 +99,6 @@ def create_doc(request):
         tipo_me = HttpResponse(request.POST.get('tipo_medio',''))
         edi = HttpResponse(request.POST.get('edicion',''))
         """
-    
         agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen)
         data = {
             'form': DocumentoForm(),
@@ -95,7 +128,57 @@ def lista_doc():
             'data':i,
             'imagen':str(base64.b64encode(i[9].read()),'utf-8')
         })
-    
+
     return documentos
 
+# Listado de libros - catalogo
+def listado_audios():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
 
+    cursor.callproc("SP_LISTAR_AUDIOS", [out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append(        {
+            'data':i,
+            'imagen':str(base64.b64encode(i[9].read()),'utf-8')
+        })
+    
+    return lista
+
+def listado_videos():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+
+    cursor.callproc("SP_LISTAR_VIDEOS", [out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append(        {
+            'data':i,
+            'imagen':str(base64.b64encode(i[9].read()),'utf-8')
+        })
+    
+    return lista
+
+def listado_libro():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+
+    cursor.callproc("SP_LISTAR_LIBRO", [out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append(        {
+            'data':i,
+            'imagen':str(base64.b64encode(i[9].read()),'utf-8')
+        })
+    
+    return lista

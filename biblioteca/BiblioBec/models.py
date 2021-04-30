@@ -61,6 +61,7 @@ class Libro(models.Model):
     categoria_id_cate = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='categoria_id_cate')
     tipo_documento_id_tipo_doc = models.ForeignKey('TipoDocumento', models.DO_NOTHING, db_column='tipo_documento_id_tipo_doc')
     tipo_medio = models.ForeignKey('TipoMedio', models.DO_NOTHING, db_column='id_medio')
+    
     class Meta:
         managed = False
         db_table = 'libro'
@@ -174,3 +175,4 @@ class Usuario(models.Model):
         
     def __str__(self):
         return self.correo
+        

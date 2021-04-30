@@ -43,10 +43,6 @@ class Ejemplar(models.Model):
     stock_disponible = models.IntegerField()
     stock_ocupado = models.IntegerField(blank=True, null=True)
     isbn = models.ForeignKey('Libro', models.DO_NOTHING, db_column='isbn')
-<<<<<<< HEAD
-
-=======
->>>>>>> 88abea396e483ce119f38cca9e0b615a07fbfc9e
     class Meta:
         managed = False
         db_table = 'ejemplar'
@@ -65,10 +61,7 @@ class Libro(models.Model):
     categoria_id_cate = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='categoria_id_cate')
     tipo_documento_id_tipo_doc = models.ForeignKey('TipoDocumento', models.DO_NOTHING, db_column='tipo_documento_id_tipo_doc')
     tipo_medio = models.ForeignKey('TipoMedio', models.DO_NOTHING, db_column='id_medio')
-<<<<<<< HEAD
     
-=======
->>>>>>> 88abea396e483ce119f38cca9e0b615a07fbfc9e
     class Meta:
         managed = False
         db_table = 'libro'

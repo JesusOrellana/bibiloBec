@@ -20,7 +20,7 @@
 
     <!-- Boton Agregar Libros -->
     <div class="p-4" style="width: 95%; height: 50px;">
-        <a class="btn btn-secondary" href="#" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
+        <a class="btn btn-secondary" href="{% url 'form_doc' %}" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
     </div>
 
     <!-- Catalogo - videos -->
@@ -34,7 +34,7 @@
                             <h6 class="card-title text-uppercase">{{p.data.1}}</h6>
                             <h6 class="card-text">{{p.data.2}}</h6>
                             <a href="{% url 'solicitudes'  %}" class="btn btn-primary btn-sm" style="float: center;">Solicitar</a>
-                            <a href="#" class="btn btn-secondary btn-sm" style="float: center;">Editar</a>
+                            <a href="/documento-update/{{p.data.0}}" class="btn btn-secondary btn-sm" style="float: center;">Editar</a>
                             <a href="#" class="btn btn-secondary btn-sm" style="float: center;">Eliminar</a>
                         </div>
                     </div>

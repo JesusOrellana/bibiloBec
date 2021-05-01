@@ -69,7 +69,8 @@ def form_doc(request):
     data = {
         'form': DocumentoForm(),
         'form2':EjemplarForm(),
-        "doc": lista_doc()
+        "doc": lista_doc(),
+        "msj": "sin mensaje"
 
     }
     return render(request, 'documento/create_doc.html', data)
@@ -77,30 +78,39 @@ def form_doc(request):
 def create_doc(request):
     #return HttpResponse(request.POST.get('autor',''))
     #return HttpResponse(request.FILES['imagen'])
-    if request.method == 'POST':
-        isbn = request.POST.get('isbn','')
-        titulo = request.POST.get('titulo','')
-        autor = request.POST.get('autor','')
-        editorial = request.POST.get('editorial','')
-        fecha = request.POST.get('fecha_publicacion','')
-        categoria = request.POST.get('categoria_id_cate','')
-        tipo_doc = request.POST.get('tipo_documento_id_tipo_doc','')
-        tipo_me = request.POST.get('tipo_medio','')
-        edi = request.POST.get('edicion','')
-        imagen = request.FILES['imagen'].read()
-        ubi = request.POST.get('ubicacion')
-        estado = request.POST.get('estado')
-        stock = request.POST.get('stock')
-        
+    try:
+        if request.method == 'POST':
+            isbn = request.POST.get('isbn','')
+            titulo = request.POST.get('titulo','')
+            autor = request.POST.get('autor','')
+            editorial = request.POST.get('editorial','')
+            fecha = request.POST.get('fecha_publicacion','')
+            categoria = request.POST.get('categoria_id_cate','')
+            tipo_doc = request.POST.get('tipo_documento_id_tipo_doc','')
+            tipo_me = request.POST.get('tipo_medio','')
+            edi = request.POST.get('edicion','')
+            imagen = request.FILES['imagen'].read()
+            ubi = request.POST.get('ubicacion')
+            estado = request.POST.get('estado')
+            stock = request.POST.get('stock')
+            
 
-        agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock)
+            agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock)
+            data = {
+                'form': DocumentoForm(),
+                "doc": lista_doc(),
+                "msj": "exi_create",
+
+            }
+            return render(request,'documento/create_doc.html',data)
+    except:
         data = {
-            'form': DocumentoForm(),
-            "doc": lista_doc()
+                'form': DocumentoForm(),
+                "doc": lista_doc(),
+                "msj": "error_create",
 
-        }
-    return render(request,'documento/create_doc.html',data)
-
+            }
+        return render(request,'documento/create_doc.html',data)
 
 def agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock):
     cursor_dj = connection.cursor()

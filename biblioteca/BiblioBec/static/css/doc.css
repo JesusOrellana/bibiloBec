@@ -63,6 +63,7 @@
 .df-btn
 {
     width: 100%;
+    background: red;
     text-align: center;
 }
 
@@ -79,3 +80,4 @@
         display: inline-block;
     }
 }
+

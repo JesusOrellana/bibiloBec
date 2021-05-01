@@ -1,4 +1,6 @@
+
 $(document).ready(function() {
+
     $('#id_isbn').prop('class','form-control')
     $("#id_isbn").prop('placeholder','Identidicador del documento')
     $('#id_tipo_documento_id_tipo_doc').prop('class','form-control')
@@ -17,7 +19,7 @@ $(document).ready(function() {
     }
     else{
         $("#id_fecha_publicacion").prop('value',fecha.getFullYear()+'-'+(fecha.getMonth()+1)+'-'+fecha.getDate())
-
+  
     }
     $('#id_edicion').prop('class','form-control')
     $("#id_edicion").prop('placeholder','Edición del documento')
@@ -25,5 +27,5 @@ $(document).ready(function() {
     $("#id_categoria_id_cate option[selected]").html('Selecciona Una categoria')
     $('#id_tipo_medio').prop('class','form-control')
     $("#id_tipo_medio option[selected]").html('Selecciona Un tipo medio')
-});
-
+  
+  });

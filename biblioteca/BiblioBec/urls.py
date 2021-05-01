@@ -10,4 +10,5 @@ urlpatterns = [
     path('solicitudes', views.solicitudes, name='solicitudes'),
     path('documento', views.form_doc, name='form_doc'),
     path('documento/create', views.create_doc, name='create_doc'),
+    path('documento-update/<str:isbn>', views.form_up_doc, name='update_doc'),
 ]

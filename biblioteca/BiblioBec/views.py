@@ -6,6 +6,7 @@ from django.db import connection
 import cx_Oracle
 import base64
 from django.core.files.base import ContentFile
+
 # Create your views here.
 
 def index(request):
@@ -16,14 +17,13 @@ def index(request):
     )
 
 def catalogo(request):
-
     data = { 
         'libros': lista_doc()
     }
     return render(
         request,
         'catalogo.html',
-        data
+        data,
     )
 
 def catalogo_audio(request):
@@ -131,6 +131,7 @@ def form_up_doc(request,isbn):
         'doc': filtro_doc(isbn)
     }
     return render(request, 'documento/update_doc.html', data)
+
 # Listado de libros - catalogo
 def listado_audios():
     django_cursor = connection.cursor()

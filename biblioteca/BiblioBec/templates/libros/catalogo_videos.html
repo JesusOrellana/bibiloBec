@@ -1,17 +1,16 @@
 {% extends "base.html" %}
-
-<!DOCTYPE html>
-<html lang="en">
+{%block content%}
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/catalogo.css' %}" />
     {%block title%}
     <title>Catalogo</title>
     {%endblock%}
 </head>
-<body>
-    {%block content%} 
+<body> 
     <!-- Header-->
     <header class="masthead text-center">
         <div class="container">
@@ -19,8 +18,13 @@
         </div>
     </header>
 
+    <!-- Boton Agregar Libros -->
+    <div class="p-4" style="width: 95%; height: 50px;">
+        <a class="btn btn-secondary" href="#" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
+    </div>
+
     <!-- Catalogo - videos -->
-    <div class="container-row p-3">
+    <div class="container p-4">
         <div class="row">
             {% for p in videos %}
                 <div class="col-md-4 mt-4 text-center">
@@ -30,6 +34,8 @@
                             <h6 class="card-title text-uppercase">{{p.data.1}}</h6>
                             <h6 class="card-text">{{p.data.2}}</h6>
                             <a href="{% url 'solicitudes'  %}" class="btn btn-primary btn-sm" style="float: center;">Solicitar</a>
+                            <a href="#" class="btn btn-secondary btn-sm" style="float: center;">Editar</a>
+                            <a href="#" class="btn btn-secondary btn-sm" style="float: center;">Eliminar</a>
                         </div>
                     </div>
                 </div>

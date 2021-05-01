@@ -1,0 +1,295 @@
+----------------------------------------------------------------
+---------------------------------------------------------------
+--    1-   INSERTE CREAR TABLAS AQUI
+
+CREATE TABLE categoria (
+    id_cate       NUMBER(5) NOT NULL,
+    descripcion   VARCHAR2(150) NOT NULL
+);
+
+ALTER TABLE categoria ADD CONSTRAINT categoria_pk PRIMARY KEY ( id_cate );
+
+CREATE TABLE detalle_solicitud_prestamo (
+    fecha_devolucion        DATE NOT NULL,
+    hora_devolucion         DATE NOT NULL,
+    fecha_devolucion_real   DATE NOT NULL,
+    hora_devolucion_real    DATE NOT NULL,
+    id_ejemplar             NUMBER(6) NOT NULL,
+    numero_solicitud        NUMBER(6) NOT NULL
+);
+
+ALTER TABLE detalle_solicitud_prestamo ADD CONSTRAINT detalle_solicitud_prestamo_pk PRIMARY KEY ( id_ejemplar,
+numero_solicitud );
+
+CREATE TABLE ejemplar (
+    id_ejem            NUMBER(6) NOT NULL,
+    estado             VARCHAR2(100) NOT NULL,
+    ubicacion          VARCHAR2(100) NOT NULL,
+    stock              NUMBER(4) NOT NULL,
+    stock_disponible   NUMBER(4) NOT NULL,
+    stock_ocupado      NUMBER(4),
+    isbn         VARCHAR2(200) NOT NULL
+);
+
+ALTER TABLE ejemplar ADD CONSTRAINT ejemplar_pk PRIMARY KEY ( id_ejem );
+
+CREATE TABLE libro (
+    isbn                         VARCHAR2(200) NOT NULL,
+    titulo                       VARCHAR2(250) NOT NULL,
+    autor                        VARCHAR2(250) NOT NULL,
+    editorial                    VARCHAR2(250) NOT NULL,
+    fecha_publicacion            DATE NOT NULL,
+    edicion                      NUMBER(6) NOT NULL,
+    categoria_id_cate            NUMBER(5) NOT NULL,
+    tipo_documento_id_tipo_doc   NUMBER(5) NOT NULL,
+    id_medio                     NUMBER(5) NOT NULL,
+    imagen                       BLOB
+);
+
+ALTER TABLE libro ADD CONSTRAINT libro_pk PRIMARY KEY ( isbn );
+
+CREATE TABLE prestamo (
+    numero_pres        NUMBER(6) NOT NULL,
+    fecha_prestamo     DATE NOT NULL,
+    rut_usr            VARCHAR2(9) NOT NULL,
+    tipo_prestamo      NUMBER NOT NULL,
+    numero_solicitud   NUMBER(6) NOT NULL
+);
+
+ALTER TABLE prestamo ADD CONSTRAINT prestamo_pk PRIMARY KEY ( numero_pres );
+
+CREATE TABLE reserva (
+    numero_res         NUMBER(6) NOT NULL,
+    fecha_reserva      DATE NOT NULL,
+    fecha_desde        DATE NOT NULL,
+    fecha_hasta        DATE NOT NULL,
+    ejemplar_id_ejem   NUMBER(6) NOT NULL,
+    usuario_rut_usr    VARCHAR2(9) NOT NULL
+);
+
+ALTER TABLE reserva ADD CONSTRAINT reserva_pk PRIMARY KEY ( numero_res );
+
+CREATE TABLE solicitud_prestamo (
+    numero_solicitud   NUMBER(6) NOT NULL,
+    fecha_solicitud    DATE NOT NULL,
+    hora_solicitud     DATE NOT NULL,
+    usuario_rut_usr    VARCHAR2(9) NOT NULL
+);
+
+ALTER TABLE solicitud_prestamo ADD CONSTRAINT solicitud_prestamo_pk PRIMARY KEY ( numero_solicitud );
+
+CREATE TABLE tipo_documento (
+    id_tipo_doc   NUMBER(5) NOT NULL,
+    descripcion   VARCHAR2(150) NOT NULL
+);
+
+ALTER TABLE tipo_documento ADD CONSTRAINT tipo_documento_pk PRIMARY KEY ( id_tipo_doc );
+
+CREATE TABLE tipo_prestamo (
+    tipo               VARCHAR2(35) NOT NULL,
+    tipo_prestamo_id   NUMBER NOT NULL
+);
+
+ALTER TABLE tipo_prestamo ADD CONSTRAINT tipo_prestamo_pk PRIMARY KEY ( tipo_prestamo_id );
+
+CREATE TABLE tipo_usuario (
+    id_tipo   NUMBER(2) NOT NULL,
+    tipo      VARCHAR2(35) NOT NULL
+);
+
+ALTER TABLE tipo_usuario ADD CONSTRAINT tipo_usuario_pk PRIMARY KEY ( id_tipo );
+
+CREATE TABLE usuario (
+    rut_usr                VARCHAR2(9) NOT NULL,
+    nombre                 VARCHAR2(30) NOT NULL,
+    apellido_p             VARCHAR2(30) NOT NULL,
+    apellido_m             VARCHAR2(30) NOT NULL,
+    direccion              VARCHAR2(100) NOT NULL,
+    telefono               NUMBER(11) NOT NULL,
+    correo                 VARCHAR2(150) NOT NULL,
+    foto                   BLOB,
+    huella                 BLOB,
+    tipo_usuario_id_tipo   NUMBER(2) NOT NULL,
+    password               VARCHAR2(20) NOT NULL
+);
+
+ALTER TABLE usuario ADD CONSTRAINT usuario_pk PRIMARY KEY ( rut_usr );
+
+ALTER TABLE detalle_solicitud_prestamo
+    ADD CONSTRAINT ds_ejemplar_fk FOREIGN KEY ( id_ejemplar )
+        REFERENCES ejemplar ( id_ejem );
+
+ALTER TABLE detalle_solicitud_prestamo
+    ADD CONSTRAINT ds_solicitud_prestamo_fk FOREIGN KEY ( numero_solicitud )
+        REFERENCES solicitud_prestamo ( numero_solicitud );
+
+ALTER TABLE ejemplar
+    ADD CONSTRAINT ejemplar_libro_fk FOREIGN KEY ( isbn )
+        REFERENCES libro ( isbn );
+
+ALTER TABLE libro
+    ADD CONSTRAINT libro_categoria_fk FOREIGN KEY ( categoria_id_cate )
+        REFERENCES categoria ( id_cate );
+
+ALTER TABLE libro
+    ADD CONSTRAINT libro_tipo_documento_fk FOREIGN KEY ( tipo_documento_id_tipo_doc )
+        REFERENCES tipo_documento ( id_tipo_doc );
+
+ALTER TABLE prestamo
+    ADD CONSTRAINT prestamo_solicitud_prestamo_fk FOREIGN KEY ( numero_solicitud )
+        REFERENCES solicitud_prestamo ( numero_solicitud );
+
+ALTER TABLE prestamo
+    ADD CONSTRAINT prestamo_tipo_prestamo_fk FOREIGN KEY ( tipo_prestamo )
+        REFERENCES tipo_prestamo ( tipo_prestamo_id );
+
+ALTER TABLE prestamo
+    ADD CONSTRAINT prestamo_usuario_fk FOREIGN KEY ( rut_usr )
+        REFERENCES usuario ( rut_usr );
+
+ALTER TABLE reserva
+    ADD CONSTRAINT reserva_ejemplar_fk FOREIGN KEY ( ejemplar_id_ejem )
+        REFERENCES ejemplar ( id_ejem );
+
+ALTER TABLE reserva
+    ADD CONSTRAINT reserva_usuario_fk FOREIGN KEY ( usuario_rut_usr )
+        REFERENCES usuario ( rut_usr );
+
+ALTER TABLE solicitud_prestamo
+    ADD CONSTRAINT solicitud_prestamo_usuario_fk FOREIGN KEY ( usuario_rut_usr )
+        REFERENCES usuario ( rut_usr );
+
+ALTER TABLE usuario
+    ADD CONSTRAINT usuario_tipo_usuario_fk FOREIGN KEY ( tipo_usuario_id_tipo )
+        REFERENCES tipo_usuario ( id_tipo );
+
+CREATE SEQUENCE tipo_prestamo_tipo_prestamo_id START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER tipo_prestamo_tipo_prestamo_id BEFORE
+    INSERT ON tipo_prestamo
+    FOR EACH ROW
+    WHEN ( new.tipo_prestamo_id IS NULL )
+BEGIN
+    :new.tipo_prestamo_id := tipo_prestamo_tipo_prestamo_id.nextval;
+END;
+/
+-- script para agregrar tipo medio
+
+CREATE TABLE tipo_medio (
+    id_medio   NUMBER(5) NOT NULL,
+    descripcion   VARCHAR2(150) NOT NULL
+);
+
+ALTER TABLE tipo_medio ADD CONSTRAINT tipo_medio_pk PRIMARY KEY ( id_medio );
+
+
+ALTER TABLE libro
+    ADD CONSTRAINT libro_tipo_medio_fk FOREIGN KEY ( id_medio )
+        REFERENCES tipo_medio ( id_medio );
+
+----------------------------------------------------------------
+---------------------------------------------------------------
+--       INSERTE TABLAS MAESTRAS AQUI
+
+INSERT INTO tipo_usuario VALUES (1,'administrador');
+INSERT INTO tipo_usuario VALUES (2,'bibliotecario');
+INSERT INTO tipo_usuario VALUES (3,'normal');
+INSERT INTO tipo_prestamo VALUES (1,'domicilio');
+INSERT INTO tipo_prestamo VALUES (2,'sala');
+INSERT INTO tipo_documento VALUES (1,'libro');
+INSERT INTO tipo_documento VALUES (2,'multimedia');
+INSERT INTO tipo_medio VALUES (1,'texto');
+INSERT INTO tipo_medio VALUES (2,'casete');
+INSERT INTO tipo_medio VALUES (3,'cd');
+INSERT INTO tipo_medio VALUES (4,'dvd');
+INSERT INTO tipo_medio VALUES (5,'blueray');
+INSERT INTO tipo_medio VALUES (6,'vinilo');
+INSERT INTO categoria VALUES (1,'documentos técnicos');
+INSERT INTO categoria VALUES (2,'audio');
+INSERT INTO categoria VALUES (3,'video');
+INSERT INTO categoria VALUES (4,'literatura española');
+INSERT INTO categoria VALUES (5,'literatura inglesa');
+INSERT INTO categoria VALUES (6,'literatura chilena');
+INSERT INTO categoria VALUES (7,'Autobiográficos');
+INSERT INTO categoria VALUES (8,'científicos');
+INSERT INTO categoria VALUES (9,'Autoayuda');
+INSERT INTO categoria VALUES (10,'Aventuras');
+INSERT INTO categoria VALUES (11,'Cuentos');
+INSERT INTO categoria VALUES (12,'deporte');
+INSERT INTO categoria VALUES (13,'Humor');
+INSERT INTO categoria VALUES (14,'marketing');
+INSERT INTO categoria VALUES (15,'Historia');
+INSERT INTO categoria VALUES (16,'salud');
+INSERT INTO categoria VALUES (17,'suspenso');
+INSERT INTO categoria VALUES (18,' videojuegos');
+INSERT INTO categoria VALUES (19,'sociedad');
+INSERT INTO categoria VALUES (20,'Microrrelatos');
+INSERT INTO categoria VALUES (21,'Novela de culto');
+INSERT INTO categoria VALUES (22,'Novela de no ficción');
+INSERT INTO categoria VALUES (23,'Novela Histórica');
+INSERT INTO categoria VALUES (24,'Novela negra');
+INSERT INTO categoria VALUES (25,'Novelas');
+INSERT INTO categoria VALUES (26,'Novelas Románticas');
+
+----------------------------------------------------------------
+---------------------------------------------------------------
+--        INSERTE SEQUENCIAS AQUI
+
+--secuencia para tabla ejemplar
+CREATE SEQUENCE seq_ejemplar
+  MINVALUE 1
+  START WITH 1
+  INCREMENT BY 1
+  CACHE 20;
+
+----------------------------------------------------------------
+---------------------------------------------------------------
+--       INSERTE PROCEDIMIENTOS AQUI
+
+---------------------------------------------------------------
+--        PROCEDIMIENTOS PARA DOCUMENTOS
+---------------------------------------------------------------
+-- procedimiento para insert documento
+create or replace PROCEDURE p_agregar_documento(
+    v_isbn VARCHAR2,
+    v_titulo VARCHAR2,
+    v_autor VARCHAR2,
+    v_editorial VARCHAR2,
+    v_fecha DATE,
+    v_cat NUMBER,
+    v_doc number,
+    v_medio number,
+    v_edi number,
+    v_imagen BLOB,
+    v_estado VARCHAR2,
+    v_ubi VARCHAR2,
+    v_stock NUMBER,
+    v_salida out NUMBER
+    
+)is
+BEGIN
+    INSERT INTO libro VALUES (v_isbn,v_titulo,v_autor,v_editorial,v_fecha,v_cat,v_doc ,v_medio,v_edi,v_imagen);
+    INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_estado,v_ubi,v_stock,v_stock,0,v_isbn);
+    COMMIT;
+    v_salida:=1;
+
+end;
+
+-- procedimiento para obtener todos los documentos
+CREATE or replace PROCEDURE p_lista_documentos(documentos out SYS_REFCURSOR)
+      IS
+      BEGIN
+         open documentos for SELECT * FROM libro;
+      END;
+
+-- procedimiento para select filtro documento
+create or replace PROCEDURE p_fitro_doc(v_isbn VARCHAR2,documentos out SYS_REFCURSOR)
+      IS
+      BEGIN
+         open documentos for SELECT li.isbn, li.titulo, li.autor,li.editorial,li.edicion, to_char(li.fecha_publicacion,'yyyy-mm-dd'),li.tipo_documento_id_tipo_doc,
+         li.categoria_id_cate,li.id_medio,li.imagen, e.ubicacion, e.estado, e.stock FROM libro li JOIN ejemplar e on(li.isbn = e.isbn)where li.isbn = v_isbn;
+      END;
+
+-----------------------------------------------------------------
+*****************************************************************
+-----------------------------------------------------------------

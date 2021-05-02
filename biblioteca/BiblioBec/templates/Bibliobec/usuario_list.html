@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}<title>Lista de usuarios</title> {% endblock %}
+{% block content %}
+<br>
+<div class="masthead container d-flex flex-column" style="max-width: 1140px;">
+  <h2 class="text-center text-uppercase">Usuarios</h2>
+
+  <div class="row">
+    <div class="col-md-8">
+    <form class="d-flex" method="POST" action="usuarios">
+      {%csrf_token%}
+      <input
+        class="form-control me-2"
+        type="search"
+        placeholder="Buscar usuario"
+        name="rut_usr"
+      />
+      <button class="btn btn-maincolor" type="submit">
+        <i class="fas fa-search"></i>
+      </button>
+    </form>
+  </div>
+    <!-- {% if user.is_authenticated  %} -->
+    <div class="col-md-4">
+      <a class="btn btn-primary1" href="{% url 'usuario_create' %}" 
+      style="float: right; font-size: 14px;">Registrar usuario</a>
+    </div>
+    <!-- {% endif %} -->
+  </div>
+</div>
+<div class="col-md-10"></div>
+  <br>
+<div class="row">
+
+  {% if page_obj %}
+    {% for u in page_obj %}
+      <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <div class="card mb-3" >
+            <div class="row g-0">
+              <div class="col-md-2">
+                {% if u.foto %}
+                  <img class="rounded-circle mt-4 ms-4" width="200" height="200" src="data:imagen/png;base64, {{u.foto}}" data-holder-rendered="true">
+                {% endif %}
+              </div>
+              <div class="col-md-10">
+                <div class="card-body pb-0">
+                  <h5 class="card-title" style="color: #1796c0; font-size: 25px; font-weight: bold;">{{ u.data.1 }} {{u.data.2}} {{u.data.3}}</h5>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p class="card-text">Rut: {{u.data.0}}</p>
+                      <p class="card-text">Teléfono: {{u.data.5}}</p>
+                      <p class="card-text">Correo electrónico: {{u.data.6}}</p>
+                      <p class="card-text">Dirección: {{u.data.4}}</p>
+                    </div>
+                    <div class="col-md-4">
+                      <p class="card-text">Tipo usuario: {{u.data.11}}</p>
+                      {% if u.huella %}
+                        <p class="card-text">Huella:    </p>
+                        <img src="data:imagen/png;base64, {{u.huella}}" width="130" height="130">
+                      {% endif %}
+                    </div>
+                    <div class="col-md-2">
+                      <a class="btn btn-celeste" href="usuario/delete?rut={{ u.data.0 }}" onclick="return confirm('¿Está seguro que desea eliminar el usuario?')" >Eliminar</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="col-md-1"></div>
+    {% endfor %}
+  {% else %}
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">¡Ups!</h4>
+        <p>No se encontraron usuarios registrados.</p>
+      </div>
+    </div>
+    <div class="col-md-2"></div>
+  {% endif %}
+</div>
+<div class="row mb-3">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+
+    {% for i in page_obj.paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
+    {% endif %}
+    </ul>
+  </div>          
+{% endblock %}

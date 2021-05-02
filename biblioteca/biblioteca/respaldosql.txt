@@ -293,3 +293,44 @@ create or replace PROCEDURE p_fitro_doc(v_isbn VARCHAR2,documentos out SYS_REFCU
 -----------------------------------------------------------------
 *****************************************************************
 -----------------------------------------------------------------
+
+---------------------------------------------------------------
+--        PROCEDIMIENTOS PARA USUARIOS
+---------------------------------------------------------------
+-- PROCEDIMIENTO PARA INSERTAR USUARIOS
+CREATE OR REPLACE PROCEDURE SP_USUARIO_INSERT (v_rut_usr varchar2, v_nombre varchar2, v_apellido_p varchar2, v_apellido_m varchar2, 
+    v_direccion varchar2, v_telefono number, v_correo varchar2, v_foto blob, v_huella blob, v_tipo_usuario_id_tipo number, 
+    v_password varchar2, v_salida out number)
+AS 
+BEGIN
+    INSERT INTO usuario
+    VALUES (v_rut_usr, v_nombre, v_apellido_p, v_apellido_m, v_direccion, v_telefono, v_correo, v_foto, v_huella, 
+            v_tipo_usuario_id_tipo, v_password);
+    COMMIT;
+    v_salida:=1;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        v_salida:=0;
+END SP_USUARIO_INSERT;
+
+-- PROCEDIMIENTO PARA LISTAR USUARIOS
+CREATE OR REPLACE PROCEDURE SP_LISTAR_USUARIOS(usuarios OUT SYS_REFCURSOR)
+      IS
+      BEGIN
+         OPEN usuarios FOR  SELECT U.*
+                                    , TU.tipo
+                            FROM usuario U
+                            INNER JOIN tipo_usuario TU
+                                ON (u.tipo_usuario_id_tipo = tu.id_tipo)
+                            ORDER BY rut_usr;
+      END;
+
+-- PROCEDIMIENTO PARA ELIMINAR USUARIO POR RUT
+CREATE OR REPLACE PROCEDURE SP_USUARIO_DELETE (v_rut_usr varchar2)
+AS 
+BEGIN
+    DELETE FROM usuario
+    WHERE rut_usr = v_rut_usr;
+    COMMIT;
+END SP_USUARIO_DELETE;

@@ -11,4 +11,5 @@ urlpatterns = [
     path('documento', views.form_doc, name='form_doc'),
     path('documento/create', views.create_doc, name='create_doc'),
     path('documento-update/<str:isbn>', views.form_up_doc, name='update_doc'),
+    path('reserva/<str:isbn>', views.vista_reserva, name='reserva'),
 ]

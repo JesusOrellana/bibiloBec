@@ -15,3 +15,9 @@ class EjemplarForm(forms.ModelForm):
     class Meta:
         model = Ejemplar
         fields = '__all__'
+
+class ReservaForm(forms.ModelForm):
+
+    class Meta:
+        model = Reserva
+        fields = '__all__'

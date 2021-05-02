@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import DocumentoForm , EjemplarForm
+from .forms import DocumentoForm , EjemplarForm , ReservaForm
 from django.http import HttpResponse
 from .models import Libro
 from django.db import connection
@@ -207,6 +207,34 @@ def filtro_doc(isbn):
         lista.append({
             'data':i,
             'imagen':str(base64.b64encode(i[9].read()),'utf-8')
+        })
+    
+    return lista
+
+    #vista para reserva 
+def vista_reserva(request,isbn):
+    data = { 
+        'form': ReservaForm(), 
+        "doc" : filtro_res(isbn)
+    }
+    return render(
+    request,
+    'reserva/reserva.html',
+    data
+    )
+
+def filtro_res(isbn):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+
+    cursor.callproc("P_FITRO_RES", [isbn,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
         })
     
     return lista

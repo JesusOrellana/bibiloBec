@@ -290,6 +290,12 @@ create or replace PROCEDURE p_fitro_doc(v_isbn VARCHAR2,documentos out SYS_REFCU
          li.categoria_id_cate,li.id_medio,li.imagen, e.ubicacion, e.estado, e.stock FROM libro li JOIN ejemplar e on(li.isbn = e.isbn)where li.isbn = v_isbn;
       END;
 
+-- procedimiendo para llamar titulo reserva
+create or replace PROCEDURE p_fitro_res(v_isbn VARCHAR2,documentos out SYS_REFCURSOR)
+      IS
+      BEGIN
+         open documentos for SELECT *FROM libro Where isbn = v_isbn;      
+      END;
 -----------------------------------------------------------------
 *****************************************************************
 -----------------------------------------------------------------

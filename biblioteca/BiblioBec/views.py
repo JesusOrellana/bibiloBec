@@ -1,7 +1,8 @@
-from django.shortcuts import render
-from .forms import DocumentoForm , EjemplarForm , ReservaForm
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
+from .forms import DocumentoForm , EjemplarForm, UsuarioForm, ReservaForm
 from django.http import HttpResponse
-from .models import Libro
+from .models import Libro, Usuario
 from django.db import connection
 import cx_Oracle
 import base64
@@ -210,6 +211,93 @@ def filtro_doc(isbn):
         })
     
     return lista
+
+# Usuario
+def lista_usuarios():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    cursor_out= django_cursor.connection.cursor()
+    cursor.callproc('SP_LISTAR_USUARIOS',[cursor_out])
+
+    usuarios = []
+    for i in cursor_out:
+        datau = {'data': '', 'foto': '', 'huella': '' }
+        datau['data'] = i
+        if (i[7]):
+            datau['foto'] = str(base64.b64encode(i[7].read()),'utf-8')
+        
+        if (i[8]):
+            datau['huella'] = str(base64.b64encode(i[8].read()),'utf-8')
+
+        usuarios.append(datau)
+    return usuarios
+
+def usuarios(request):
+    lista = lista_usuarios()
+    if request.method == 'GET':
+        paginator = Paginator(lista, 6) 
+        page_number = request.GET.get('page')
+        usuario_filtrado = paginator.get_page(page_number)
+        data = { 
+                'page_obj': usuario_filtrado
+            }
+        return render(
+            request,
+            'Bibliobec/usuario_list.html',
+            data
+        )
+    else:
+        rut_usr_a_buscar = request.POST.get('rut_usr')
+        usuario_encontrado = []
+        for u in lista:
+            if u['data'][0] == rut_usr_a_buscar:
+                usuario_encontrado.append(u)
+                break   
+        return render(
+            request,
+            'Bibliobec/usuario_list.html',
+            {'page_obj': usuario_encontrado}
+        )
+
+def form_usuario(request):
+    data = {
+        'form': UsuarioForm(),
+        'usuarios': lista_usuarios()
+    }
+    if request.method == "POST":
+        print('entro al post')
+        rut_usr = request.POST.get('rut_usr')
+        nombre = request.POST.get('nombre')
+        apellido_p = request.POST.get('apellido_p')
+        apellido_m = request.POST.get('apellido_m')
+        direccion = request.POST.get('direccion')
+        telefono = request.POST.get('telefono')
+        correo = request.POST.get('correo')
+        foto = request.FILES['foto'].read()
+        huella = request.FILES['huella'].read()
+        tipo_usuario_id_tipo = request.POST.get('tipo_usuario_id_tipo')
+        password = request.POST.get('password')
+        resp = agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion,
+                                   telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
+        if resp == 1:
+            return redirect('usuario_list')
+    return render(request, 'Bibliobec/usuario_form.html', data)
+
+def agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono, correo, foto, huella, tipo_usuario_id_tipo, password):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    salida = cursor.var(cx_Oracle.NUMBER)
+    cursor.callproc('SP_USUARIO_INSERT', [rut_usr, nombre, apellido_p, apellido_m, direccion, telefono, correo, foto, huella, 
+                                         tipo_usuario_id_tipo, password, salida])
+    return salida.getvalue()
+
+def eliminar_usuario(request):
+    rut_usr = request.GET.get('rut')
+
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    cursor.callproc('SP_USUARIO_DELETE',[rut_usr])
+    return redirect('usuario_list')
 
     #vista para reserva 
 def vista_reserva(request,isbn):

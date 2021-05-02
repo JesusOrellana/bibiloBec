@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %} <title>Registrar usuario</title> {% endblock %}
+{% block content %}
+{% load static %}
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <h1 class="">Registrar usuario</h1>
+        <br><hr>
+        <form id="" action="" method="post" autocomplete="on" enctype="multipart/form-data">
+        {%csrf_token%}
+        {{form.as_p}}
+        <br>
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <a class="btn btn-volver" href="{% url 'usuario_list' %}">Volver</a>
+                <button type="submit" class="btn btn-primary1">Registrar
+                    <i class="fas fa-check"></i>
+                </button>
+        </div>
+            <div class="col-sm-4"></div>
+        </div>
+        </form>
+    </div>
+    <div class="col-sm-3"></div>
+</div>
+<br>
+
+
+
+{% endblock %}

@@ -48,3 +48,16 @@
   margin-bottom: 0;
 }
 
+.btn-celeste {
+  color: #fff;
+  background-color: #1796c0;
+  border-color: #1796c0;
+  font-family: "Roboto", sans-serif;
+}
+
+.btn-primary1 {
+  color: #fff;
+  background-color: #159a80;
+  border-color: #148f77;
+  font-family: "Roboto", sans-serif;
+}

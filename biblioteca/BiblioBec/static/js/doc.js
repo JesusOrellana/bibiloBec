@@ -17,6 +17,10 @@ $(document).ready(function() {
     $("#id_editorial").prop('placeholder','Editorial del documento')
     $('#id_fecha_publicacion').prop('class','form-control')
     $('#id_fecha_publicacion').prop('type','date')
+    $('#id_fecha_publicacion').removeAttr("required");
+    $('#id_tipo_medio').removeAttr("required");
+    $('#id_edicion').removeAttr("required");
+    $('#id_categoria_id_cate').removeAttr("required");
     fecha = new Date()
     if((fecha.getMonth() + 1)<10){
         $("#id_fecha_publicacion").prop('value',fecha.getFullYear()+'-0'+(fecha.getMonth()+1)+'-'+fecha.getDate())
@@ -31,22 +35,24 @@ $(document).ready(function() {
     $("#id_categoria_id_cate option[selected]").html('Selecciona Una categoria')
     $('#id_tipo_medio').prop('class','form-control')
     $("#id_tipo_medio option[selected]").html('Selecciona Un tipo medio')
-  
+    btn_estado1 = true
   });
-  
   
   function validarForm()
   {
-  
     isbn = $('#id_isbn').val()
     titulo=  $('#id_titulo').val()
     autor=  $('#id_autor').val()
     edito =  $('#id_editorial').val()
     fecha=  $('#id_fecha_publicacion').val()
-    deicion=  $('#id_edicion').val()
-    console.log(isbn)
+    edicion=  $('#id_edicion').val()
+    t_doc=  $('#id_tipo_documento_id_tipo_doc').val()
+    
+
+    var exr = new RegExp("^[0-9,$]");
     if(isbn == "")
     {
+        $('#id_isbn').focus()
         toastr.error("Debe Ingresar el identificador del documento","ERROR",{
             "closeButton": true,
             "debug": false,
@@ -66,5 +72,165 @@ $(document).ready(function() {
         });
         return false;
     }
-    return false
+    if(titulo == "")
+    {
+        $('#id_titulo').focus()
+        toastr.error("Debe Ingresar el titulo del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(autor == "")
+    {
+        $('#id_autor').focus()
+        toastr.error("Debe Ingresar el nombre del autor del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(edito == "")
+    {
+        $('#id_editorial').focus()
+        toastr.error("Debe Ingresar la editorial del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(edicion == "")
+    {
+        $('#id_edicion').focus()
+        toastr.error("Debe Ingresar el numero de edición del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(!exr.test(edicion))
+    {
+        $('#id_edicion').focus()
+        toastr.error("Solo puede ingresar numeros en la edición del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(fecha =="")
+    {   
+        if(btn_estado1)
+        {   
+            $("#btn-dd").click()
+            btn_estado1 = false;
+            $("#btn-dd").click()
+        }
+        $('#id_fecha_publicacion').focus()
+        toastr.error("Debe ingresar una fecha de publicación del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(t_doc =="")
+    {   
+        
+        $('#id_tipo_documento_id_tipo_doc').focus()
+        toastr.error("Debe ingresar el tipo de documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
   }

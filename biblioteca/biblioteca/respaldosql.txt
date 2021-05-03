@@ -52,7 +52,7 @@ CREATE TABLE prestamo (
     numero_pres        NUMBER(6) NOT NULL,
     fecha_prestamo     DATE NOT NULL,
     rut_usr            VARCHAR2(9) NOT NULL,
-    tipo_prestamo      NUMBER NOT NULL,
+    tipo_prestamo      NUMBER(5) NOT NULL,
     numero_solicitud   NUMBER(6) NOT NULL
 );
 
@@ -86,8 +86,9 @@ CREATE TABLE tipo_documento (
 ALTER TABLE tipo_documento ADD CONSTRAINT tipo_documento_pk PRIMARY KEY ( id_tipo_doc );
 
 CREATE TABLE tipo_prestamo (
-    tipo               VARCHAR2(35) NOT NULL,
-    tipo_prestamo_id   NUMBER NOT NULL
+    tipo_prestamo_id   NUMBER(6) NOT NULL,
+    tipo               VARCHAR2(35) NOT NULL
+
 );
 
 ALTER TABLE tipo_prestamo ADD CONSTRAINT tipo_prestamo_pk PRIMARY KEY ( tipo_prestamo_id );
@@ -163,16 +164,6 @@ ALTER TABLE usuario
     ADD CONSTRAINT usuario_tipo_usuario_fk FOREIGN KEY ( tipo_usuario_id_tipo )
         REFERENCES tipo_usuario ( id_tipo );
 
-CREATE SEQUENCE tipo_prestamo_tipo_prestamo_id START WITH 1 NOCACHE ORDER;
-
-CREATE OR REPLACE TRIGGER tipo_prestamo_tipo_prestamo_id BEFORE
-    INSERT ON tipo_prestamo
-    FOR EACH ROW
-    WHEN ( new.tipo_prestamo_id IS NULL )
-BEGIN
-    :new.tipo_prestamo_id := tipo_prestamo_tipo_prestamo_id.nextval;
-END;
-/
 -- script para agregrar tipo medio
 
 CREATE TABLE tipo_medio (
@@ -186,7 +177,22 @@ ALTER TABLE tipo_medio ADD CONSTRAINT tipo_medio_pk PRIMARY KEY ( id_medio );
 ALTER TABLE libro
     ADD CONSTRAINT libro_tipo_medio_fk FOREIGN KEY ( id_medio )
         REFERENCES tipo_medio ( id_medio );
+----------------------------------------------------------------
+---------------------------------------------------------------
+--       INSERTE DROP TABLAS (ELIMINAR TABLAS)
 
+drop table detalle_solicitud_prestamo;
+drop table prestamo;
+drop table reserva;
+drop table tipo_prestamo;
+drop table solicitud_prestamo;
+drop table ejemplar;
+drop table libro;
+drop table categoria;
+drop table tipo_medio;
+drop table usuario;
+drop table tipo_usuario;
+drop table tipo_documento;
 ----------------------------------------------------------------
 ---------------------------------------------------------------
 --       INSERTE TABLAS MAESTRAS AQUI
@@ -230,7 +236,7 @@ INSERT INTO categoria VALUES (23,'Novela Histórica');
 INSERT INTO categoria VALUES (24,'Novela negra');
 INSERT INTO categoria VALUES (25,'Novelas');
 INSERT INTO categoria VALUES (26,'Novelas Románticas');
-
+COMMIT;
 ----------------------------------------------------------------
 ---------------------------------------------------------------
 --        INSERTE SEQUENCIAS AQUI
@@ -290,12 +296,16 @@ create or replace PROCEDURE p_fitro_doc(v_isbn VARCHAR2,documentos out SYS_REFCU
          li.categoria_id_cate,li.id_medio,li.imagen, e.ubicacion, e.estado, e.stock FROM libro li JOIN ejemplar e on(li.isbn = e.isbn)where li.isbn = v_isbn;
       END;
 
+---------------------------------------------------------------
+--        PROCEDIMIENTOS PARA RESERVA
+---------------------------------------------------------------
 -- procedimiendo para llamar titulo reserva
 create or replace PROCEDURE p_fitro_res(v_isbn VARCHAR2,documentos out SYS_REFCURSOR)
       IS
       BEGIN
          open documentos for SELECT *FROM libro Where isbn = v_isbn;      
       END;
+      
 -----------------------------------------------------------------
 *****************************************************************
 -----------------------------------------------------------------

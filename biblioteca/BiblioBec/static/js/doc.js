@@ -36,6 +36,7 @@ $(document).ready(function() {
     $('#id_tipo_medio').prop('class','form-control')
     $("#id_tipo_medio option[selected]").html('Selecciona Un tipo medio')
     btn_estado1 = true
+    btn_estado2 = true
   });
   
   function validarForm()
@@ -47,7 +48,12 @@ $(document).ready(function() {
     fecha=  $('#id_fecha_publicacion').val()
     edicion=  $('#id_edicion').val()
     t_doc=  $('#id_tipo_documento_id_tipo_doc').val()
-    
+    cate = $('#id_categoria_id_cate').val()
+    medio = $('#id_tipo_medio').val()
+    imagen = $('#id_imagen').val()
+    ubi = $('#id_ubicacion').val()
+    estado = $('#id_estado').val()
+    stock = $('#id_stock').val()
 
     var exr = new RegExp("^[0-9,$]");
     if(isbn == "")
@@ -188,7 +194,6 @@ $(document).ready(function() {
         {   
             $("#btn-dd").click()
             btn_estado1 = false;
-            $("#btn-dd").click()
         }
         $('#id_fecha_publicacion').focus()
         toastr.error("Debe ingresar una fecha de publicación del documento","ERROR",{
@@ -233,4 +238,147 @@ $(document).ready(function() {
         });
         return false;
     }
+    if(cate =="")
+    {   
+        
+        $('#id_categoria_id_cate').focus()
+        toastr.error("Debe ingresar la categoria del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(medio =="")
+    {   
+        
+        $('#id_tipo_medio').focus()
+        toastr.error("Debe ingresar el tipo de medio","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(ubi =="")
+    {   
+        if(btn_estado2)
+        {   
+            $("#btn-ld").click()
+            btn_estado2 = false;
+        }
+        $('#id_ubicacion').focus()
+        toastr.error("Debe ingresar la ubicación del documento en estanterias","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(estado =="")
+    {   
+        
+        $('#id_estado').focus()
+        toastr.error("Debe ingresar el estado del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(stock =="")
+    {   
+        
+        $('#id_stock').focus()
+        toastr.error("Debe ingresar la cantidad de existencia del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(!exr.test(stock))
+    {   
+        
+        $('#id_stock').focus()
+        toastr.error("Debe ingresar la cantidad de existencia del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
   }
+

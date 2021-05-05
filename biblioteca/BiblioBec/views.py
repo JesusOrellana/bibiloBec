@@ -253,12 +253,18 @@ def form_usuario(request):
         direccion = request.POST.get('direccion')
         telefono = request.POST.get('telefono')
         correo = request.POST.get('correo')
-        with open('BiblioBec/static/img/user-5.jpg','rb') as image_file:
-            foto = image_file.read()
-        with open('BiblioBec/static/img/no-imagen-user.jpg','rb') as image_file:
-            huella = image_file.read()
         tipo_usuario_id_tipo = request.POST.get('tipo_usuario_id_tipo')
         password = request.POST.get('password')
+        if 'foto' in request.FILES:
+            foto = request.FILES['foto'].read()
+        else:
+            with open('BiblioBec/static/img/user-5.jpg','rb') as image_file:
+                foto = image_file.read()
+        if 'huella' in request.FILES:
+            huella = request.FILES['huella'].read()
+        else:
+            with open('BiblioBec/static/img/no-imagen-user.jpg','rb') as image_file:
+                huella = image_file.read()
         resp = agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion,
                                    telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
         if resp == 1:
@@ -320,7 +326,7 @@ def usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono,
     return salida.getvalue()
 
 def editar_usuario(request):
-    rut_usr = request.GET.get('rut_usr')
+    rut_usr = request.GET.get('rut_usr') if request.method == "GET" else request.POST.get('rut_usr')
     data = {
         'usuario': usuario_filtrado(rut_usr),
         'mensajeError': None
@@ -328,10 +334,25 @@ def editar_usuario(request):
     if request.method == "GET":
         return render(request, 'Bibliobec/usuario_update.html', data)
     else:
-        with open('BiblioBec/static/img/user-5.jpg','rb') as image_file:
-            foto = image_file.read()
-        with open('BiblioBec/static/img/no-imagen-user.jpg','rb') as image_file:
-            huella = image_file.read()
+        foto = None
+        huella = None
+        if 'foto' in request.FILES:
+            foto = request.FILES['foto'].read()
+        else:
+            if not data['usuario'][0]['data'][7]:
+                with open('BiblioBec/static/img/user-5.jpg','rb') as image_file:
+                    foto = image_file.read()
+            else:
+                foto = data['usuario'][0]['data'][7]
+        
+        if 'huella' in request.FILES:
+            huella = request.FILES['huella'].read()
+        else:
+            if not data['usuario'][0]['data'][8]:
+                with open('BiblioBec/static/img/no-imagen-user.jpg','rb') as image_file:
+                    huella = image_file.read()
+            else:
+                huella = data['usuario'][0]['data'][8]
         rut_usr = request.POST.get('rut_usr')
         nombre = request.POST.get('nombre')
         apellido_p = request.POST.get('apellido_p')
@@ -339,10 +360,6 @@ def editar_usuario(request):
         direccion = request.POST.get('direccion')
         telefono = request.POST.get('telefono')
         correo = request.POST.get('correo')
-        if 'foto' in request.FILES:
-            foto = request.FILES['foto'].read()
-        if 'huella' in request.FILES:
-            huella = request.FILES['huella'].read()
         tipo_usuario_id_tipo = request.POST.get('tipo_usuario_id_tipo')
         password = request.POST.get('password')
         resp = usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion,
@@ -364,7 +381,6 @@ def editar_usuario(request):
             data['usuario'][0]['data'][10] = password
             data['mensajeError'] = "No se pudo actualizar el usuario."
             return render(request, 'Bibliobec/usuario_update.html', data)
-
 
 def eliminar_usuario(request):
     rut_usr = request.GET.get('rut')

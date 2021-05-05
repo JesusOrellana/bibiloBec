@@ -103,11 +103,11 @@
                         />
                     </div>
             </div>
-                <div class="col-md-6 text-center">
-                    <label for="foto">Foto:</label>
-                    {% if usuario.0.data.7 %}
+            <div class="col-md-6 text-center">
+                <label for="foto">Foto:</label>
+                {% if usuario.0.data.7 %}
                     <img class="rounded-circle mt-3 ms-5 mb-2" width="200" height="200" src="data:imagen/png;base64, {{usuario.0.foto}}" data-holder-rendered="true">
-                    {% endif %}
+                {% endif %}
                     <div class="form-group">
                         <input
                         type="file"
@@ -116,10 +116,10 @@
                         id="id_foto"
                         />
                     </div>
-                    <label for="huella">Huella:</label>
-                    {% if usuario.0.data.8 %}
+                <label for="huella">Huella:</label>
+                {% if usuario.0.data.8 %}
                     <img class="rounded-circle mt-3 ms-5 mb-2" width="200" height="200" src="data:imagen/png;base64, {{usuario.0.huella}}" data-holder-rendered="true">
-                    {% endif %}
+                {% endif %}
                     <div class="form-group">
                         <input
                         type="file"
@@ -128,26 +128,22 @@
                         id="id_huella"
                         />
                     </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <br>
+                    <a class="btn btn-celeste" href="{% url 'usuario_list' %}">Volver</a>
+                    <button type="submit" class="btn btn-primary1" href="{% url 'usuario_update' %}">Actualizar
+                        <i class="fas fa-sync"></i>
+                    </button>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div class="col-sm-4">
-                        <br>
-                        <a class="btn btn-celeste" href="{% url 'usuario_list' %}">Volver</a>
-                        <button type="submit" class="btn btn-primary1" href="{% url 'usuario_update' %}">Actualizar
-                            <i class="fa fa-refresh" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                    <div class="col-sm-4"></div>
-                </div>
-            </form>
-            
+                <div class="col-sm-4"></div>
+            </div>
+                </form>
         </div>
     </div>
     <div class="col-sm-3"></div>
 </div>
 <br>
-
-
-
 {% endblock %}

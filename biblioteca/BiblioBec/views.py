@@ -213,25 +213,6 @@ def filtro_doc(isbn):
     return lista
 
 # Usuario
-def lista_usuarios():
-    django_cursor = connection.cursor()
-    cursor = django_cursor.connection.cursor()
-    cursor_out= django_cursor.connection.cursor()
-    cursor.callproc('SP_LISTAR_USUARIOS',[cursor_out])
-
-    usuarios = []
-    for i in cursor_out:
-        datau = {'data': '', 'foto': '', 'huella': '' }
-        datau['data'] = i
-        if (i[7]):
-            datau['foto'] = str(base64.b64encode(i[7].read()),'utf-8')
-        
-        if (i[8]):
-            datau['huella'] = str(base64.b64encode(i[8].read()),'utf-8')
-
-        usuarios.append(datau)
-    return usuarios
-
 def usuarios(request):
     lista = lista_usuarios()
     if request.method == 'GET':
@@ -265,7 +246,6 @@ def form_usuario(request):
         'usuarios': lista_usuarios()
     }
     if request.method == "POST":
-        print('entro al post')
         rut_usr = request.POST.get('rut_usr')
         nombre = request.POST.get('nombre')
         apellido_p = request.POST.get('apellido_p')
@@ -273,8 +253,10 @@ def form_usuario(request):
         direccion = request.POST.get('direccion')
         telefono = request.POST.get('telefono')
         correo = request.POST.get('correo')
-        foto = request.FILES['foto'].read()
-        huella = request.FILES['huella'].read()
+        with open('BiblioBec/static/img/user-5.jpg','rb') as image_file:
+            foto = image_file.read()
+        with open('BiblioBec/static/img/no-imagen-user.jpg','rb') as image_file:
+            huella = image_file.read()
         tipo_usuario_id_tipo = request.POST.get('tipo_usuario_id_tipo')
         password = request.POST.get('password')
         resp = agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion,
@@ -291,6 +273,99 @@ def agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono
                                          tipo_usuario_id_tipo, password, salida])
     return salida.getvalue()
 
+def lista_usuarios():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    cursor_out= django_cursor.connection.cursor()
+    cursor.callproc('SP_LISTAR_USUARIOS',[cursor_out])
+
+    usuarios = []
+    for i in cursor_out:
+        datau = {'data': '', 'foto': '', 'huella': '' }
+        datau['data'] = i
+        if (i[7]):
+            datau['foto'] = str(base64.b64encode(i[7].read()),'utf-8')
+        
+        if (i[8]):
+            datau['huella'] = str(base64.b64encode(i[8].read()),'utf-8')
+
+        usuarios.append(datau)
+    return usuarios
+
+def usuario_filtrado(rut_usr):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    cursor_out = django_cursor.connection.cursor()
+    cursor.callproc('SP_FILTRAR_USUARIO_POR_RUT',[rut_usr, cursor_out])
+        
+    usuarios = []
+    for i in cursor_out:
+        datau = {'data': '', 'foto': '', 'huella': '' }
+        datau['data'] = i
+        if (i[7]):
+            datau['foto'] = str(base64.b64encode(i[7].read()),'utf-8')
+            
+        if (i[8]):
+            datau['huella'] = str(base64.b64encode(i[8].read()),'utf-8')
+
+        usuarios.append(datau)
+    return usuarios
+
+def usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono, correo, foto, huella, tipo_usuario_id_tipo, password):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    salida = cursor.var(cx_Oracle.NUMBER)
+    cursor.callproc('SP_USUARIO_UPDATE',[rut_usr, nombre, apellido_p, apellido_m, direccion, telefono, correo, foto, huella, 
+                                         tipo_usuario_id_tipo, password, salida])
+    return salida.getvalue()
+
+def editar_usuario(request):
+    rut_usr = request.GET.get('rut_usr')
+    data = {
+        'usuario': usuario_filtrado(rut_usr),
+        'mensajeError': None
+    }
+    if request.method == "GET":
+        return render(request, 'Bibliobec/usuario_update.html', data)
+    else:
+        with open('BiblioBec/static/img/user-5.jpg','rb') as image_file:
+            foto = image_file.read()
+        with open('BiblioBec/static/img/no-imagen-user.jpg','rb') as image_file:
+            huella = image_file.read()
+        rut_usr = request.POST.get('rut_usr')
+        nombre = request.POST.get('nombre')
+        apellido_p = request.POST.get('apellido_p')
+        apellido_m = request.POST.get('apellido_m')
+        direccion = request.POST.get('direccion')
+        telefono = request.POST.get('telefono')
+        correo = request.POST.get('correo')
+        if 'foto' in request.FILES:
+            foto = request.FILES['foto'].read()
+        if 'huella' in request.FILES:
+            huella = request.FILES['huella'].read()
+        tipo_usuario_id_tipo = request.POST.get('tipo_usuario_id_tipo')
+        password = request.POST.get('password')
+        resp = usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion,
+                                   telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
+        if resp == 1:
+            return redirect('usuario_list')
+        else:
+            data = {'usuario': [{'data': {}}]}
+            data['usuario'][0]['data'][0] = rut_usr
+            data['usuario'][0]['data'][1] = nombre
+            data['usuario'][0]['data'][2] = apellido_p
+            data['usuario'][0]['data'][3] = apellido_m
+            data['usuario'][0]['data'][4] = direccion
+            data['usuario'][0]['data'][5] = telefono
+            data['usuario'][0]['data'][6] = correo
+            data['usuario'][0]['data'][7] = foto
+            data['usuario'][0]['data'][8] = huella
+            data['usuario'][0]['data'][9] = tipo_usuario_id_tipo
+            data['usuario'][0]['data'][10] = password
+            data['mensajeError'] = "No se pudo actualizar el usuario."
+            return render(request, 'Bibliobec/usuario_update.html', data)
+
+
 def eliminar_usuario(request):
     rut_usr = request.GET.get('rut')
 
@@ -298,6 +373,7 @@ def eliminar_usuario(request):
     cursor = django_cursor.connection.cursor()
     cursor.callproc('SP_USUARIO_DELETE',[rut_usr])
     return redirect('usuario_list')
+
 
     #vista para reserva 
 def vista_reserva(request,isbn):

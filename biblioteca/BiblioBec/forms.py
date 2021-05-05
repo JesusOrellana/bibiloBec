@@ -30,7 +30,7 @@ class UsuarioForm(forms.ModelForm):
         }
     ))
 
-    nombre = forms.CharField(label='Primer nombre', required=True, max_length=30, widget=forms.TextInput(
+    nombre = forms.CharField(label='Nombre', required=True, max_length=30, widget=forms.TextInput(
         attrs={
             'class': 'form-control'
         }
@@ -72,13 +72,13 @@ class UsuarioForm(forms.ModelForm):
         }
     ))
 
-    foto = forms.ImageField(label='Foto', widget=forms.ClearableFileInput(
+    foto = forms.ImageField(label='Foto', required=False, widget=forms.ClearableFileInput(
         attrs={
             'class': 'form-control'
         }
     ))
 
-    huella = forms.ImageField(label='Huella', widget=forms.ClearableFileInput(
+    huella = forms.ImageField(label='Huella', required=False, widget=forms.ClearableFileInput(
         attrs={
             'class': 'form-control'
         }

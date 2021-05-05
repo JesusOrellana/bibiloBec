@@ -61,8 +61,12 @@
                       {% endif %}
                     </div>
                     <div class="col-md-2">
-                      <a class="btn btn-celeste" href="usuario/delete?rut={{ u.data.0 }}" onclick="return confirm('¿Está seguro que desea eliminar el usuario?')" >Eliminar</a>
+                      <a class="btn btn-primary1 mt-auto" href="usuario/update?rut_usr={{ u.data.0 }}" >Editar <i class="fas fa-user-edit"></i></a>
+                      <br>
+                      <a class="btn btn-celeste mt-4" href="usuario/delete?rut={{ u.data.0 }}" onclick="return confirm('¿Está seguro que desea eliminar el usuario?')" >Eliminar <i class="fas fa-trash"></i></a>
                     </div>
+                      
+                    
                   </div>
                 </div>
               </div>

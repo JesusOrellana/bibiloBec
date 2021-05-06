@@ -382,3 +382,8 @@ $(document).ready(function() {
     }
   }
 
+  function deleteDoc(isbn)
+  {
+    $("#eliminar_documento").prop("href",'documento-delete/'+isbn);
+    //$("#eliminar_documento").prop("class",'btn-warning');
+  }

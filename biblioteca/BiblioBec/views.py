@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from .forms import DocumentoForm , EjemplarForm, UsuarioForm, ReservaForm
 from django.http import HttpResponse
-from .models import Libro, Usuario
+from .models import Libro, Usuario, Ejemplar
 from django.db import connection
 import cx_Oracle
 import base64
@@ -66,7 +66,7 @@ def solicitudes(request):
 
 # vistas de documentos
 
-def form_doc(request):
+def form_cr_doc(request):
     data = {
         'form': DocumentoForm(),
         'form2':EjemplarForm(),
@@ -119,6 +119,24 @@ def agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_
     salida = cursor_ex.var(cx_Oracle.NUMBER)
     cursor_ex.callproc('P_AGREGAR_DOCUMENTO',[isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock,salida])
 
+def delete_doc(request,isbn):
+    """
+    isbn = request.GET.get('isbn')
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    cursor.callproc('SP_DOC_DELETE',[isbn])
+    """
+    doc = get_object_or_404(Libro,isbn=isbn)
+    ejemplar = get_object_or_404(Ejemplar,isbn=isbn)
+    ejemplar.delete()
+    doc.delete()
+    data = {
+                'libro': listado_libro(),
+                "msj": "exi_delete",
+
+            }
+
+    return render(request, "catalogo.html",data)
 
 def lista_doc():
 
@@ -143,6 +161,71 @@ def form_up_doc(request,isbn):
     }
     return render(request, 'documento/update_doc.html', data)
 
+def update_doc(request):
+    if request.method == 'POST':
+        isbn = request.POST.get('isbn','')
+        titulo = request.POST.get('titulo','')
+        autor = request.POST.get('autor','')
+        editorial = request.POST.get('editorial','')
+        fecha = request.POST.get('fecha_publicacion','')
+        categoria = request.POST.get('categoria_id_cate','')
+        tipo_doc = request.POST.get('tipo_documento_id_tipo_doc','')
+        tipo_me = request.POST.get('tipo_medio','')
+        edi = request.POST.get('edicion','')
+        imagen = request.FILES['imagen'].read()
+        ubi = request.POST.get('ubicacion')
+        estado = request.POST.get('estado')
+        stock = request.POST.get('stock')
+    
+
+    editar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock)
+    data = {
+        'form': DocumentoForm(),
+        'doc': filtro_doc(isbn),
+        "msj": "exi_update",
+
+    }
+    return render(request, 'documento/update_doc.html', data)
+    """
+    try:
+        if request.method == 'POST':
+            isbn = request.POST.get('isbn','')
+            titulo = request.POST.get('titulo','')
+            autor = request.POST.get('autor','')
+            editorial = request.POST.get('editorial','')
+            fecha = request.POST.get('fecha_publicacion','')
+            categoria = request.POST.get('categoria_id_cate','')
+            tipo_doc = request.POST.get('tipo_documento_id_tipo_doc','')
+            tipo_me = request.POST.get('tipo_medio','')
+            edi = request.POST.get('edicion','')
+            imagen = request.FILES['imagen'].read()
+            ubi = request.POST.get('ubicacion')
+            estado = request.POST.get('estado')
+            stock = request.POST.get('stock')
+            
+
+            editar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock)
+            data = {
+                'form': DocumentoForm(),
+                'doc': filtro_doc(isbn),
+                "msj": "exi_update",
+
+            }
+            return render(request, 'documento/update_doc.html', data)
+    except:
+        data = {
+                'form': DocumentoForm(),
+                'doc': filtro_doc(isbn),
+                "msj": "error_update",
+
+            }
+        return render(request, 'documento/update_doc.html', data)
+    """
+def editar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock):
+    cursor_dj = connection.cursor()
+    cursor_ex = cursor_dj.connection.cursor() 
+    salida = cursor_ex.var(cx_Oracle.NUMBER)
+    cursor_ex.callproc('SP_EDITAR_DOCUMENTO',[isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock,salida])
 # Listado de libros - catalogo
 def listado_audios():
     django_cursor = connection.cursor()

@@ -350,3 +350,39 @@ BEGIN
     WHERE rut_usr = v_rut_usr;
     COMMIT;
 END SP_USUARIO_DELETE;
+
+--PROCEDIMIENTO FILTRAR USUARIO POR RUT
+CREATE OR REPLACE PROCEDURE SP_FILTRAR_USUARIO_POR_RUT(v_rut_usr VARCHAR2, usuarios OUT SYS_REFCURSOR)
+      IS
+      BEGIN
+         OPEN usuarios FOR  SELECT U.*
+                                    , TU.tipo
+                            FROM usuario U
+                            INNER JOIN tipo_usuario TU
+                                ON (u.tipo_usuario_id_tipo = tu.id_tipo)
+                            WHERE u.rut_usr = v_rut_usr;
+      END;
+
+-- PROCEDIMIENTO PARA ACTUALIZAR USUARIO
+CREATE OR REPLACE PROCEDURE SP_USUARIO_UPDATE (v_rut_usr varchar2, v_nombre varchar2, v_apellido_p varchar2, v_apellido_m varchar2, 
+    v_direccion varchar2, v_telefono number, v_correo varchar2, v_foto blob default null, v_huella blob default null, v_tipo_usuario_id_tipo number, 
+    v_password varchar2, v_salida out number)
+
+AS 
+BEGIN
+    UPDATE usuario
+    SET     nombre = v_nombre
+            , apellido_p = v_apellido_p
+            , apellido_m = v_apellido_m
+            , direccion = v_direccion
+            , telefono = v_telefono
+            , correo = v_correo
+            , foto = v_foto
+            , huella = v_huella
+            , tipo_usuario_id_tipo = v_tipo_usuario_id_tipo
+            , password = v_password
+        WHERE rut_usr = v_rut_usr;
+    COMMIT;
+    v_salida:=1;
+
+END SP_USUARIO_UPDATE;

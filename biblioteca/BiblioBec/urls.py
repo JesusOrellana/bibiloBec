@@ -15,6 +15,8 @@ urlpatterns = [
     path('documento-delete/<str:isbn>', views.delete_doc, name='eliminar_documento'),
     path('usuario/create', views.form_usuario, name='usuario_create'),
     path('usuarios', views.usuarios, name='usuario_list'),
-    path('usuario/delete', views.eliminar_usuario, name='eliminar_usuario'),
+    path('usuario/create', views.form_usuario, name='usuario_create'),
+    path('usuario/update', views.editar_usuario, name='usuario_update'),
+    path('usuario/delete', views.eliminar_usuario, name='usuario_delete'),
     path('reserva/<str:isbn>', views.vista_reserva, name='reserva'),
 ]

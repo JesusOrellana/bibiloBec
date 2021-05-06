@@ -296,6 +296,30 @@ create or replace PROCEDURE p_fitro_doc(v_isbn VARCHAR2,documentos out SYS_REFCU
          li.categoria_id_cate,li.id_medio,li.imagen, e.ubicacion, e.estado, e.stock FROM libro li JOIN ejemplar e on(li.isbn = e.isbn)where li.isbn = v_isbn;
       END;
 
+create or replace PROCEDURE sp_editar_documento(
+    v_isbn VARCHAR2,
+    v_titulo VARCHAR2,
+    v_autor VARCHAR2,
+    v_editorial VARCHAR2,
+    v_fecha DATE,
+    v_cat NUMBER,
+    v_doc number,
+    v_medio number,
+    v_edi number,
+    v_imagen BLOB,
+    v_estado VARCHAR2,
+    v_ubi VARCHAR2,
+    v_stock NUMBER,
+    v_salida out NUMBER
+    
+)is
+BEGIN
+    UPDATE libro SET titulo = v_titulo, autor = v_autor, editorial = v_editorial, fecha_publicacion= v_fecha, categoria_id_cate = v_cat, 
+    tipo_documento_id_tipo_doc = v_doc, id_medio = v_medio, edicion = v_edi, imagen = v_imagen WHERE isbn = v_isbn; 
+    UPDATE ejemplar SET estado = v_estado, stock = v_stock , ubicacion = v_ubi WHERE isbn = v_isbn;
+    COMMIT;
+    v_salida:=1;
+
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA RESERVA
 ---------------------------------------------------------------

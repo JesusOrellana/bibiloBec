@@ -72,13 +72,13 @@ class UsuarioForm(forms.ModelForm):
         }
     ))
 
-    foto = forms.ImageField(label='Foto', required=False, widget=forms.ClearableFileInput(
+    foto = forms.ImageField(label='Foto', required=False, widget=forms.FileInput(
         attrs={
             'class': 'form-control'
         }
     ))
 
-    huella = forms.ImageField(label='Huella', required=False, widget=forms.ClearableFileInput(
+    huella = forms.ImageField(label='Huella', required=False, widget=forms.FileInput(
         attrs={
             'class': 'form-control'
         }
@@ -93,3 +93,8 @@ class ReservaForm(forms.ModelForm):
     class Meta:
         model = Reserva
         fields = '__all__'
+
+class formLogin(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ['rut_usr','password']

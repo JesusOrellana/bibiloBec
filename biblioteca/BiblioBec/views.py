@@ -302,7 +302,8 @@ def usuarios(request):
     Valida que se acceda a la vista solo los usuarios con sesión y con privilegios
     '''
     #Validar si existe la sesión
-    if not request.session.is_empty():
+    if not request.session._session:
+        print('entra al empty')
         return redirect('index')
 
     #Validar que el usuario no acceda a la vista si no es tipo administrador o bibliotecario

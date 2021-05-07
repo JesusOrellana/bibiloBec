@@ -7,7 +7,7 @@
 <div class="doc-center">
     <div class="doc-titulo"><h2>Ingresar nuevo documento</h2></div>
     <div class="doc-form">
-        <form action="documento/create" method="post" enctype="multipart/form-data" onsubmit="return validarForm();">
+        <form action="{% url 'create_doc' %}" method="post" enctype="multipart/form-data" onsubmit="return validarForm();">
             {% csrf_token %}
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item">
@@ -167,46 +167,4 @@
     </div>
     
 </div>
-{% if msj == "exi_create" %}
-<script>
-
-    toastr.success("Se ha creado el documento correctamente","¡EXITO!",{
-    "closeButton": true,
-    "debug": false,
-    "newestOnTop": true,
-    "progressBar": true,
-    "positionClass": "toast-bottom-right",
-    "preventDuplicates": false,
-    "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-    });
-</script>
-{% elif msj == "error_create"%}
-<script>
-    toastr.error("lo sentimos ha ocurrido un problema","ERROR",{
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": true,
-        "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    });
-</script>
-{% endif %}
 {% endblock %}

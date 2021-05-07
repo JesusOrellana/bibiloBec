@@ -41,7 +41,6 @@ $(document).ready(function() {
   
   function validarForm()
   {
-    alert("asdasdasdas")
     isbn = $('#id_isbn').val()
     titulo=  $('#id_titulo').val()
     autor=  $('#id_autor').val()

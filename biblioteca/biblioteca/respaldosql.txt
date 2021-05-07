@@ -274,7 +274,7 @@ create or replace PROCEDURE p_agregar_documento(
     
 )is
 BEGIN
-    INSERT INTO libro VALUES (v_isbn,v_titulo,v_autor,v_editorial,v_fecha,v_cat,v_doc ,v_medio,v_edi,v_imagen);
+    INSERT INTO libro VALUES (v_isbn,v_titulo,v_autor,v_editorial,v_fecha,v_edi,v_cat,v_doc ,v_medio,v_imagen);
     INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_estado,v_ubi,v_stock,v_stock,0,v_isbn);
     COMMIT;
     v_salida:=1;
@@ -283,10 +283,10 @@ end;
 
 -- procedimiento para obtener todos los documentos
 CREATE or replace PROCEDURE p_lista_documentos(documentos out SYS_REFCURSOR)
-      IS
-      BEGIN
-         open documentos for SELECT * FROM libro;
-      END;
+IS
+BEGIN
+    open documentos for SELECT * FROM libro;
+END;
 
 -- procedimiento para select filtro documento
 create or replace PROCEDURE p_fitro_doc(v_isbn VARCHAR2,documentos out SYS_REFCURSOR)
@@ -329,7 +329,35 @@ create or replace PROCEDURE p_fitro_res(v_isbn VARCHAR2,documentos out SYS_REFCU
       BEGIN
          open documentos for SELECT *FROM libro Where isbn = v_isbn;      
       END;
-      
+
+---------------------------------------------------------------
+--        PROCEDIMIENTOS PARA CATALOGO
+---------------------------------------------------------------
+-- Ejecutar cada uno por separado
+
+-- Procedimiento para listar solo libros de audio
+create or replace procedure sp_listar_audios(audios out SYS_REFCURSOR)
+is
+
+begin
+    open audios for select * from libro where id_medio IN(2,6) ;
+end;
+
+-- Procedimiento para listar solo libros en video
+create or replace procedure sp_listar_videos(videos out SYS_REFCURSOR)
+is
+
+begin
+    open videos for select * from libro where id_medio IN(3,4,5);
+end;
+
+-- Procedimiento para listar solo libros de texto
+create or replace procedure sp_listar_libro(libros out SYS_REFCURSOR)
+is
+
+begin
+    open libros for select * from libro where id_medio = 1;
+end;
 -----------------------------------------------------------------
 *****************************************************************
 -----------------------------------------------------------------

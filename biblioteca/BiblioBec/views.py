@@ -79,6 +79,30 @@ def form_cr_doc(request):
 def create_doc(request):
     #return HttpResponse(request.POST.get('autor',''))
     #return HttpResponse(request.FILES['imagen'])
+    if request.method == 'POST':
+        isbn = request.POST.get('isbn','')
+        titulo = request.POST.get('titulo','')
+        autor = request.POST.get('autor','')
+        editorial = request.POST.get('editorial','')
+        fecha = request.POST.get('fecha_publicacion','')
+        categoria = request.POST.get('categoria_id_cate','')
+        tipo_doc = request.POST.get('tipo_documento_id_tipo_doc','')
+        tipo_me = request.POST.get('tipo_medio','')
+        edi = request.POST.get('edicion','')
+        imagen = request.FILES['imagen'].read()
+        ubi = request.POST.get('ubicacion')
+        estado = request.POST.get('estado')
+        stock = request.POST.get('stock')
+        
+
+        agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock)
+        data = {
+            'libros': lista_doc(),
+            "msj": "exi_create",
+
+        }
+        return render(request,'catalogo.html', data)
+    
     try:
         if request.method == 'POST':
             isbn = request.POST.get('isbn','')
@@ -98,21 +122,19 @@ def create_doc(request):
 
             agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock)
             data = {
-                'form': DocumentoForm(),
-                "doc": lista_doc(),
+                'libros': lista_doc(),
                 "msj": "exi_create",
 
             }
-            return render(request,'documento/create_doc.html',data)
+            return render(request,'catalogo.html', data)
     except:
         data = {
-                'form': DocumentoForm(),
-                "doc": lista_doc(),
+                'libros': lista_doc(),
                 "msj": "error_create",
 
             }
-        return render(request,'documento/create_doc.html',data)
-
+        return render(request,'catalogo.html', data)
+    
 def agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock):
     cursor_dj = connection.cursor()
     cursor_ex = cursor_dj.connection.cursor() 
@@ -131,12 +153,12 @@ def delete_doc(request,isbn):
     ejemplar.delete()
     doc.delete()
     data = {
-                'libro': listado_libro(),
+                'libros': lista_doc(),
                 "msj": "exi_delete",
 
             }
 
-    return render(request, "catalogo.html",data)
+    return redirect('catalogo')
 
 def lista_doc():
 

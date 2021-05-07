@@ -61,8 +61,50 @@
             </div>
           </div>
         </div>
+        {msj}
     </div>
-    {% if msj == "exi_delete" %}
+    {% if msj == "exi_create" %}
+    <script>
+
+        toastr.success("Se ha creado el documento correctamente","¡EXITO!",{
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": true,
+        "positionClass": "toast-bottom-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+        });
+    </script>
+    {% elif msj == "error_create"%}
+    <script>
+        toastr.error("lo sentimos ha ocurrido un problema","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+    </script>
+    {% elif msj == "exi_delete" %}
     <script>
 
         toastr.success("Se ha eliminado el documento correctamente","¡EXITO!",{

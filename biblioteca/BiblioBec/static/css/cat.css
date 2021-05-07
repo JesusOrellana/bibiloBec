@@ -1,9 +1,4 @@
-*{
-  padding: 0;
-  border: 0;
-}
-
-div [class^="col-"]{
+.div-cat [class^="col-"]{
   margin-left: auto;
   margin-right: auto;
   width: 200px;
@@ -11,6 +6,7 @@ div [class^="col-"]{
   padding-right:5px;
 }
 .card-img-top{
+
   height:250px;
   width:100%;
 }
@@ -18,6 +14,7 @@ div [class^="col-"]{
   transition:0.5s;
   cursor:pointer;
 }
+
 .card-title{  
   font-size:15px;
   transition:1s;
@@ -36,7 +33,6 @@ div [class^="col-"]{
   transform: scale(1.05);
   box-shadow: 10px 10px 15px rgba(0,0,0,0.3);
 }
-
 .card::before, .card::after {
   position: absolute;
   top: 0;
@@ -58,7 +54,24 @@ div [class^="col-"]{
 .card:hover::before, .card:hover::after, .card:focus::before, .card:focus::after {
   transform: scale3d(1, 1, 1);
 }
+.masthead .masthead-heading {
+  margin-top: 30px;
+  font-size: 2.75rem;
+  line-height: 2.75rem;
+}
 
+@media (min-width: 992px) {
+  .masthead .masthead-heading {
+    margin-top: 30px;
+    font-size: 4rem;
+    line-height: 3.5rem;
+  }
+}
+
+.margin-btn{
+  padding: 0;
+  margin-top: 20px;
+}
 .btn-primary{
   color: #fff;
   background-color: #159a80;
@@ -81,23 +94,4 @@ div [class^="col-"]{
   border: 0;
   margin: 0 0 15px;
   box-sizing: border-box;
-}
-
-.masthead .masthead-heading {
-  margin-top: 30px;
-  font-size: 2.75rem;
-  line-height: 2.75rem;
-}
-
-@media (min-width: 992px) {
-  .masthead .masthead-heading {
-    margin-top: 30px;
-    font-size: 4rem;
-    line-height: 3.5rem;
-  }
-}
-
-.margin-btn{
-  padding: 0;
-  margin-top: 20px;
 }

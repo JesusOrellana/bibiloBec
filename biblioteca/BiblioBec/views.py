@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
-from .forms import DocumentoForm , EjemplarForm, UsuarioForm, ReservaForm
+from .forms import DocumentoForm , EjemplarForm, UsuarioForm, ReservaForm, formLogin
 from django.http import HttpResponse
 from .models import Libro, Usuario, Ejemplar
 from django.db import connection
 import cx_Oracle
 import base64
 from django.core.files.base import ContentFile
+from django.contrib import messages
 
 # Create your views here.
 
@@ -297,9 +298,20 @@ def filtro_doc(isbn):
 
 # Usuario
 def usuarios(request):
+    '''
+    Valida que se acceda a la vista solo los usuarios con sesión y con privilegios
+    '''
+    #Validar si existe la sesión
+    if not request.session.is_empty():
+        return redirect('index')
+
+    #Validar que el usuario no acceda a la vista si no es tipo administrador o bibliotecario
+    if request.session['user_login']['user']['tipo'] == 3:
+        return redirect('index')
+        
     lista = lista_usuarios()
     if request.method == 'GET':
-        paginator = Paginator(lista, 6) 
+        paginator = Paginator(lista, 5) 
         page_number = request.GET.get('page')
         usuario_filtrado = paginator.get_page(page_number)
         data = { 
@@ -316,7 +328,12 @@ def usuarios(request):
         for u in lista:
             if u['data'][0] == rut_usr_a_buscar:
                 usuario_encontrado.append(u)
-                break   
+                break
+
+        if len(usuario_encontrado) < 1:
+            messages.success(request, "Usuario no encontrado./error")
+            return redirect('usuario_list')
+
         return render(
             request,
             'Bibliobec/usuario_list.html',
@@ -351,7 +368,11 @@ def form_usuario(request):
         resp = agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion,
                                    telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
         if resp == 1:
+            messages.success(request, "Usuario registrado correctamente./success")
             return redirect('usuario_list')
+        else:
+            messages.success(request, "No se pudo registrar al usuario./error")
+            return redirect('usuario_create')
     return render(request, 'Bibliobec/usuario_form.html', data)
 
 def agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono, correo, foto, huella, tipo_usuario_id_tipo, password):
@@ -411,8 +432,7 @@ def usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono,
 def editar_usuario(request):
     rut_usr = request.GET.get('rut_usr') if request.method == "GET" else request.POST.get('rut_usr')
     data = {
-        'usuario': usuario_filtrado(rut_usr),
-        'mensajeError': None
+        'usuario': usuario_filtrado(rut_usr)
     }
     if request.method == "GET":
         return render(request, 'Bibliobec/usuario_update.html', data)
@@ -448,6 +468,7 @@ def editar_usuario(request):
         resp = usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion,
                                    telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
         if resp == 1:
+            messages.success(request, "Usuario actualizado correctamente./success")
             return redirect('usuario_list')
         else:
             data = {'usuario': [{'data': {}}]}
@@ -462,17 +483,45 @@ def editar_usuario(request):
             data['usuario'][0]['data'][8] = huella
             data['usuario'][0]['data'][9] = tipo_usuario_id_tipo
             data['usuario'][0]['data'][10] = password
-            data['mensajeError'] = "No se pudo actualizar el usuario."
+            messages.error(request, "No se pudo actualizar el usuario./error")
             return render(request, 'Bibliobec/usuario_update.html', data)
 
 def eliminar_usuario(request):
-    rut_usr = request.GET.get('rut')
+    rut_usr = request.GET.get('rut_usr')
 
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
     cursor.callproc('SP_USUARIO_DELETE',[rut_usr])
+    messages.success(request, "Usuario eliminado correctamente./success")
     return redirect('usuario_list')
 
+# Inicio de sesión
+def iniciar_sesion(request):
+    if request.method == 'POST':
+        formulario = formLogin(request.POST)
+        if formulario.is_valid:
+            usuario = request.POST.get('rut_usr')
+            password = request.POST.get('password')
+            verificacion = Usuario.objects.filter(rut_usr = usuario, password = password).exists()
+            
+        if verificacion == True:
+            usuario = usuario_filtrado(usuario)
+            request.session['user_login'] = {'user': {'foto':usuario[0]['foto'],'rut_usr':usuario[0]['data'][0], 
+            'nombre':usuario[0]['data'][1], 'apellido':usuario[0]['data'][2], 'tipo':usuario[0]['data'][9], 'tipo_desc':usuario[0]['data'][11].title()}}
+            return redirect('index')
+        else:
+            messages.success(request, "Usuario o contraseña incorrecta, por favor intente nuevamente./error")
+            return render(request, 'session/login.html')
+    else:
+        formulario = formLogin()
+    return render(request, 'session/login.html', {'formulario': formulario})
+
+def logout(request):
+    try:
+        del request.session['user_login']
+    except KeyError:
+        pass
+    return redirect('index')
 
     #vista para reserva 
 def vista_reserva(request,isbn):

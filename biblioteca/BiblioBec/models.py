@@ -20,35 +20,31 @@ class Categoria(models.Model):
         return self.descripcion
 
 class DetalleSolicitudPrestamo(models.Model):
+    id_solicitud = models.IntegerField(primary_key=True)
     fecha_devolucion = models.DateField()
     hora_devolucion = models.DateField()
     fecha_devolucion_real = models.DateField()
     hora_devolucion_real = models.DateField()
-    id_ejemplar = models.OneToOneField('Ejemplar', models.DO_NOTHING, db_column='id_ejemplar', primary_key=True)
     numero_solicitud = models.ForeignKey('SolicitudPrestamo', models.DO_NOTHING, db_column='numero_solicitud')
 
     class Meta:
         managed = False
         db_table = 'detalle_solicitud_prestamo'
-        unique_together = (('id_ejemplar', 'numero_solicitud'),)
         
     def __str__(self):
-        return self.numero_solicitud
+        return str(self.numero_solicitud) 
 
 class Ejemplar(models.Model):
     id_ejem = models.IntegerField(primary_key=True)
     estado = models.CharField(max_length=100)
     ubicacion = models.CharField(max_length=100)
-    stock = models.IntegerField()
-    stock_disponible = models.IntegerField()
-    stock_ocupado = models.IntegerField(blank=True, null=True)
     isbn = models.ForeignKey('Libro', models.DO_NOTHING, db_column='isbn')
     class Meta:
         managed = False
         db_table = 'ejemplar'
         
     def __str__(self):
-        return self.id_ejem
+        return str(self.id_ejem)
 
 class Libro(models.Model):
     isbn = models.CharField(primary_key=True, max_length=200)
@@ -81,7 +77,7 @@ class Prestamo(models.Model):
         db_table = 'prestamo'
         
     def __str__(self):
-        return self.numero_pres
+        return str(self.numero_pres)
 
 class Reserva(models.Model):
     numero_res = models.IntegerField(primary_key=True)
@@ -96,7 +92,7 @@ class Reserva(models.Model):
         db_table = 'reserva'
         
     def __str__(self):
-        return self.numero_res
+        return str(self.numero_res)
 
 class SolicitudPrestamo(models.Model):
     numero_solicitud = models.IntegerField(primary_key=True)
@@ -109,7 +105,7 @@ class SolicitudPrestamo(models.Model):
         db_table = 'solicitud_prestamo'
         
     def __str__(self):
-        return self.numero_solicitud
+        return str(self.numero_solicitud)
 
 class TipoDocumento(models.Model):
     id_tipo_doc = models.IntegerField(primary_key=True)

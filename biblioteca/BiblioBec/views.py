@@ -80,30 +80,6 @@ def form_cr_doc(request):
 def create_doc(request):
     #return HttpResponse(request.POST.get('autor',''))
     #return HttpResponse(request.FILES['imagen'])
-    if request.method == 'POST':
-        isbn = request.POST.get('isbn','')
-        titulo = request.POST.get('titulo','')
-        autor = request.POST.get('autor','')
-        editorial = request.POST.get('editorial','')
-        fecha = request.POST.get('fecha_publicacion','')
-        categoria = request.POST.get('categoria_id_cate','')
-        tipo_doc = request.POST.get('tipo_documento_id_tipo_doc','')
-        tipo_me = request.POST.get('tipo_medio','')
-        edi = request.POST.get('edicion','')
-        imagen = request.FILES['imagen'].read()
-        ubi = request.POST.get('ubicacion')
-        estado = request.POST.get('estado')
-        stock = request.POST.get('stock')
-        
-
-        agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock)
-        data = {
-            'libros': lista_doc(),
-            "msj": "exi_create",
-
-        }
-        return render(request,'catalogo.html', data)
-    
     try:
         if request.method == 'POST':
             isbn = request.POST.get('isbn','')
@@ -121,34 +97,31 @@ def create_doc(request):
             stock = request.POST.get('stock')
             
 
-            agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock)
+            agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,ubi,stock)
             data = {
                 'libros': lista_doc(),
                 "msj": "exi_create",
 
             }
-            return render(request,'catalogo.html', data)
+            messages.success(request, "Documento Creado Correctamente./success")
+            return redirect('catalogo')
     except:
         data = {
                 'libros': lista_doc(),
-                "msj": "error_create",
+                #"msj": "error_create",
 
             }
-        return render(request,'catalogo.html', data)
+        messages.error(request, "lo sentimos ha ocurrido un error./error")
+        return redirect('form_doc')
     
-def agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock):
+def agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,ubi,stock):
     cursor_dj = connection.cursor()
     cursor_ex = cursor_dj.connection.cursor() 
     salida = cursor_ex.var(cx_Oracle.NUMBER)
-    cursor_ex.callproc('P_AGREGAR_DOCUMENTO',[isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock,salida])
+    cursor_ex.callproc('P_AGREGAR_DOCUMENTO',[isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,ubi,stock,salida])
 
 def delete_doc(request,isbn):
-    """
-    isbn = request.GET.get('isbn')
-    django_cursor = connection.cursor()
-    cursor = django_cursor.connection.cursor()
-    cursor.callproc('SP_DOC_DELETE',[isbn])
-    """
+
     doc = get_object_or_404(Libro,isbn=isbn)
     ejemplar = get_object_or_404(Ejemplar,isbn=isbn)
     ejemplar.delete()
@@ -158,7 +131,7 @@ def delete_doc(request,isbn):
                 "msj": "exi_delete",
 
             }
-
+    messages.success(request, "Documento Eliminado./success")
     return redirect('catalogo')
 
 def lista_doc():
@@ -248,7 +221,7 @@ def editar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_m
     cursor_dj = connection.cursor()
     cursor_ex = cursor_dj.connection.cursor() 
     salida = cursor_ex.var(cx_Oracle.NUMBER)
-    cursor_ex.callproc('SP_EDITAR_DOCUMENTO',[isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,estado,ubi,stock,salida])
+    cursor_ex.callproc('SP_EDITAR_DOCUMENTO',[isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,ubi,salida])
 # Listado de libros - catalogo
 def listado_audios():
     django_cursor = connection.cursor()

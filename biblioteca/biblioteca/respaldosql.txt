@@ -10,28 +10,17 @@ CREATE TABLE categoria (
 ALTER TABLE categoria ADD CONSTRAINT categoria_pk PRIMARY KEY ( id_cate );
 
 CREATE TABLE detalle_solicitud_prestamo (
+    id_solicitud            NUMBER(9) NOT NULL,
     fecha_devolucion        DATE NOT NULL,
     hora_devolucion         DATE NOT NULL,
     fecha_devolucion_real   DATE NOT NULL,
     hora_devolucion_real    DATE NOT NULL,
-    id_ejemplar             NUMBER(6) NOT NULL,
+    id_ejem                 NUMBER(6) NOT NULL,
+    isbn                    VARCHAR2(200) NOT NULL,
     numero_solicitud        NUMBER(6) NOT NULL
 );
 
-ALTER TABLE detalle_solicitud_prestamo ADD CONSTRAINT detalle_solicitud_prestamo_pk PRIMARY KEY ( id_ejemplar,
-numero_solicitud );
-
-CREATE TABLE ejemplar (
-    id_ejem            NUMBER(6) NOT NULL,
-    estado             VARCHAR2(100) NOT NULL,
-    ubicacion          VARCHAR2(100) NOT NULL,
-    stock              NUMBER(4) NOT NULL,
-    stock_disponible   NUMBER(4) NOT NULL,
-    stock_ocupado      NUMBER(4),
-    isbn         VARCHAR2(200) NOT NULL
-);
-
-ALTER TABLE ejemplar ADD CONSTRAINT ejemplar_pk PRIMARY KEY ( id_ejem );
+ALTER TABLE detalle_solicitud_prestamo ADD CONSTRAINT detalle_solicitud_prestamo_pk PRIMARY KEY ( id_solicitud );
 
 CREATE TABLE libro (
     isbn                         VARCHAR2(200) NOT NULL,
@@ -48,6 +37,20 @@ CREATE TABLE libro (
 
 ALTER TABLE libro ADD CONSTRAINT libro_pk PRIMARY KEY ( isbn );
 
+
+CREATE TABLE ejemplar (
+    id_ejem            NUMBER(6) NOT NULL,
+    isbn               VARCHAR2(200) NOT NULL,
+    estado             VARCHAR2(100) NOT NULL,
+    ubicacion          VARCHAR2(100) NOT NULL
+);
+
+ALTER TABLE ejemplar ADD CONSTRAINT ejemplar_pk PRIMARY KEY (id_ejem ,isbn);
+
+ALTER TABLE ejemplar
+    ADD CONSTRAINT ejemplar_libro_fk FOREIGN KEY ( isbn )
+        REFERENCES libro ( isbn );
+
 CREATE TABLE prestamo (
     numero_pres        NUMBER(6) NOT NULL,
     fecha_prestamo     DATE NOT NULL,
@@ -63,7 +66,8 @@ CREATE TABLE reserva (
     fecha_reserva      DATE NOT NULL,
     fecha_desde        DATE NOT NULL,
     fecha_hasta        DATE NOT NULL,
-    ejemplar_id_ejem   NUMBER(6) NOT NULL,
+    id_ejem            NUMBER(6) NOT NULL,
+    isbn               VARCHAR2(200) not null,
     usuario_rut_usr    VARCHAR2(9) NOT NULL
 );
 
@@ -117,16 +121,13 @@ CREATE TABLE usuario (
 ALTER TABLE usuario ADD CONSTRAINT usuario_pk PRIMARY KEY ( rut_usr );
 
 ALTER TABLE detalle_solicitud_prestamo
-    ADD CONSTRAINT ds_ejemplar_fk FOREIGN KEY ( id_ejemplar )
-        REFERENCES ejemplar ( id_ejem );
+    ADD CONSTRAINT ds_solicitud_ejemplar_fk FOREIGN KEY ( id_ejem , isbn )
+        REFERENCES ejemplar ( id_ejem, isbn );
 
 ALTER TABLE detalle_solicitud_prestamo
     ADD CONSTRAINT ds_solicitud_prestamo_fk FOREIGN KEY ( numero_solicitud )
         REFERENCES solicitud_prestamo ( numero_solicitud );
 
-ALTER TABLE ejemplar
-    ADD CONSTRAINT ejemplar_libro_fk FOREIGN KEY ( isbn )
-        REFERENCES libro ( isbn );
 
 ALTER TABLE libro
     ADD CONSTRAINT libro_categoria_fk FOREIGN KEY ( categoria_id_cate )
@@ -149,8 +150,9 @@ ALTER TABLE prestamo
         REFERENCES usuario ( rut_usr );
 
 ALTER TABLE reserva
-    ADD CONSTRAINT reserva_ejemplar_fk FOREIGN KEY ( ejemplar_id_ejem )
-        REFERENCES ejemplar ( id_ejem );
+    ADD CONSTRAINT reserva_ejemplar_fk FOREIGN KEY ( id_ejem , isbn )
+        REFERENCES ejemplar ( id_ejem,
+        isbn );
 
 ALTER TABLE reserva
     ADD CONSTRAINT reserva_usuario_fk FOREIGN KEY ( usuario_rut_usr )

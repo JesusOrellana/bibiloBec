@@ -269,7 +269,6 @@ create or replace PROCEDURE p_agregar_documento(
     v_medio number,
     v_edi number,
     v_imagen BLOB,
-    v_estado VARCHAR2,
     v_ubi VARCHAR2,
     v_stock NUMBER,
     v_salida out NUMBER
@@ -277,13 +276,16 @@ create or replace PROCEDURE p_agregar_documento(
 )is
 BEGIN
     INSERT INTO libro VALUES (v_isbn,v_titulo,v_autor,v_editorial,v_fecha,v_edi,v_cat,v_doc ,v_medio,v_imagen);
-    INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_estado,v_ubi,v_stock,v_stock,0,v_isbn);
-    COMMIT;
     v_salida:=1;
-
+    FOR i IN 1..v_stock LOOP
+        INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_isbn,'disponible',v_ubi);
+    END LOOP;
+    COMMIT;
 end;
 
+
 -- procedimiento para obtener todos los documentos
+
 CREATE or replace PROCEDURE p_lista_documentos(documentos out SYS_REFCURSOR)
 IS
 BEGIN
@@ -291,12 +293,15 @@ BEGIN
 END;
 
 -- procedimiento para select filtro documento
+
 create or replace PROCEDURE p_fitro_doc(v_isbn VARCHAR2,documentos out SYS_REFCURSOR)
       IS
       BEGIN
          open documentos for SELECT li.isbn, li.titulo, li.autor,li.editorial,li.edicion, to_char(li.fecha_publicacion,'yyyy-mm-dd'),li.tipo_documento_id_tipo_doc,
-         li.categoria_id_cate,li.id_medio,li.imagen, e.ubicacion, e.estado, e.stock FROM libro li JOIN ejemplar e on(li.isbn = e.isbn)where li.isbn = v_isbn;
+         li.categoria_id_cate,li.id_medio,li.imagen, e.ubicacion, e.estado
+         FROM libro li JOIN ejemplar e on(li.isbn = e.isbn)where li.isbn = v_isbn;
       END;
+
 
 create or replace PROCEDURE sp_editar_documento(
     v_isbn VARCHAR2,
@@ -309,20 +314,42 @@ create or replace PROCEDURE sp_editar_documento(
     v_medio number,
     v_edi number,
     v_imagen BLOB,
-    v_estado VARCHAR2,
     v_ubi VARCHAR2,
-    v_stock NUMBER,
+    V_opcion varchar2,
     v_salida out NUMBER
     
 )is
 BEGIN
-    UPDATE libro SET titulo = v_titulo, autor = v_autor, editorial = v_editorial, fecha_publicacion= v_fecha, categoria_id_cate = v_cat, 
-    tipo_documento_id_tipo_doc = v_doc, id_medio = v_medio, edicion = v_edi, imagen = v_imagen WHERE isbn = v_isbn; 
-    UPDATE ejemplar SET estado = v_estado, stock = v_stock , ubicacion = v_ubi WHERE isbn = v_isbn;
-    COMMIT;
+    IF v_opcion = 'a' THEN
+        UPDATE libro SET titulo = v_titulo, autor = v_autor, editorial = v_editorial, fecha_publicacion= v_fecha, categoria_id_cate = v_cat, 
+        tipo_documento_id_tipo_doc = v_doc, id_medio = v_medio, edicion = v_edi, imagen = v_imagen WHERE isbn = v_isbn; 
+
+        UPDATE ejemplar SET ubicacion = v_ubi WHERE isbn = v_isbn;
+        COMMIT;
+    ELSE
+        UPDATE libro SET titulo = v_titulo, autor = v_autor, editorial = v_editorial, fecha_publicacion= v_fecha, categoria_id_cate = v_cat, 
+        tipo_documento_id_tipo_doc = v_doc, id_medio = v_medio, edicion = v_edi WHERE isbn = v_isbn; 
+        UPDATE ejemplar SET ubicacion = v_ubi WHERE isbn = v_isbn;
+        COMMIT;
+	END IF;
+
+
     v_salida:=1;
 
-END;
+end;
+
+-- PROCEDIMIENTO ELIMINAR EJEMPLARES--
+CREATE PROCEDURE sp_delete_ejemplar(
+ v_isbn VARCHAR2
+) 
+IS
+BEGIN
+  DELETE FROM ejemplar WHERE isbn = v_isbn;
+  commit;
+END sp_delete_ejemplar;
+
+
+
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA RESERVA
 ---------------------------------------------------------------

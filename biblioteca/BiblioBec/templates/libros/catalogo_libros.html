@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/catalogo.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/cat.css' %}" />
     <script src="{% static 'js/doc.js' %}"></script>
     {%block title%}
     <title>Catalogo</title>
@@ -21,11 +21,13 @@
 
     <!-- Boton Agregar Libros -->
     <div class="p-4" style="width: 95%; height: 50px;">
-        <a class="btn btn-secondary" href="{% url 'form_doc' %}" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
-    </div>
+        {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
+            <a class="btn btn-secondary" href="{% url 'form_doc' %}" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
+        {%endif%}
+        </div>
 
     <!-- Catalogo - textos -->
-    <div class="container p-4">
+    <div class="div-cat container p-4">
         <div class="row">
             {% for p in libro %}
                 <div class="col-md-4 mt-4 text-center">
@@ -35,10 +37,12 @@
                             <h6 class="card-title text-uppercase">{{p.data.1}}</h6>
                             <h6 class="card-text">{{p.data.2}}</h6>
                             <a href="{% url 'solicitudes'  %}" class="btn btn-primary btn-sm" style="float: center;">Solicitar</a>
-                            <a href="/documento-update/{{p.data.0}}" class="btn btn-secondary btn-sm" style="float: center;">Editar</a>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="deleteDoc('{{p.data.0}}')">
-                                Eliminar 
-                            </button>
+                            {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %} 
+                                <a href="/documento-update/{{p.data.0}}" class="btn btn-secondary btn-sm" style="float: center;">Editar</a>
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="deleteDoc('{{p.data.0}}')">
+                                    Eliminar 
+                                </button>
+                            {%endif%}
                         </div>
                     </div>
                 </div>
@@ -53,10 +57,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ¿está seguro que desea eliminar este documento?
+                    ¿Está seguro que desea eliminar este documento?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <a href="" id="eliminar_documento" class="btn btn-danger">Eliminar</a>
                 </div>
             </div>

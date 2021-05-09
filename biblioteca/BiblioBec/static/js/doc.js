@@ -410,3 +410,11 @@ $(document).ready(function() {
     $("#eliminar_documento").prop("href",'documento-delete/'+isbn);
     //$("#eliminar_documento").prop("class",'btn-warning');
   }
+
+  function opeDoc(rut,isbn)
+  {
+    $("#id_rut_usu").prop("value",rut);
+    $("#id_isbn2").prop("value",isbn);
+    //$("#eliminar_documento").prop("class",'btn-warning');
+  }
+

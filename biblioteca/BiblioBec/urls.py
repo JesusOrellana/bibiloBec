@@ -21,4 +21,6 @@ urlpatterns = [
     path('usuario/update', views.editar_usuario, name='usuario_update'),
     path('usuario/delete', views.eliminar_usuario, name='usuario_delete'),
     path('reserva/<str:isbn>', views.vista_reserva, name='reserva'),
+    path('solicitud-prestamo', views.solicitud_prestamo, name='solicitud_pres'),
+    path('proceso-prestamo', views.proceso_prestamo, name='proceso_prestamo'),
 ]

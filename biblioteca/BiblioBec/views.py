@@ -8,7 +8,7 @@ import cx_Oracle
 import base64
 from django.core.files.base import ContentFile
 from django.contrib import messages
-
+from django.http import HttpResponse
 # Create your views here.
 
 def index(request):
@@ -20,7 +20,7 @@ def index(request):
         request,
         'catalogo.html',
         data,
-    )
+    )  
 
 def catalogo(request):
     data = { 
@@ -64,9 +64,12 @@ def catalogo_libro(request):
 
 def solicitudes(request):
    
+    data = {
+        'pres': lista_pres()
+    }
     return render(
         request,
-        'solicitudes.html',
+        'solicitudes.html',data
     )
 
 # vistas de documentos
@@ -514,6 +517,82 @@ def filtro_res(isbn):
     out_cur = django_cursor.connection.cursor()
 
     cursor.callproc("P_FITRO_RES", [isbn,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
+# VISTAS DE SOLICITUD DOCUMENTO
+
+def solicitud_prestamo(request):
+    rut = request.POST.get('rut','')
+    isbn = request.POST.get('isbn','')
+    
+    data={
+        'num' : num_ejem_dis(isbn),
+        'ejem': id_ejem(isbn),
+        'doc': filtro_doc(isbn),
+        'rut': rut,
+    }
+    return render(request,'prestamo.html',data)
+
+def proceso_prestamo(request):
+    rut = request.POST.get('rut','')
+    id_ejem = request.POST.get('id_ejem','')
+    isbn = request.POST.get('isbn','')
+    tipo = request.POST.get('tipo','')
+    
+    sp(rut, id_ejem, isbn, tipo)
+    messages.success(request, "Solicitud Procesada correctamente Dirijase al mesón de ayuda para retirar el documento./success")
+    return redirect('catalogo')
+
+
+def sp(rut,id_ejem,isbn,tipo):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("p_solicitud_prestamo", [rut,id_ejem,isbn,tipo])
+
+def num_ejem_dis(isbn):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("sp_num_ejemplar_disponible", [isbn,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
+def id_ejem(isbn):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("sp_ejemplar", [isbn,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
+def lista_pres():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("sp_prestamos", [out_cur])
 
     lista = []
 

@@ -95,3 +95,22 @@
   margin: 0 0 15px;
   box-sizing: border-box;
 }
+
+/*estilos modal operacion solicitud documento*/
+
+.oper-btn
+{
+  width:48%;
+  height:80px;
+  display: inline-block;
+  text-align: center;
+}
+.oper-btn a
+{
+  width:80%;
+}
+.btn-soli
+{
+  color: #fff;
+  background-color: #159a80;
+}

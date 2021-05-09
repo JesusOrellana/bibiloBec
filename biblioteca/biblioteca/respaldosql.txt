@@ -250,6 +250,28 @@ CREATE SEQUENCE seq_ejemplar
   INCREMENT BY 1
   CACHE 20;
 
+-- secuencia para solicitud_prestamo
+
+CREATE SEQUENCE seq_solicitud
+  MINVALUE 1
+  START WITH 1
+  INCREMENT BY 1
+  CACHE 20;
+
+-- secuencia para detalle_solicitud_prestamo
+CREATE SEQUENCE seq_deta_solicitud
+  MINVALUE 1
+  START WITH 1
+  INCREMENT BY 1
+  CACHE 20;
+
+-- secuencia para préstamo
+
+CREATE SEQUENCE seq_prestamo
+  MINVALUE 1
+  START WITH 1
+  INCREMENT BY 1
+  CACHE 20;
 ----------------------------------------------------------------
 ---------------------------------------------------------------
 --       INSERTE PROCEDIMIENTOS AQUI
@@ -348,8 +370,62 @@ BEGIN
   commit;
 END sp_delete_ejemplar;
 
+---------------------------------------------------------------
+--        PROCEDIMIENTOS PARA SOLICITUD_PRESTAMO
+---------------------------------------------------------------
+create or replace PROCEDURE p_solicitud_prestamo(
+    v_rut VARCHAR2,
+    v_ejem number,
+    v_isbn VARCHAR2,
+    v_tipo varchar2
+    )
+    is
+BEGIN
+    INSERT INTO solicitud_prestamo VALUES (seq_solicitud.NEXTVAL,sysdate,sysdate,v_rut);
+    IF v_tipo = 'd' THEN
+        INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, sysdate,v_rut,1,seq_solicitud.NEXTVAL-1);
+        INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,sysdate+5,sysdate+5,sysdate+6,sysdate+6,v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
+        UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
+      ELSE
+        INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, sysdate,v_rut,2,seq_solicitud.NEXTVAL-1);
+        INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,(sysdate+3/24),(sysdate +3/24),(sysdate +4/24),(sysdate +4 / 24),v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
+        UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
+      END IF;
+    COMMIT;
+end;
 
+-- procedimento para traer un ejemplar disponible
+CREATE or replace PROCEDURE sp_ejemplar(v_isbn varchar2,disponible out SYS_REFCURSOR)
+IS
+BEGIN
+  open disponible for SELECT id_ejem FROM ejemplar where estado ='disponible' and rownum <= 1 and isbn = v_isbn;
+END sp_ejemplar;
 
+-- procedimento para contar los ejemplares disponibles --
+create or replace PROCEDURE sp_num_ejemplar_disponible(v_isbn varchar2,disponible out SYS_REFCURSOR)
+IS
+BEGIN
+  open disponible for SELECT count(id_ejem) as stock FROM ejemplar WHERE estado = 'disponible' and isbn = v_isbn
+  GROUP BY isbn;
+END sp_num_ejemplar_disponible;
+
+-- registro de prestamos -------------
+create or replace PROCEDURE sp_prestamos(prestamos out SYS_REFCURSOR)
+IS
+BEGIN
+ open prestamos for SELECT
+    u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
+    c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
+    to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
+    to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud
+    FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
+    JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
+    JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
+    JOIN usuario u on(u.rut_usr = sp.usuario_rut_usr)
+    JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
+    JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
+    JOIN categoria c on(c.id_cate = l.categoria_id_cate);
+END;
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA RESERVA
 ---------------------------------------------------------------

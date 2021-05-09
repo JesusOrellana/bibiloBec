@@ -1,0 +1,89 @@
+.soli-center
+{
+    width: 100%;
+    height:auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.opcion-soli
+{
+    display: inline-block;
+    width: 90%;
+    height: auto;
+}
+
+.op-sala,.op-domi
+{   
+    padding: 10px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.img-doc
+{
+    display: inline-block;
+    width: 200px;
+    height: 280px;
+}
+.img-doc img
+{
+    width: 100%;
+    height: 100%;
+}
+.form-sala
+{
+    width: 100%;
+    padding-top: 10px;
+}
+.des-sala
+{
+    width: 100%;
+    padding: 10px;
+    text-align: justify;
+}
+@media (min-width:800px){
+
+    .soli-center
+    {
+        width: 100%;
+        height: 700px;
+        padding: 50px;
+    }
+
+    .opcion-soli
+    {
+        display: inline-block;
+        width: 100%;
+        height: 600px;
+        padding-left: 50px;
+    }
+
+    .op-sala
+    {
+        float: left;
+    }
+    .op-sala,.op-domi
+    {
+        display: inline-block;
+        width: 48%;
+        height: 600px;
+        padding-left: 40px;
+    }
+    .sala-id
+    {
+        width: 100%;
+        height: 350px;
+    }
+    .img-doc
+    {
+        float: left;
+        display: inline-block;
+    }
+    .des-sala
+    {
+        display: inline-block;
+        width: 40%;
+    }
+}

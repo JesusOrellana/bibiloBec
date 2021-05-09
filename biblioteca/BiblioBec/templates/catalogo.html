@@ -36,7 +36,6 @@
                     <div class="card-body margin-btn">
                         <h6 class="card-title text-uppercase">{{p.data.1}}</h6>
                         <h6 class="card-text">{{p.data.2}}</h6>
-                        <a href="{% url 'solicitudes'  %}" class="btn btn-primary btn-sm" style="float: center;">Solicitar</a>
                         {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %} 
                             <a href="/documento-update/{{p.data.0}}" class="btn btn-secondary btn-sm" style="float: center;">Editar</a>
                             <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="deleteDoc('{{p.data.0}}')">
@@ -44,6 +43,13 @@
                             </button>
                         {%endif%}
                     </div>
+                    {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 or request.session.user_login.user.tipo == 3 %} 
+                        <button type="button" class="btn btn-sm btn-soli" data-bs-toggle="modal" data-bs-target="#operacionDoc" onclick="opeDoc('{{request.session.user_login.user.rut_usr}}','{{p.data.0}}')">
+                            Solicitar
+                        </button>
+                    {%else%}
+                    <a href="{% url 'login' %}" class="btn btn-sm btn-soli" >Solicitar</a>
+                    {%endif%}
                 </div>
             </div>
             {%endfor%}
@@ -65,71 +71,33 @@
             </div>
           </div>
         </div>
-        {msj}
     </div>
-    {% if msj == "exi_create" %}
-    <script>
-
-        toastr.success("Se ha creado el documento correctamente","¡EXITO!",{
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": true,
-        "progressBar": true,
-        "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-        });
-    </script>
-    {% elif msj == "error_create"%}
-    <script>
-        toastr.error("lo sentimos ha ocurrido un problema","ERROR",{
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": true,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        });
-    </script>
-    {% elif msj == "exi_delete" %}
-    <script>
-
-        toastr.success("Se ha eliminado el documento correctamente","¡EXITO!",{
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": true,
-        "progressBar": true,
-        "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-        });
-    </script>
-    {% endif %}
+    <div class="modal fade " id="operacionDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-center" id="staticBackdropLabel">Solicitud De Documento</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                ¿Qué operacion desea realizar?
+            </div>
+            <div class="modal-footer">
+                <div class="oper-btn">
+                    <form action="{% url 'solicitud_pres' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="text" name="rut" id="id_rut_usu" value = "" hidden>
+                        <input type="text" name="isbn" id="id_isbn2" value="" hidden >
+                        <input type="submit" class="btn btn-primary " value="Préstamo">
+                    </form>
+                </div>
+                <div class="oper-btn">
+                    <a href="" id="" class="btn btn-success ">Reservar</a>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
     {% endblock %}
 </body>
 </html>

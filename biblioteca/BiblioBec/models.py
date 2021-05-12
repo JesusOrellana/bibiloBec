@@ -159,11 +159,14 @@ class Usuario(models.Model):
     apellido_m = models.CharField(max_length=30)
     direccion = models.CharField(max_length=100)
     telefono = models.IntegerField()
-    correo = models.CharField(max_length=150)
+    correo = models.EmailField(max_length=150)
     foto = models.ImageField(upload_to="imagenes")
     huella = models.ImageField(upload_to="imagenes")
     tipo_usuario_id_tipo = models.ForeignKey(TipoUsuario, models.DO_NOTHING, db_column='tipo_usuario_id_tipo')
     password = models.CharField(max_length=20)
+    activo = models.IntegerField()
+    fecha_activacion = models.DateField()
+    cambio_contrasena = models.IntegerField()
 
     class Meta:
         managed = False

@@ -10,7 +10,106 @@
             <hr>
             <form id="" action="" method="post" autocomplete="on" enctype="multipart/form-data">
             {%csrf_token%}
-            {{form.as_p}}
+                    <div class="form-group">
+                        <label for="rut_usr">RUT Usuario:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="rut_usr"
+                        id="rut_usr"
+                        maxlength="9"
+                        oninput="checkRut(this)"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="nombre"
+                        id="nombre"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido_p">Apellido paterno:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="apellido_p"
+                        id="apellido_p"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido_m">Apellido materno:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="apellido_m"
+                        id="apellido_m"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="direccion">Dirección:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="direccion"
+                        id="direccion"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono:</label>
+                        <input
+                        type="number"
+                        class="form-control"
+                        name="telefono"
+                        id="telefono"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Correo electrónico:</label>
+                        <input
+                        type="email"
+                        class="form-control"
+                        name="correo"
+                        id="correo"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_usuario_id_tipo">Tipo usuario:</label>
+                        <select class="form-control" id="tipo_usuario_id_tipo" name="tipo_usuario_id_tipo">
+                        <option value="1" >Administrador</option>
+                        <option value="2" >Bibliotecario</option>
+                        <option value="3" >Normal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input
+                        type="password"
+                        class="form-control"
+                        name="password"
+                        id="password"
+                        />
+                    </div>
+                    <label for="foto">Foto:</label>
+                    <div class="form-group">
+                        <input
+                        type="file"
+                        class="form-control"
+                        name="foto"
+                        id="id_foto"
+                        />
+                    </div>
+                <label for="huella">Huella:</label>
+                <div class="form-group">
+                    <input
+                    type="file"
+                    class="form-control"
+                    name="huella"
+                    id="id_huella"
+                    />
+                </div>
             <br>
             <div class="row">
                 <div class="col-sm-4"></div>

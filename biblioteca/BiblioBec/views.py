@@ -9,18 +9,11 @@ import base64
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.http import HttpResponse
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+from .utils import validarRut
 # Create your views here.
-
-def index(request):
-   
-    data = { 
-        'libros': lista_doc()
-    }
-    return render(
-        request,
-        'catalogo.html',
-        data,
-    )  
 
 def catalogo(request):
     data = { 
@@ -316,13 +309,36 @@ def usuarios(request):
             {'page_obj': usuario_encontrado}
         )
 
+def enviar_email(correo, rut_usr, nombre):
+    context = {'mail': correo, 'rut_usr': rut_usr, 'nombre': nombre}
+    template = get_template('correo.html')
+    content = template.render(context)
+
+    email = EmailMultiAlternatives(
+        'Active su cuenta para iniciar sesión en BiblioBEC',
+        'BiblioBEC',
+        settings.EMAIL_HOST_USER,
+        to=[correo]
+    )
+    
+    email.attach_alternative(content, 'text/html')
+    return email
+
 def form_usuario(request):
+    if not request.session._session:
+        return redirect('index')
+
+    if  not request.session['user_login']['user']['tipo'] == 1:
+        return redirect('index')
     data = {
         'form': UsuarioForm(),
         'usuarios': lista_usuarios()
     }
     if request.method == "POST":
         rut_usr = request.POST.get('rut_usr')
+        if not validarRut(rut_usr):
+            messages.error(request, 'El RUT ingresado no es válido./error')
+            return render(request, 'Bibliobec/usuario_form.html', data)
         nombre = request.POST.get('nombre')
         apellido_p = request.POST.get('apellido_p')
         apellido_m = request.POST.get('apellido_m')
@@ -344,6 +360,8 @@ def form_usuario(request):
         resp = agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion,
                                    telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
         if resp == 1:
+            resp = enviar_email(correo, rut_usr, nombre)
+            resp.send()
             messages.success(request, "Usuario registrado correctamente./success")
             return redirect('usuario_list')
         else:
@@ -406,6 +424,9 @@ def usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono,
     return salida.getvalue()
 
 def editar_usuario(request):
+    if not request.session._session:
+        return redirect('index')
+
     rut_usr = request.GET.get('rut_usr') if request.method == "GET" else request.POST.get('rut_usr')
     data = {
         'usuario': usuario_filtrado(rut_usr)
@@ -476,14 +497,20 @@ def iniciar_sesion(request):
     if request.method == 'POST':
         formulario = formLogin(request.POST)
         if formulario.is_valid:
-            usuario = request.POST.get('rut_usr')
+            rut_usr = request.POST.get('rut_usr')
+            if not validarRut(rut_usr):
+                messages.error(request, 'El RUT ingresado no es válido./error')
+                return render(request, 'session/login.html')
             password = request.POST.get('password')
-            verificacion = Usuario.objects.filter(rut_usr = usuario, password = password).exists()
+            verificacion = Usuario.objects.filter(rut_usr = rut_usr, password = password).exists()
             
         if verificacion == True:
-            usuario = usuario_filtrado(usuario)
+            usuario = usuario_filtrado(rut_usr)
+            if usuario[0]['data'][11] == 0: 
+                messages.warning(request, "Debe activar su cuenta para iniciar sesión en BiblioBEC./warning")
+                return render(request, 'session/login.html')
             request.session['user_login'] = {'user': {'foto':usuario[0]['foto'],'rut_usr':usuario[0]['data'][0], 
-            'nombre':usuario[0]['data'][1], 'apellido':usuario[0]['data'][2], 'tipo':usuario[0]['data'][9], 'tipo_desc':usuario[0]['data'][11].title()}}
+            'nombre':usuario[0]['data'][1], 'apellido':usuario[0]['data'][2], 'tipo':usuario[0]['data'][9], 'tipo_desc':usuario[0]['data'][14].title()}}
             return redirect('index')
         else:
             messages.success(request, "Usuario o contraseña incorrecta, por favor intente nuevamente./error")
@@ -491,6 +518,19 @@ def iniciar_sesion(request):
     else:
         formulario = formLogin()
     return render(request, 'session/login.html', {'formulario': formulario})
+
+def habilitar_cuenta(request):
+    rut_usr = request.GET.get('rut_usr')
+    usuario = usuario_filtrado(rut_usr)
+    if usuario[0]['data'][11] == 0:
+        django_cursor = connection.cursor()
+        cursor = django_cursor.connection.cursor()
+        cursor.callproc('SP_USUARIO_UPDATE_ACTIVO',[rut_usr])
+        messages.success(request, "Su cuenta ha sido habilitada./success")
+        return redirect('login')
+    else:
+        messages.info(request, "Su cuenta ya está habilitada, inicie sesión en BiblioBEC./info")
+        return redirect('login')
 
 def logout(request):
     try:

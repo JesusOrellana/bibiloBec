@@ -127,4 +127,10 @@ LOGOUT_REDIRECT_URL = 'index'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
+EMAIL_HOST = 'smtp.googlemail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'bibliobec.duoc@gmail.com'
+EMAIL_HOST_PASSWORD = 'bibliobec1234'
+EMAIL_USE_TLS = True
+
 #REST FRAMEWORKS

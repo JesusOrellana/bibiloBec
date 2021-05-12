@@ -86,7 +86,8 @@ class UsuarioForm(forms.ModelForm):
 
     class Meta:
         model = Usuario
-        fields = ('__all__')
+        fields = ('rut_usr' , 'nombre', 'apellido_p', 'apellido_m', 'direccion', 'telefono', 'correo', 'foto',
+                'huella', 'tipo_usuario_id_tipo', 'password')
 
 class ReservaForm(forms.ModelForm):
 

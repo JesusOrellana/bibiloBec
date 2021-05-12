@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
     <script src='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js'></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
     {% block title %}{% endblock %}
   </head>
   <body style="background-color:#f1f1f1e0">
@@ -100,9 +101,11 @@
                   <div class="col-md-2">
                     <img class="rounded-circle mt-2 me-2" src="data:imagen/png;base64, {{request.session.user_login.user.foto}}" width="43" height="43">
                   </div>
-                <div class="col-md-7 text-center">
-                  <h6 class="ms-1" style="color: #0c3a6d; font-size: 16px;">{{ request.session.user_login.user.nombre }} {{ request.session.user_login.user.apellido }}</h6>
-                  <h6 class="ms-1" style="color: #0c3a6d; font-size: 15px; ">{{ request.session.user_login.user.tipo_desc }}</h6>
+                <div class="col-md-7 mt-1 text-center">
+                  <a href="/usuario/update?rut_usr={{ request.session.user_login.user.rut_usr }}">
+                    <h6 class="ms-1" style="color: #0c3a6d; font-size: 16px;">{{ request.session.user_login.user.nombre }} {{ request.session.user_login.user.apellido }}</h6>
+                    <h6 class="ms-1" style="color: #0c3a6d; font-size: 15px; ">{{ request.session.user_login.user.tipo_desc }}</h6>
+                  </a>
                 </div>
                 <div class="col-md-2">
                   <a class="btn me-1 mt-1" style="color: black; background-color: #f8f9fa;" href="{% url 'logout' %}">  <i class="fas fa-sign-out-alt"></i> </a> 
@@ -137,9 +140,8 @@
     {% if messages %}
         {%for m in messages%}
           <script>
-            const infoAlert = "{{m}}";
-            const mensaje = infoAlert.split("/")
-            console.log(mensaje)
+            const Alert = "{{m}}";
+            const mensaje = Alert.split("/")
             Swal.fire({
               "text": mensaje[0],
               "icon": mensaje[1]

@@ -37,6 +37,7 @@
         placeholder="Buscar usuario"
         name="rut_usr"
         maxlength="9"
+        oninput="checkRut(this)"
       />
       <button class="btn btn-maincolor" type="submit">
         <i class="fas fa-search"></i>
@@ -63,21 +64,21 @@
             <div class="row g-0">
               <div class="col-md-2">
                 {% if u.foto %}
-                  <img class="rounded-circle mt-4 ms-4" width="200" height="200" src="data:imagen/png;base64, {{u.foto}}" data-holder-rendered="true">
+                <img class="rounded-circle mt-4 ms-3" width="200" height="200" src="data:imagen/png;base64, {{u.foto}}" data-holder-rendered="true">
                 {% endif %}
               </div>
               <div class="col-md-10">
                 <div class="card-body pb-0">
-                  <h5 class="card-title" style="color: #1796c0; font-size: 25px; font-weight: bold;">{{ u.data.1 }} {{u.data.2}} {{u.data.3}}</h5>
+                  <h5 class="card-title ms-1" style="color: #1796c0; font-size: 25px; font-weight: bold;">{{ u.data.1 }} {{u.data.2}} {{u.data.3}}</h5>
                   <div class="row">
                     <div class="col-md-6">
-                      <p class="card-text">Rut: {{u.data.0}}</p>
-                      <p class="card-text">Teléfono: {{u.data.5}}</p>
-                      <p class="card-text">Correo electrónico: {{u.data.6}}</p>
-                      <p class="card-text">Dirección: {{u.data.4}}</p>
+                      <p class="card-text ms-2">Rut: {{u.data.0}}</p>
+                      <p class="card-text ms-2">Teléfono: {{u.data.5}}</p>
+                      <p class="card-text ms-2">Correo electrónico: {{u.data.6}}</p>
+                      <p class="card-text ms-2">Dirección: {{u.data.4}}</p>
                     </div>
                     <div class="col-md-4">
-                      <p class="card-text">Tipo usuario: {{u.data.11}}</p>
+                      <p class="card-text">Tipo usuario: {{u.data.14.title}}</p>
                       {% if u.huella %}
                         <p class="card-text">Huella:    </p>
                         <img class="mb-3" src="data:imagen/png;base64, {{u.huella}}" width="130" height="130">

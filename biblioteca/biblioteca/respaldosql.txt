@@ -120,6 +120,14 @@ CREATE TABLE usuario (
 
 ALTER TABLE usuario ADD CONSTRAINT usuario_pk PRIMARY KEY ( rut_usr );
 
+ALTER TABLE usuario 
+ADD (
+    activo NUMBER(1) DEFAULT 0,
+    fecha_activacion DATE,
+    cambio_contrasena NUMBER(1) DEFAULT 1
+);
+
+
 ALTER TABLE detalle_solicitud_prestamo
     ADD CONSTRAINT ds_solicitud_ejemplar_fk FOREIGN KEY ( id_ejem , isbn )
         REFERENCES ejemplar ( id_ejem, isbn );
@@ -479,7 +487,7 @@ AS
 BEGIN
     INSERT INTO usuario
     VALUES (v_rut_usr, v_nombre, v_apellido_p, v_apellido_m, v_direccion, v_telefono, v_correo, v_foto, v_huella, 
-            v_tipo_usuario_id_tipo, v_password);
+            v_tipo_usuario_id_tipo, v_password, 0, null, 1);
     COMMIT;
     v_salida:=1;
 
@@ -544,3 +552,16 @@ BEGIN
     v_salida:=1;
 
 END SP_USUARIO_UPDATE;
+
+--PROCEDIMIENTO PARA ACTUALIZAR ESTADO ACTIVO
+create or replace PROCEDURE SP_USUARIO_UPDATE_ACTIVO (v_rut_usr varchar2)
+
+AS 
+BEGIN
+    UPDATE usuario
+    SET     activo = 1,
+            fecha_activacion = SYSDATE
+        WHERE rut_usr = v_rut_usr;
+    COMMIT;
+
+END SP_USUARIO_UPDATE_ACTIVO;

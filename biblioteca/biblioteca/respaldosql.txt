@@ -565,3 +565,21 @@ BEGIN
     COMMIT;
 
 END SP_USUARIO_UPDATE_ACTIVO;
+
+--PROCEDIMIENTO PARA ACTUALIZAR CONTRASEÑA
+CREATE OR REPLACE PROCEDURE SP_USUARIO_UPDATE_PASSWORD (v_rut_usr varchar2, v_password varchar2, v_salida out number)
+
+AS 
+BEGIN
+    UPDATE usuario
+    SET     password = v_password,
+            cambio_contrasena = 0
+        WHERE rut_usr = v_rut_usr;
+    COMMIT;
+    v_salida:=1;
+
+
+END SP_USUARIO_UPDATE_PASSWORD;
+--SCRIPT PARA INSERTAR UN USUARIO ADMINISTRADOR
+--INSERT INTO usuario VALUES('111111111','Administrador',' ',' ','Dirección 123',982013456,'correo@gmail.com',NULL,NULL,1,'1234',1,sysdate,1);
+--COMMIT;

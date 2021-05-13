@@ -48,3 +48,16 @@ function checkRut(rut) {
     // Si todo sale bien, eliminar errores (decretar que es válido)
     rut.setCustomValidity('');
 }
+
+function verificarPasswords(password1) {
+    password2 = document.getElementById('password2');
+
+    if (password1.value != password2.value) {
+        password1.setCustomValidity('Las contraseñas no coinciden')
+        return false;
+    }
+     
+    else {
+        password1.setCustomValidity('')
+    }
+}

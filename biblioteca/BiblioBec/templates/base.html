@@ -102,10 +102,8 @@
                     <img class="rounded-circle mt-2 me-2" src="data:imagen/png;base64, {{request.session.user_login.user.foto}}" width="43" height="43">
                   </div>
                 <div class="col-md-7 mt-1 text-center">
-                  <a href="/usuario/update?rut_usr={{ request.session.user_login.user.rut_usr }}">
-                    <h6 class="ms-1" style="color: #0c3a6d; font-size: 16px;">{{ request.session.user_login.user.nombre }} {{ request.session.user_login.user.apellido }}</h6>
-                    <h6 class="ms-1" style="color: #0c3a6d; font-size: 15px; ">{{ request.session.user_login.user.tipo_desc }}</h6>
-                  </a>
+                  <h6 class="ms-1" style="color: #0c3a6d; font-size: 16px;">{{ request.session.user_login.user.nombre }} {{ request.session.user_login.user.apellido }}</h6>
+                  <h6 class="ms-1" style="color: #0c3a6d; font-size: 15px; ">{{ request.session.user_login.user.tipo_desc }}</h6>
                 </div>
                 <div class="col-md-2">
                   <a class="btn me-1 mt-1" style="color: black; background-color: #f8f9fa;" href="{% url 'logout' %}">  <i class="fas fa-sign-out-alt"></i> </a> 

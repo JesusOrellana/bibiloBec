@@ -431,6 +431,9 @@ def usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono,
 def editar_usuario(request):
     if not request.session._session:
         return redirect('index')
+    
+    if not request.session['user_login']['user']['tipo'] == 1:
+        return redirect('index')
 
     rut_usr = request.GET.get('rut_usr') if request.method == "GET" else request.POST.get('rut_usr')
     data = {
@@ -511,11 +514,17 @@ def iniciar_sesion(request):
             
         if verificacion == True:
             usuario = usuario_filtrado(rut_usr)
+            correo = usuario[0]['data'][6]
+            nombre = usuario[0]['data'][1]
             if usuario[0]['data'][11] == 0: 
-                messages.warning(request, "Debe activar su cuenta para iniciar sesión en BiblioBEC./warning")
+                messages.warning(request, "Debe activar su cuenta para iniciar sesión en BiblioBEC, se enviará un correo para habilitarla./warning")
+                resp = enviar_email(correo, rut_usr, nombre)
+                resp.send()
                 return render(request, 'session/login.html')
             request.session['user_login'] = {'user': {'foto':usuario[0]['foto'],'rut_usr':usuario[0]['data'][0], 
             'nombre':usuario[0]['data'][1], 'apellido':usuario[0]['data'][2], 'tipo':usuario[0]['data'][9], 'tipo_desc':usuario[0]['data'][14].title()}}
+            if usuario[0]['data'][13] == 1:
+                return redirect('cambiar_contrasena')
             return redirect('index')
         else:
             messages.success(request, "Usuario o contraseña incorrecta, por favor intente nuevamente./error")
@@ -536,6 +545,31 @@ def habilitar_cuenta(request):
     else:
         messages.info(request, "Su cuenta ya está habilitada, inicie sesión en BiblioBEC./info")
         return redirect('login')
+
+def actualizar_contrasena(rut_usr, password):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    salida = cursor.var(cx_Oracle.NUMBER)
+    cursor.callproc('SP_USUARIO_UPDATE_PASSWORD',[rut_usr, password, salida])
+
+    return salida.getvalue()
+
+def cambiar_contrasena(request):
+    if request.method == 'POST':
+        print('entro')
+        rut_usr = request.session['user_login']['user']['rut_usr'] 
+        password = request.POST.get('password1')
+        print(rut_usr, password)
+        resp = actualizar_contrasena(rut_usr, password)
+        print(resp)
+        if resp == 1:
+            messages.success(request, 'Contraseña actualizada con éxito./success')
+            return redirect('index')
+        else:
+            messages.error(request, 'No fue posible actualizar su contraseña, inténtelo nuevamente./error')
+            return render(request, 'session/cambiar_contrasena.html')
+    else:
+        return render(request, 'session/cambiar_contrasena.html')
 
 def logout(request):
     try:

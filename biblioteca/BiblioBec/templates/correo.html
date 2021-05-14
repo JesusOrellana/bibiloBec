@@ -6,8 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>{{nombre}}, gracias por registrarte en BiblioBEC</h1>
-    <p>Para poder iniciar sesión, debe activar su cuenta haciendo click en el enlace.</p>
-    <a href="http://127.0.0.1:8000/usuario/habilitar?rut_usr={{rut_usr}}">Active su cuenta</a>
+    <table style="max-width: 600px; padding: 10px; margin:0 0 0 22%; border-collapse: collapse;">
+        <tr>
+            <td style="background-color: #ffffff; padding: 0">
+                <a href="http://127.0.0.1:8000/usuario/habilitar?rut_usr={{rut_usr}}">
+                    <img width="30%" style="display:block; margin: 1.5% 3%" src="https://i.postimg.cc/QNb6KZms/logo.png">
+                </a>
+            </td>
+        </tr>        
+        <tr>
+            <td style="background-color: #ffffff; padding: 0">
+                <div style="color: #0c3a6d; margin: 1% 6% 4%; text-align: justify;font-family: sans-serif">
+                    <h2 style="color: #0c3a6d; margin: 0 0 7px">{{nombre}}, gracias por registrarte en BiblioBEC.</h2>
+                    <p style="margin: 2px; font-size: 15px">
+                        Para poder iniciar sesión en la plataforma, habilita tu cuenta haciendo click en el botón.</p>
+                    <br>
+                    <br>
+                    <div style="width: 100%; text-align: center">
+                        <a style="text-decoration: none; border-radius: 5px; padding: 11px 23px; color: white; background-color: #159a80; font-size: 15px;" 
+                            href="http://127.0.0.1:8000/usuario/habilitar?rut_usr={{rut_usr}}">Activar cuenta</a>	
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

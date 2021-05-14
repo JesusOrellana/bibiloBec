@@ -1,9 +1,11 @@
+from os import name
 from django.urls import path
 from . import views
 
 urlpatterns = [
     path('', views.catalogo, name='index'),
     path('login', views.iniciar_sesion, name='login'),
+    path('cambiar_contrasena', views.cambiar_contrasena, name='cambiar_contrasena'),
     path('logout', views.logout, name='logout'),
     path('catalogo', views.catalogo, name='catalogo'),
     path('catalogo/audios/', views.catalogo_audio, name='catalogo_audio'),

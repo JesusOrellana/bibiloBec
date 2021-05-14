@@ -80,3 +80,10 @@
   font-family: "Roboto", sans-serif;
 }
 
+.ocultar {
+  display: none;
+}
+
+.mostrar {
+  display: block;
+}

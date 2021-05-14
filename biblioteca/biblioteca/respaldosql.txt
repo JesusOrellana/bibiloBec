@@ -115,7 +115,10 @@ CREATE TABLE usuario (
     foto                   BLOB,
     huella                 BLOB,
     tipo_usuario_id_tipo   NUMBER(2) NOT NULL,
-    password               VARCHAR2(20) NOT NULL
+    password               VARCHAR2(20) NOT NULL,
+    activo                 NUMBER(1) DEFAULT 0,
+    fecha_activacion       DATE,
+    cambio_contrasena      NUMBER(1) DEFAULT 1
 );
 
 ALTER TABLE usuario ADD CONSTRAINT usuario_pk PRIMARY KEY ( rut_usr );

@@ -57,13 +57,18 @@ def catalogo_libro(request):
 
 def solicitudes(request):
    
-    data = {
-        'pres': lista_pres()
-    }
-    return render(
-        request,
-        'solicitudes.html',data
-    )
+    if request.session['user_login']['user']['tipo'] == 3 or request.session['user_login']['user']['tipo'] == 2 or request.session['user_login']['user']['tipo'] == 1:
+        data = {
+            'pres': lista_pres()
+        }
+        return render(
+            request,
+            'solicitudes.html',data)
+    else:
+        return redirect('index')
+        
+    
+
 
 # vistas de documentos
 

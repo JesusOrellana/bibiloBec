@@ -68,9 +68,11 @@
                   <li><a class="dropdown-item" href="{% url 'catalogo_videos' %}">Videos</a></li>
                 </ul>
               </li>
+              {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 or request.session.user_login.user.tipo == 3 %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'solicitudes' %}">Solicitudes</a>
               </li>
+              {% endif %}
               {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'usuario_list' %}">Usuarios</a>

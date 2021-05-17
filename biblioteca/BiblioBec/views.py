@@ -16,8 +16,13 @@ from .utils import validarRut
 # Create your views here.
 
 def catalogo(request):
+    lista = lista_doc()
+    paginator = Paginator(lista, 15) 
+    page_number = request.GET.get('page')
+    libros_page = paginator.get_page(page_number)
     data = { 
-        'libros': lista_doc()
+        'libros': libros_page,
+        'page_obj' : libros_page
     }
     return render(
         request,
@@ -26,8 +31,13 @@ def catalogo(request):
     )
 
 def catalogo_audio(request):
+    lista = listado_audios()
+    paginator = Paginator(lista, 15) 
+    page_number = request.GET.get('page')
+    audios_page = paginator.get_page(page_number)
     data = { 
-        'audios': listado_audios()
+        'audios': audios_page,
+        'page_obj': audios_page
     }
     return render(
         request,
@@ -36,8 +46,13 @@ def catalogo_audio(request):
     )
 
 def catalogo_video(request):
+    lista = listado_videos()
+    paginator = Paginator(lista, 15) 
+    page_number = request.GET.get('page')
+    videos_page = paginator.get_page(page_number)
     data = { 
-        'videos': listado_videos()
+        'videos': videos_page,
+        'page_obj': videos_page
     }
     return render(
         request,
@@ -46,8 +61,13 @@ def catalogo_video(request):
     )
 
 def catalogo_libro(request):
+    lista = listado_libro()
+    paginator = Paginator(lista, 15) 
+    page_number = request.GET.get('page')
+    libro_page = paginator.get_page(page_number)
     data = { 
-        'libro': listado_libro()
+        'libro': libro_page,
+        'page_obj': libro_page
     }
     return render(
         request,

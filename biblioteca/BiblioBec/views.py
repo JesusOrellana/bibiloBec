@@ -334,9 +334,9 @@ def usuarios(request):
             {'page_obj': usuario_encontrado}
         )
 
-def enviar_email(correo, rut_usr, nombre):
+def enviar_email_habilitar(correo, rut_usr, nombre):
     context = {'mail': correo, 'rut_usr': rut_usr, 'nombre': nombre}
-    template = get_template('correo.html')
+    template = get_template('correo_habilitar.html')
     content = template.render(context)
 
     email = EmailMultiAlternatives(
@@ -385,7 +385,7 @@ def form_usuario(request):
         resp = agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion,
                                    telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
         if resp == 1:
-            resp = enviar_email(correo, rut_usr, nombre)
+            resp = enviar_email_habilitar(correo, rut_usr, nombre)
             resp.send()
             messages.success(request, "Usuario registrado correctamente./success")
             return redirect('usuario_list')
@@ -538,7 +538,7 @@ def iniciar_sesion(request):
             nombre = usuario[0]['data'][1]
             if usuario[0]['data'][11] == 0: 
                 messages.warning(request, "Debe activar su cuenta para iniciar sesión en BiblioBEC, se enviará un correo para habilitarla./warning")
-                resp = enviar_email(correo, rut_usr, nombre)
+                resp = enviar_email_habilitar(correo, rut_usr, nombre)
                 resp.send()
                 return render(request, 'session/login.html')
             request.session['user_login'] = {'user': {'foto':usuario[0]['foto'],'rut_usr':usuario[0]['data'][0], 
@@ -628,6 +628,22 @@ def filtro_res(isbn):
 
 # VISTAS DE SOLICITUD DOCUMENTO
 
+def enviar_email_recordatorio(numero_pres, correo, rut_usr, nombre, titulo, autor, fecha_prestamo, tipo, vencimiento):
+    context = {'mail': correo, 'rut_usr': rut_usr, 'nombre': nombre, 'titulo': titulo, 'autor': autor, 'fecha_prestamo': fecha_prestamo, 
+    'tipo': tipo, 'vencimiento': vencimiento}
+    template = get_template('correo_recordatorio.html')
+    content = template.render(context)
+
+    email = EmailMultiAlternatives(
+        'Recordatorio de devolución',
+        'BiblioBEC',
+        settings.EMAIL_HOST_USER,
+        to=[correo]
+    )
+    
+    email.attach_alternative(content, 'text/html')
+    return email
+
 def solicitud_prestamo(request):
     rut = request.POST.get('rut','')
     isbn = request.POST.get('isbn','')
@@ -701,3 +717,29 @@ def lista_pres():
         })
     
     return lista
+
+def pres_filtrado(numero_pres):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("SP_PRESTAMO_FILTRADO", [numero_pres, out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
+def enviar_correo_dev(request): 
+    numero_pres = request.GET.get('numero_pres')
+    data = {
+        'pres_filtrado':pres_filtrado(numero_pres) #Todos
+    }
+    resp = enviar_email_recordatorio(numero_pres, data['pres_filtrado'][0]['data'][3],data['pres_filtrado'][0]['data'][1], data['pres_filtrado'][0]['data'][2], 
+    data['pres_filtrado'][0]['data'][5], data['pres_filtrado'][0]['data'][6], data['pres_filtrado'][0]['data'][7], 
+    data['pres_filtrado'][0]['data'][4], data['pres_filtrado'][0]['data'][9])
+    resp.send()
+    return redirect('solicitudes')

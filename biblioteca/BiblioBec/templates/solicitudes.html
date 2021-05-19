@@ -116,9 +116,10 @@
     </header>
     <section>
         {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
-          <table id="example" class="display" style="width:100%">
+        <table id="example" class="display text-center" style="width:100%">
             <thead>
                 <tr>
+                    <th>N° Préstamo</th>
                     <th>Rut</th>
                     <th>Nombre</th>
                     <th>Préstamo</th>
@@ -127,25 +128,38 @@
                     <th>Editorial</th>
                     <th>Documento</th>
                     <th>Categoria</th>
-                    <th>Fecha Solicitud</th>
+                    <th>Fecha Préstamo</th>
                     <th>Fecha Devolución</th>
+                    <th>Vence en</th>
                     <th>Recordatorio</th>
                 </tr>
             </thead>
             <tbody>
                 {% for p in pres %}
                 <tr>
-                    <td>{{p.data.0}}</td>
-                    <td>{{p.data.1}}</td>
-                    <td>{{p.data.2}}</td>
-                    <td>{{p.data.3}}</td>
-                    <td>{{p.data.4}}</td>
-                    <td>{{p.data.5}}</td>
-                    <td>{{p.data.6}}</td>
-                    <td>{{p.data.7}}</td>
-                    <td>{{p.data.8}}</td>
-                    <td>{{p.data.10}}</td>
-                    <td><a href="" class="btn btn-success">Enviar</a></td>
+                  <td>{{p.data.0}}</td>
+                  <td>{{p.data.1}}</td>
+                  <td>{{p.data.2}}</td>
+                  <td>{{p.data.4}}</td>
+                  <td>{{p.data.5}}</td>
+                  <td>{{p.data.6}}</td>
+                  <td>{{p.data.7}}</td>
+                  <td>{{p.data.8}}</td>
+                  <td>{{p.data.9}}</td>
+                  <td>{{p.data.10}}</td>
+                  <td>{{p.data.12}}</td>
+                  {% if p.data.14 < 0  %}
+                    <td>Vencido</td>
+                  {% elif p.data.4 == 'domicilio' %}
+                    {% if p.data.14 <= 1 %}
+                      <td><strong>Menos</strong> de un día </td>
+                    {% else %}
+                      <td>{{p.data.14 }} días</td>
+                    {% endif %}
+                  {% elif p.data.4 == 'sala' %}
+                    <td>{{p.data.14 }} minutos</td>
+                  {% endif %}
+                  <td><a href="recordatorio?numero_pres={{p.data.0}}" class="btn btn-success">Enviar</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -168,21 +182,21 @@
                 </tr>
             </thead>
             <tbody>
-                {% for p in pres %}
-                {% if p.data.0 == request.session.user_login.user.rut_usr %}
-                <tr>
-                    <td>{{p.data.0}}</td>
-                    <td>{{p.data.1}}</td>
-                    <td>{{p.data.2}}</td>
-                    <td>{{p.data.3}}</td>
-                    <td>{{p.data.4}}</td>
-                    <td>{{p.data.5}}</td>
-                    <td>{{p.data.6}}</td>
-                    <td>{{p.data.7}}</td>
-                    <td>{{p.data.8}}</td>
-                    <td>{{p.data.10}}</td>
-                </tr>
-                {% endif %}
+              {% for p in pres %}
+              {% if p.data.1 == request.session.user_login.user.rut_usr %}
+              <tr>
+                <td>{{p.data.1}}</td>
+                <td>{{p.data.2}}</td>
+                <td>{{p.data.4}}</td>
+                <td>{{p.data.5}}</td>
+                <td>{{p.data.6}}</td>
+                <td>{{p.data.7}}</td>
+                <td>{{p.data.8}}</td>
+                <td>{{p.data.9}}</td>
+                <td>{{p.data.10}}</td>
+                <td>{{p.data.12}}</td>
+              </tr>
+              {% endif %}
                 {% endfor %}
             </tbody>
           </table>

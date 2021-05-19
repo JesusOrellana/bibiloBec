@@ -38,19 +38,19 @@
                         <h6 class="card-title text-uppercase">{{p.data.1}}</h6>
                         <h6 class="card-text">{{p.data.2}}</h6>
                         {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %} 
-                            <a href="/documento-update/{{p.data.0}}" class="btn btn-secondary btn-sm" style="float: center;">Editar</a>
+                            <a href="/documento-update/{{p.data.0}}" class="btn btn-sm btn-edit" style="float: center;">Editar</a>
                             <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="deleteDoc('{{p.data.0}}')">
                                 Eliminar 
                             </button>
                         {%endif%}
-                    </div>
-                    {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 or request.session.user_login.user.tipo == 3 %} 
+                        {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 or request.session.user_login.user.tipo == 3 %} 
                         <button type="button" class="btn btn-sm btn-soli" data-bs-toggle="modal" data-bs-target="#operacionDoc" onclick="opeDoc('{{request.session.user_login.user.rut_usr}}','{{p.data.0}}')">
                             Solicitar
                         </button>
                     {%else%}
                     <a href="{% url 'login' %}" class="btn btn-sm btn-soli" >Solicitar</a>
                     {%endif%}
+                    </div>
                 </div>
             </div>
             {%endfor%}
@@ -99,6 +99,29 @@
           </div>
         </div>
     </div>
+    <div class="row mb-3">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+          {% endif %}
+      
+          {% for i in page_obj.paginator.page_range %}
+            {% if page_obj.number == i %}
+              <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+            {% endif %}
+          {% endfor %}
+      
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+          {% else %}
+            <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
+          {% endif %}
+          </ul>
+        </div>
     {% endblock %}
 </body>
 </html>

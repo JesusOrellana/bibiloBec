@@ -98,7 +98,6 @@ def create_doc(request):
             edi = request.POST.get('edicion','')
             imagen = request.FILES['imagen'].read()
             ubi = request.POST.get('ubicacion')
-            estado = request.POST.get('estado')
             stock = request.POST.get('stock')
             
 

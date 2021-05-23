@@ -1,16 +1,12 @@
 {% extends "base.html" %}
 {% block title %}
-<title>Cambiar contraseña</title>
+<title>Restablecer contraseña</title>
 {% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-        <br>
-        <div class="alert alert-warning" role="alert">
-            <strong>Para mayor seguridad, se recomienda cambiar su contraseña.</strong> 
-        </div>
         <form method="POST" >
             {% csrf_token %}
             <div class="form-group mt-4">
@@ -20,7 +16,7 @@
                 class="form-control"
                 name="password1"
                 id="password1"
-                oninput="() => verificarPasswords(this)"
+                oninput="verificarPasswords(this)"
                 required
                 />
             </div>
@@ -34,14 +30,8 @@
                 required
                 />
             </div>
-            <div class="row mt-4 mb-4">
-                <div class="col-md-4">
-                </div>
-                <div class="text-center col-md-4">
-                    <button class="btn btn-primary1 mb-5" type="submit">Actualizar contraseña</button>
-                </div>
-                <div class="col-md-4"></div>
-                
+            <div class="text-center col-md-5">
+                <button class="btn btn-primary1" type="submit">Actualizar contraseña</button>
             </div>
         </form>
     </div>

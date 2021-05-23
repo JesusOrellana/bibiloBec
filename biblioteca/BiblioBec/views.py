@@ -12,7 +12,7 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from .utils import validarRut
+from .utils import validarRut, cifrarPassword
 from datetime import datetime
 # Create your views here.
 
@@ -87,8 +87,6 @@ def solicitudes(request):
             'solicitudes.html',data)
     else:
         return redirect('index')
-        
-    
 
 
 # vistas de documentos
@@ -296,7 +294,6 @@ def usuarios(request):
     '''
     #Validar si existe la sesión
     if not request.session._session:
-        print('entra al empty')
         return redirect('index')
 
     #Validar que el usuario no acceda a la vista si no es tipo administrador o bibliotecario
@@ -325,7 +322,7 @@ def usuarios(request):
                 break
 
         if len(usuario_encontrado) < 1:
-            messages.success(request, "Usuario no encontrado./error")
+            messages.error(request, "Usuario no encontrado./error")            
             return redirect('usuario_list')
 
         return render(
@@ -341,6 +338,21 @@ def enviar_email_habilitar(correo, rut_usr, nombre):
 
     email = EmailMultiAlternatives(
         'Active su cuenta para iniciar sesión en BiblioBEC',
+        'BiblioBEC',
+        settings.EMAIL_HOST_USER,
+        to=[correo]
+    )
+    
+    email.attach_alternative(content, 'text/html')
+    return email
+
+def enviar_email_restablecer_contrasena(correo, rut_usr, nombre):
+    context = {'mail': correo, 'rut_usr': rut_usr, 'nombre': nombre}
+    template = get_template('correo_restablecer_contrasena.html')
+    content = template.render(context)
+
+    email = EmailMultiAlternatives(
+        'Restablecer contraseña',
         'BiblioBEC',
         settings.EMAIL_HOST_USER,
         to=[correo]
@@ -372,6 +384,7 @@ def form_usuario(request):
         correo = request.POST.get('correo')
         tipo_usuario_id_tipo = request.POST.get('tipo_usuario_id_tipo')
         password = request.POST.get('password')
+        password_cifrada = cifrarPassword(password)
         if 'foto' in request.FILES:
             foto = request.FILES['foto'].read()
         else:
@@ -383,7 +396,7 @@ def form_usuario(request):
             with open('BiblioBec/static/img/no-imagen-user.jpg','rb') as image_file:
                 huella = image_file.read()
         resp = agregar_usuario(rut_usr, nombre, apellido_p, apellido_m, direccion,
-                                   telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
+                                   telefono, correo, foto, huella, tipo_usuario_id_tipo, password_cifrada)
         if resp == 1:
             resp = enviar_email_habilitar(correo, rut_usr, nombre)
             resp.send()
@@ -440,13 +453,26 @@ def usuario_filtrado(rut_usr):
         usuarios.append(datau)
     return usuarios
 
-def usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono, correo, foto, huella, tipo_usuario_id_tipo, password):
+def usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion, telefono, correo, foto, huella, tipo_usuario_id_tipo):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
     salida = cursor.var(cx_Oracle.NUMBER)
     cursor.callproc('SP_USUARIO_UPDATE',[rut_usr, nombre, apellido_p, apellido_m, direccion, telefono, correo, foto, huella, 
-                                         tipo_usuario_id_tipo, password, salida])
+                                          tipo_usuario_id_tipo, salida])
     return salida.getvalue()
+
+def enviar_correo_restablecer_contrasena(request):
+    if request.method == "POST":
+        rut_usr = request.POST.get('rut_usr')
+        usuario = usuario_filtrado(rut_usr)
+        correo = usuario[0]['data'][6]
+        nombre = usuario[0]['data'][1]
+        print(nombre, correo)
+        resp = enviar_email_restablecer_contrasena(correo, rut_usr, nombre)
+        resp.send()
+        messages.success(request, 'Por favor revise su correo para restablecer su contraseña./success')
+        return redirect('index')
+    return render(request, 'session/form_restablecer_contrasena.html')
 
 def editar_usuario(request):
     if not request.session._session:
@@ -489,9 +515,8 @@ def editar_usuario(request):
         telefono = request.POST.get('telefono')
         correo = request.POST.get('correo')
         tipo_usuario_id_tipo = request.POST.get('tipo_usuario_id_tipo')
-        password = request.POST.get('password')
         resp = usuario_update(rut_usr, nombre, apellido_p, apellido_m, direccion,
-                                   telefono, correo, foto, huella, tipo_usuario_id_tipo, password)
+                                   telefono, correo, foto, huella, tipo_usuario_id_tipo)
         if resp == 1:
             messages.success(request, "Usuario actualizado correctamente./success")
             return redirect('usuario_list')
@@ -507,7 +532,6 @@ def editar_usuario(request):
             data['usuario'][0]['data'][7] = foto
             data['usuario'][0]['data'][8] = huella
             data['usuario'][0]['data'][9] = tipo_usuario_id_tipo
-            data['usuario'][0]['data'][10] = password
             messages.error(request, "No se pudo actualizar el usuario./error")
             return render(request, 'Bibliobec/usuario_update.html', data)
 
@@ -530,7 +554,9 @@ def iniciar_sesion(request):
                 messages.error(request, 'El RUT ingresado no es válido./error')
                 return render(request, 'session/login.html')
             password = request.POST.get('password')
-            verificacion = Usuario.objects.filter(rut_usr = rut_usr, password = password).exists()
+            password_cifrada = cifrarPassword(password)
+            verificacion = Usuario.objects.filter(rut_usr = rut_usr, password = password_cifrada).exists()
+            
             
         if verificacion == True:
             usuario = usuario_filtrado(rut_usr)
@@ -575,19 +601,20 @@ def actualizar_contrasena(rut_usr, password):
     return salida.getvalue()
 
 def cambiar_contrasena(request):
-    if request.method == 'POST':
-        print('entro')
+    if not request.session._session:
+        rut_usr = request.GET.get('rut_usr')
+    else:
         rut_usr = request.session['user_login']['user']['rut_usr'] 
-        password = request.POST.get('password1')
-        print(rut_usr, password)
-        resp = actualizar_contrasena(rut_usr, password)
-        print(resp)
+    print(rut_usr)
+    if request.method == 'POST':
+        password1 = request.POST.get('password1')
+        password_cifrada = cifrarPassword(password1)
+        resp = actualizar_contrasena(rut_usr, password_cifrada)
         if resp == 1:
             messages.success(request, 'Contraseña actualizada con éxito./success')
             return redirect('index')
         else:
             messages.error(request, 'No fue posible actualizar su contraseña, inténtelo nuevamente./error')
-            return render(request, 'session/cambiar_contrasena.html')
     else:
         return render(request, 'session/cambiar_contrasena.html')
 

@@ -1,4 +1,5 @@
 from itertools import cycle
+import hashlib
 
 def validarRut(rut):
 	rut = rut.upper();
@@ -18,3 +19,8 @@ def validarRut(rut):
 		return True
 	else:
 		return False
+
+def cifrarPassword(password):
+	password = password.encode('utf-8')
+	password_cifrada = hashlib.md5(password).hexdigest()
+	return password_cifrada

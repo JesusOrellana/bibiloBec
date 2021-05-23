@@ -20,7 +20,7 @@
                 <div style="color: #0c3a6d; margin: 1% 6% 4%; text-align: justify;font-family: sans-serif">
                     {% if vencimiento < 0 %}
                         {% if tipo == 'domicilio' %}
-                            <h3 style="color: #0c3a6d; margin: 0 0 7px">Estimada/o {{nombre}}, el documento en préstamo está con un atraso de 
+                            <h3 style="color: #0c3a6d; margin: 0 0 7px">Estimado/a {{nombre}}, el documento en préstamo está con un atraso de 
                                 {{vencimiento|mul:-1}} días, por favor acérquese al establecimiento de BiblioBEC para devolver el documento.
                                 <br> <br><div style="text-align: center; font-weight: bolder;">{{titulo.title}} - {{autor.title}}.</div> <br>
                                 que fué prestado el día {{fecha_prestamo}}.
@@ -51,8 +51,6 @@
                                     administración de BiblioBEC.</div>
                             {% endif%}
                     {% endif%}
-                    <!-- <p style="margin: 2px; font-size: 15px">
-                        Para poder iniciar sesión en la plataforma, habilita tu cuenta haciendo click en el botón.</p> -->
                     <br>
                     <br>
                 </div>

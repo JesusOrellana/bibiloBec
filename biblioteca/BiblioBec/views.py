@@ -13,6 +13,7 @@ from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from .utils import validarRut
+from datetime import datetime
 # Create your views here.
 
 def catalogo(request):
@@ -627,7 +628,7 @@ def filtro_res(isbn):
 
 # VISTAS DE SOLICITUD DOCUMENTO
 
-def enviar_email_recordatorio(numero_pres, correo, rut_usr, nombre, titulo, autor, fecha_prestamo, tipo, vencimiento):
+def enviar_email_recordatorio(numero_pres, correo, rut_usr, nombre, titulo, fecha_prestamo, tipo, vencimiento):
     context = {'mail': correo, 'rut_usr': rut_usr, 'nombre': nombre, 'titulo': titulo, 'autor': autor, 'fecha_prestamo': fecha_prestamo, 
     'tipo': tipo, 'vencimiento': vencimiento}
     template = get_template('correo_recordatorio.html')
@@ -635,6 +636,22 @@ def enviar_email_recordatorio(numero_pres, correo, rut_usr, nombre, titulo, auto
 
     email = EmailMultiAlternatives(
         'Recordatorio de devolución',
+        'BiblioBEC',
+        settings.EMAIL_HOST_USER,
+        to=[correo]
+    )
+    
+    email.attach_alternative(content, 'text/html')
+    return email
+
+def enviar_email_comprobante(numero_pres,correo,nombre, rut_usr, id_ejem ,documento, fecha_prestamo, fecha_devolucion,tipo):
+    context = {'mail': correo, 'rut_usr': rut_usr, 'nombre': nombre, 'documento': documento,'id_ejem':id_ejem,'fecha_prestamo': fecha_prestamo, 
+    'tipo': tipo, 'numero_pres': numero_pres ,'fecha_devolucion':fecha_devolucion}
+    template = get_template('correo_comprobante.html')
+    content = template.render(context)
+
+    email = EmailMultiAlternatives(
+        'Comprobante de Solicitud',
         'BiblioBEC',
         settings.EMAIL_HOST_USER,
         to=[correo]
@@ -660,17 +677,23 @@ def proceso_prestamo(request):
     id_ejem = request.POST.get('id_ejem','')
     isbn = request.POST.get('isbn','')
     tipo = request.POST.get('tipo','')
-    
-    sp(rut, id_ejem, isbn, tipo)
+    fecha = datetime.now()
+    sp(rut, id_ejem, isbn, tipo,fecha)
+    cp = lista_com_pre(rut,fecha)
+    #return HttpResponse(cp[0]["data"][1])
+    correo = enviar_email_comprobante(cp[0]["data"][0],cp[0]["data"][1],cp[0]["data"][2],cp[0]["data"][3],cp[0]["data"][4],cp[0]["data"][5],cp[0]["data"][6],cp[0]["data"][7],cp[0]["data"][8])
+    correo.send()
     messages.success(request, "Solicitud Procesada correctamente Dirijase al mesón de ayuda para retirar el documento./success")
     return redirect('catalogo')
+    
+    
 
 
-def sp(rut,id_ejem,isbn,tipo):
+def sp(rut,id_ejem,isbn,tipo,fecha):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
     out_cur = django_cursor.connection.cursor()
-    cursor.callproc("p_solicitud_prestamo", [rut,id_ejem,isbn,tipo])
+    cursor.callproc("p_solicitud_prestamo", [rut,id_ejem,isbn,tipo,fecha])
 
 def num_ejem_dis(isbn):
     django_cursor = connection.cursor()
@@ -717,6 +740,21 @@ def lista_pres():
     
     return lista
 
+def lista_com_pre(rut, fecha):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("sp_comprobante_pres", [rut,fecha,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
 def pres_filtrado(numero_pres):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
@@ -742,3 +780,4 @@ def enviar_correo_dev(request):
     data['pres_filtrado'][0]['data'][4], data['pres_filtrado'][0]['data'][9])
     resp.send()
     return redirect('solicitudes')
+

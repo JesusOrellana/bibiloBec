@@ -116,7 +116,7 @@
     </header>
     <section>
         {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
-        <table id="example" class="display text-center" style="width:100%">
+          <table id="example1" class="display text-center" style="width:100%">
             <thead>
                 <tr>
                     <th>N° Préstamo</th>
@@ -125,46 +125,39 @@
                     <th>Préstamo</th>
                     <th>Titulo</th>
                     <th>Autor</th>
-                    <th>Editorial</th>
                     <th>Documento</th>
-                    <th>Categoria</th>
                     <th>Fecha Préstamo</th>
                     <th>Fecha Devolución</th>
-                    <th>Vence en</th>
+                    <th>Ingresar Devolución</th>
                     <th>Recordatorio</th>
                 </tr>
             </thead>
             <tbody>
                 {% for p in pres %}
                 <tr>
+                  <td>{{p.data.13}}</td>
                   <td>{{p.data.0}}</td>
                   <td>{{p.data.1}}</td>
                   <td>{{p.data.2}}</td>
+                  <td>{{p.data.3}}</td>
                   <td>{{p.data.4}}</td>
-                  <td>{{p.data.5}}</td>
                   <td>{{p.data.6}}</td>
-                  <td>{{p.data.7}}</td>
-                  <td>{{p.data.8}}</td>
-                  <td>{{p.data.9}}</td>
-                  <td>{{p.data.10}}</td>
-                  <td>{{p.data.12}}</td>
-                  {% if p.data.14 < 0  %}
-                    <td>Vencido</td>
-                  {% elif p.data.4 == 'domicilio' %}
-                    {% if p.data.14 <= 1 %}
-                      <td><strong>Menos</strong> de un día </td>
-                    {% else %}
-                      <td>{{p.data.14 }} días</td>
-                    {% endif %}
-                  {% elif p.data.4 == 'sala' %}
-                    <td>{{p.data.14 }} minutos</td>
-                  {% endif %}
-                  <td><a href="recordatorio?numero_pres={{p.data.0}}" class="btn btn-success">Enviar</a></td>
+                  {% if p.data.2 == "domicilio" %}
+                    <td>{{p.data.8}}</td>
+                    <td>{{p.data.10}}</td>
+                    <td><a href="#" class="btn btn-warning">Registrar</a></td>
+                  {% else %}
+                    <td>{{p.data.9}}</td>
+                    <td>{{p.data.11}}</td>
+                    <td><a href="#" class="btn btn-warning">Registrar</a></td>
+                  {% endif %} 
+                  <td><a href="recordatorio?numero_pres={{p.data.13}}" class="btn btn-success">Enviar</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
           </table>
-        {% else %}
+        {% endif %}
+        {% if request.session.user_login.user.tipo == 3 %}
           <h3>Mis Solicitudes</h3>
           <table id="example" class="display" style="width:100%">
             <thead>
@@ -183,21 +176,21 @@
             </thead>
             <tbody>
               {% for p in pres %}
-              {% if p.data.1 == request.session.user_login.user.rut_usr %}
-              <tr>
-                <td>{{p.data.1}}</td>
-                <td>{{p.data.2}}</td>
-                <td>{{p.data.4}}</td>
-                <td>{{p.data.5}}</td>
-                <td>{{p.data.6}}</td>
-                <td>{{p.data.7}}</td>
-                <td>{{p.data.8}}</td>
-                <td>{{p.data.9}}</td>
-                <td>{{p.data.10}}</td>
-                <td>{{p.data.12}}</td>
-              </tr>
-              {% endif %}
-                {% endfor %}
+                {% if p.data.0 == request.session.user_login.user.rut_usr %}
+                <tr>
+                  <td>{{p.data.0}}</td>
+                  <td>{{p.data.1}}</td>
+                  <td>{{p.data.2}}</td>
+                  <td>{{p.data.3}}</td>
+                  <td>{{p.data.4}}</td>
+                  <td>{{p.data.5}}</td>
+                  <td>{{p.data.6}}</td>
+                  <td>{{p.data.7}}</td>
+                  <td>{{p.data.8}}</td>
+                  <td>{{p.data.10}}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
             </tbody>
           </table>
         {%endif%}     
@@ -214,5 +207,10 @@
             $('#example').DataTable();
         } );
     </script>
+    <script>
+      $(document).ready(function() {
+          $('#example1').DataTable();
+      } );
+  </script>
   </body>
 </html>

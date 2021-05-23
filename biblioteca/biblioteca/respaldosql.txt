@@ -56,7 +56,8 @@ CREATE TABLE prestamo (
     fecha_prestamo     DATE NOT NULL,
     rut_usr            VARCHAR2(9) NOT NULL,
     tipo_prestamo      NUMBER(5) NOT NULL,
-    numero_solicitud   NUMBER(6) NOT NULL
+    numero_solicitud   NUMBER(6) NOT NULL,
+    estado             VARCHAR2(50) NOT NULL
 );
 
 ALTER TABLE prestamo ADD CONSTRAINT prestamo_pk PRIMARY KEY ( numero_pres );
@@ -421,30 +422,15 @@ BEGIN
 END sp_num_ejemplar_disponible;
 
 -- registro de prestamos -------------
+        
 create or replace PROCEDURE sp_prestamos(prestamos out SYS_REFCURSOR)
 IS
 BEGIN
  open prestamos for SELECT
-                        p.numero_pres,
-                        u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre,
-                        u.correo,
-                        tp.tipo, 
-                        l.titulo, 
-                        l.autor, 
-                        l.editorial,
-                        td.descripcion,
-                        c.descripcion,
-                        to_char(p.fecha_prestamo,'dd/mm/yyyy HH24:MI:ss') as "fecha y hora prestamo",
-                        to_char(p.fecha_prestamo,'HH24:MI:ss') as "hora prestamo",
-                        to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss') as "fecha y hora devolucion",
-                        to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion",
-                        CASE 
-                        WHEN tp.tipo = 'domicilio' THEN
-                        ROUND(TO_NUMBER(dsp.fecha_devolucion - sysdate))
-                        WHEN tp.tipo = 'sala' THEN
-                        TRUNC(TO_NUMBER((CAST( dsp.fecha_devolucion AS DATE ) - CAST( sysdate AS DATE )) * 1440))
-                        END AS "VENCIMIENTO",
-                        tp.tipo_prestamo_id
+    u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
+    c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
+    to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
+    to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres
     FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
     JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
     JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)

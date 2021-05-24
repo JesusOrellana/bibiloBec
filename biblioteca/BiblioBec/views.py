@@ -707,7 +707,6 @@ def proceso_prestamo(request):
     fecha = datetime.now()
     sp(rut, id_ejem, isbn, tipo,fecha)
     cp = lista_com_pre(rut,fecha)
-    #return HttpResponse(cp[0]["data"][1])
     correo = enviar_email_comprobante(cp[0]["data"][0],cp[0]["data"][1],cp[0]["data"][2],cp[0]["data"][3],cp[0]["data"][4],cp[0]["data"][5],cp[0]["data"][6],cp[0]["data"][7],cp[0]["data"][8])
     correo.send()
     messages.success(request, "Solicitud Procesada correctamente Dirijase al mesón de ayuda para retirar el documento./success")

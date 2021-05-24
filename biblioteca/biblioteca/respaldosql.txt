@@ -479,6 +479,25 @@ create or replace PROCEDURE SP_PRESTAMO_FILTRADO(v_numero_pres VARCHAR2, prestam
                             JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
                             WHERE p.numero_pres = v_numero_pres;
       END SP_PRESTAMO_FILTRADO;
+
+-------------------- comprobante solicitud 
+create or replace PROCEDURE sp_comprobante_pres(v_rut varchar2,v_fecha varchar,comprobante out SYS_REFCURSOR)
+      IS
+         
+      BEGIN
+          OPEN comprobante FOR SELECT
+                            p.numero_pres,u.correo, u.nombre,u.rut_usr,dsp.id_ejem,l.titulo, 
+                            to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
+                            to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion", tp.tipo
+                            FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
+                            JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
+                            JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
+                            JOIN usuario u on(u.rut_usr = sp.usuario_rut_usr)
+                            JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
+                            JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
+                            JOIN categoria c on(c.id_cate = l.categoria_id_cate)
+                            WHERE u.rut_usr = v_rut and p.fecha_prestamo = v_fecha ;
+      END;
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA RESERVA
 ---------------------------------------------------------------

@@ -655,7 +655,7 @@ def filtro_res(isbn):
 
 # VISTAS DE SOLICITUD DOCUMENTO
 
-def enviar_email_recordatorio(numero_pres, correo, rut_usr, nombre, titulo, fecha_prestamo, tipo, vencimiento):
+def enviar_email_recordatorio(numero_pres, correo, rut_usr, nombre, titulo, autor,fecha_prestamo, tipo, vencimiento):
     context = {'mail': correo, 'rut_usr': rut_usr, 'nombre': nombre, 'titulo': titulo, 'autor': autor, 'fecha_prestamo': fecha_prestamo, 
     'tipo': tipo, 'vencimiento': vencimiento}
     template = get_template('correo_recordatorio.html')
@@ -713,9 +713,6 @@ def proceso_prestamo(request):
     messages.success(request, "Solicitud Procesada correctamente Dirijase al mesón de ayuda para retirar el documento./success")
     return redirect('catalogo')
     
-    
-
-
 def sp(rut,id_ejem,isbn,tipo,fecha):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
@@ -808,3 +805,12 @@ def enviar_correo_dev(request):
     resp.send()
     return redirect('solicitudes')
 
+def devolucion(request,id_ejem, num):
+    sp_devolucion(id_ejem,num)
+    messages.success(request, "Se ha ingresado la devolución correctamente./success")
+    return redirect('catalogo')
+
+def sp_devolucion(id_ejem,num):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    cursor.callproc("SP_DEVOLUCION_DOC", [id_ejem,num])

@@ -415,6 +415,7 @@ $(document).ready(function() {
   {
     $("#id_rut_usu").prop("value",rut);
     $("#id_isbn2").prop("value",isbn);
+    $("#op-reserva").prop("href",'reserva/'+isbn);
     //$("#eliminar_documento").prop("class",'btn-warning');
   }
 

@@ -116,7 +116,7 @@ CREATE TABLE usuario (
     foto                   BLOB,
     huella                 BLOB,
     tipo_usuario_id_tipo   NUMBER(2) NOT NULL,
-    password               VARCHAR2(20) NOT NULL,
+    password               VARCHAR2(40) NOT NULL,
     activo                 NUMBER(1) DEFAULT 0,
     fecha_activacion       DATE,
     cambio_contrasena      NUMBER(1) DEFAULT 1
@@ -373,33 +373,45 @@ BEGIN
 end;
 
 -- PROCEDIMIENTO ELIMINAR EJEMPLARES--
-CREATE PROCEDURE sp_delete_ejemplar(
+create or replace PROCEDURE sp_delete_ejemplar(
  v_isbn VARCHAR2
 ) 
 IS
 BEGIN
-  DELETE FROM ejemplar WHERE isbn = v_isbn;
+    DELETE FROM detalle_solicitud_prestamo WHERE isbn = v_isbn;
+    DELETE FROM ejemplar WHERE isbn = v_isbn;
   commit;
 END sp_delete_ejemplar;
 
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA SOLICITUD_PRESTAMO
 ---------------------------------------------------------------
+-- devoluciones prestamos
+create or replace PROCEDURE SP_DEVOLUCION_DOC(v_id_ejem VARCHAR2,v_num_pres VARCHAR2)
+      IS
+      BEGIN
+            UPDATE ejemplar set estado = 'disponible'WHERE id_ejem = v_id_ejem;
+            UPDATE prestamo set estado = 'devolucion' WHERE numero_pres = v_num_pres;
+      END;
+
+
+-- proceso solicitud
 create or replace PROCEDURE p_solicitud_prestamo(
     v_rut VARCHAR2,
     v_ejem number,
     v_isbn VARCHAR2,
-    v_tipo varchar2
+    v_tipo varchar2,
+    v_fecha VARCHAR2
     )
     is
 BEGIN
     INSERT INTO solicitud_prestamo VALUES (seq_solicitud.NEXTVAL,sysdate,sysdate,v_rut);
     IF v_tipo = 'd' THEN
-        INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, sysdate,v_rut,1,seq_solicitud.NEXTVAL-1);
+        INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,1,seq_solicitud.NEXTVAL-1,'en prestamo');
         INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,sysdate+5,sysdate+5,sysdate+6,sysdate+6,v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
         UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
       ELSE
-        INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, sysdate,v_rut,2,seq_solicitud.NEXTVAL-1);
+        INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,2,seq_solicitud.NEXTVAL-1,'en prestamo');
         INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,(sysdate+3/24),(sysdate +3/24),(sysdate +4/24),(sysdate +4 / 24),v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
         UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
       END IF;
@@ -426,18 +438,19 @@ END sp_num_ejemplar_disponible;
 create or replace PROCEDURE sp_prestamos(prestamos out SYS_REFCURSOR)
 IS
 BEGIN
- open prestamos for SELECT
+ open prestamos for  SELECT
     u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
     c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
     to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
-    to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres
+    to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem
     FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
     JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
     JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
     JOIN usuario u on(u.rut_usr = sp.usuario_rut_usr)
     JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
     JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
-    JOIN categoria c on(c.id_cate = l.categoria_id_cate);
+    JOIN categoria c on(c.id_cate = l.categoria_id_cate)
+    WHERE p.estado = 'en prestamo';
 END;
 
 --PROCEDIMIENTO PARA FILTRAR PRESTAMO POR NUMERO DE PRESTAMO

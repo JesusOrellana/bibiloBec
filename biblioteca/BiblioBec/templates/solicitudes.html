@@ -145,12 +145,11 @@
                   {% if p.data.2 == "domicilio" %}
                     <td>{{p.data.8}}</td>
                     <td>{{p.data.10}}</td>
-                    <td><a href="#" class="btn btn-warning">Registrar</a></td>
                   {% else %}
                     <td>{{p.data.9}}</td>
                     <td>{{p.data.11}}</td>
-                    <td><a href="#" class="btn btn-warning">Registrar</a></td>
                   {% endif %} 
+                  <td><a href="devolucion/{{p.data.14}}/{{p.data.13}}" class="btn btn-warning">Registrar</a></td>
                   <td><a href="recordatorio?numero_pres={{p.data.13}}" class="btn btn-success">Enviar</a></td>
                 </tr>
                 {% endfor %}

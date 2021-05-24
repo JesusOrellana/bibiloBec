@@ -28,5 +28,6 @@ urlpatterns = [
     path('reserva/<str:isbn>', views.vista_reserva, name='reserva'),
     path('solicitud-prestamo', views.solicitud_prestamo, name='solicitud_pres'),
     path('proceso-prestamo', views.proceso_prestamo, name='proceso_prestamo'),
-    path('recordatorio', views.enviar_correo_dev, name='correo_recordatorio')
+    path('recordatorio', views.enviar_correo_dev, name='correo_recordatorio'),
+    path('devolucion/<str:id_ejem>/<str:num>', views.devolucion, name='devolucion')
 ]

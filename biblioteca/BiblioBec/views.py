@@ -671,14 +671,14 @@ def enviar_email_recordatorio(numero_pres, correo, rut_usr, nombre, titulo, auto
     email.attach_alternative(content, 'text/html')
     return email
 
-def enviar_email_comprobante(numero_pres,correo,nombre, rut_usr, id_ejem ,documento, fecha_prestamo, fecha_devolucion,tipo):
+def enviar_email_comprobante(numero_pres,correo,nombre, rut_usr, id_ejem ,documento, fecha_prestamo, fecha_devolucion,tipo, autor):
     context = {'mail': correo, 'rut_usr': rut_usr, 'nombre': nombre, 'documento': documento,'id_ejem':id_ejem,'fecha_prestamo': fecha_prestamo, 
-    'tipo': tipo, 'numero_pres': numero_pres ,'fecha_devolucion':fecha_devolucion}
+    'tipo': tipo, 'numero_pres': numero_pres ,'fecha_devolucion': fecha_devolucion, 'autor': autor}
     template = get_template('correo_comprobante.html')
     content = template.render(context)
 
     email = EmailMultiAlternatives(
-        'Comprobante de Solicitud',
+        'Comprobante de préstamo',
         'BiblioBEC',
         settings.EMAIL_HOST_USER,
         to=[correo]
@@ -708,9 +708,10 @@ def proceso_prestamo(request):
     sp(rut, id_ejem, isbn, tipo,fecha)
     cp = lista_com_pre(rut,fecha)
     #return HttpResponse(cp[0]["data"][1])
-    correo = enviar_email_comprobante(cp[0]["data"][0],cp[0]["data"][1],cp[0]["data"][2],cp[0]["data"][3],cp[0]["data"][4],cp[0]["data"][5],cp[0]["data"][6],cp[0]["data"][7],cp[0]["data"][8])
+    correo = enviar_email_comprobante(cp[0]["data"][0],cp[0]["data"][1],cp[0]["data"][2],cp[0]["data"][3],cp[0]["data"][4],
+    cp[0]["data"][5],cp[0]["data"][6],cp[0]["data"][7],cp[0]["data"][8], cp[0]["data"][9])
     correo.send()
-    messages.success(request, "Solicitud Procesada correctamente Dirijase al mesón de ayuda para retirar el documento./success")
+    messages.success(request, "Solicitud procesada correctamente. Diríjase al mesón para retirar el documento./success")
     return redirect('catalogo')
     
 def sp(rut,id_ejem,isbn,tipo,fecha):

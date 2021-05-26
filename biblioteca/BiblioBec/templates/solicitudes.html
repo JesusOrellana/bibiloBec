@@ -128,8 +128,8 @@
                     <th>Documento</th>
                     <th>Fecha Préstamo</th>
                     <th>Fecha Devolución</th>
-                    <th>Ingresar Devolución</th>
-                    <th>Recordatorio</th>
+                    <th>Acción</th>
+                    <th>-</th>
                 </tr>
             </thead>
             <tbody>
@@ -143,14 +143,29 @@
                   <td>{{p.data.4}}</td>
                   <td>{{p.data.6}}</td>
                   {% if p.data.2 == "domicilio" %}
-                    <td>{{p.data.8}}</td>
-                    <td>{{p.data.10}}</td>
+                      {% if p.data.15 == "solicitud" %}
+                        <td>-</td>
+                        <td>-</td>
+                      {% else %}
+                        <td>{{p.data.8}}</td>
+                        <td>{{p.data.10}}</td>
+                      {% endif %} 
                   {% else %}
-                    <td>{{p.data.9}}</td>
-                    <td>{{p.data.11}}</td>
+                      {% if p.data.15 == "solicitud" %}
+                        <td>-</td>
+                        <td>-</td>
+                      {% else %}
+                      <td>{{p.data.9}}</td>
+                      <td>{{p.data.11}}</td>
+                      {% endif %} 
+                  {% endif %}
+                  {% if p.data.15 == "solicitud" %}
+                    <td><a href="proceso-aprobacion/{{p.data.13}}/{{p.data.0}}/{{p.data.16}}" class="btn btn-primary">Aprobar Solicitud</a></td>
+                    <td><a href="proceso-cancelar/{{p.data.13}}/{{p.data.14}}" class="btn btn-danger">Cancelar Solicitud</a></td>
+                  {% else %}
+                    <td><a href="devolucion/{{p.data.14}}/{{p.data.13}}" class="btn btn-warning">Registrar Devolución</a></td>
+                    <td><a href="recordatorio?numero_pres={{p.data.13}}" class="btn btn-success">Enviar Recordatorio</a></td>
                   {% endif %} 
-                  <td><a href="devolucion/{{p.data.14}}/{{p.data.13}}" class="btn btn-warning">Registrar</a></td>
-                  <td><a href="recordatorio?numero_pres={{p.data.13}}" class="btn btn-success">Enviar</a></td>
                 </tr>
                 {% endfor %}
             </tbody>

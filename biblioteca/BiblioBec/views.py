@@ -699,30 +699,35 @@ def solicitud_prestamo(request):
     }
     return render(request,'prestamo.html',data)
 
-def proceso_prestamo(request):
+def proceso_solicitud(request):
     rut = request.POST.get('rut','')
     id_ejem = request.POST.get('id_ejem','')
     isbn = request.POST.get('isbn','')
     tipo = request.POST.get('tipo','')
+    pro = request.POST.get('pro','')
     fecha = datetime.now()
-    sp(rut, id_ejem, isbn, tipo,fecha)
-    cp = lista_com_pre(rut,fecha)
-<<<<<<< HEAD
-    correo = enviar_email_comprobante(cp[0]["data"][0],cp[0]["data"][1],cp[0]["data"][2],cp[0]["data"][3],cp[0]["data"][4],cp[0]["data"][5],cp[0]["data"][6],cp[0]["data"][7],cp[0]["data"][8])
-=======
-    #return HttpResponse(cp[0]["data"][1])
-    correo = enviar_email_comprobante(cp[0]["data"][0],cp[0]["data"][1],cp[0]["data"][2],cp[0]["data"][3],cp[0]["data"][4],
-    cp[0]["data"][5],cp[0]["data"][6],cp[0]["data"][7],cp[0]["data"][8], cp[0]["data"][9])
->>>>>>> f98784101b447aabe0f92d9e1b26eb08e0861d3e
-    correo.send()
+    sp(rut, id_ejem, isbn, tipo,fecha,pro)
     messages.success(request, "Solicitud procesada correctamente. Diríjase al mesón para retirar el documento./success")
     return redirect('catalogo')
-    
-def sp(rut,id_ejem,isbn,tipo,fecha):
+
+def proceso_aprobacion(request,pres,rut,fecha):
+    sp(pres, 0, '', '','','p')  
+    cp = lista_com_pre(rut,fecha)
+    correo = enviar_email_comprobante(cp[0]["data"][0],cp[0]["data"][1],cp[0]["data"][2],cp[0]["data"][3],cp[0]["data"][4],
+    cp[0]["data"][5],cp[0]["data"][6],cp[0]["data"][7],cp[0]["data"][8], cp[0]["data"][9])
+    correo.send()
+    return redirect('solicitudes')
+
+def proceso_cancelar(request,pres,id_ejem):
+    sp(pres, id_ejem, '', '','','c')  
+    return redirect('solicitudes')
+
+
+def sp(rut,id_ejem,isbn,tipo,fecha,pro):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
     out_cur = django_cursor.connection.cursor()
-    cursor.callproc("p_solicitud_prestamo", [rut,id_ejem,isbn,tipo,fecha])
+    cursor.callproc("p_solicitud_prestamo", [rut,id_ejem,isbn,tipo,fecha,pro])
 
 def num_ejem_dis(isbn):
     django_cursor = connection.cursor()
@@ -812,8 +817,7 @@ def enviar_correo_dev(request):
 
 def devolucion(request,id_ejem, num):
     sp_devolucion(id_ejem,num)
-    messages.success(request, "Se ha ingresado la devolución correctamente./success")
-    return redirect('catalogo')
+    return redirect('solicitudes')
 
 def sp_devolucion(id_ejem,num):
     django_cursor = connection.cursor()

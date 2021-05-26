@@ -25,12 +25,13 @@
                 </div>
             </div>
             <div class="form-sala">
-                <form action="{% url 'proceso_prestamo' %}" method="post" enctype="multipart/form-data">
+                <form action="{% url 'proceso_solicitud' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="text" name="rut" id="rut" value="{{rut}}"hidden>
                     <input type="text" name="id_ejem" id="id_ejem" value="{{ejem.0.data.0}}"hidden>
                     <input type="text" name="isbn" id="isbn" value="{{doc.0.data.0}}"hidden>
                     <input type="text" name="tipo" id="tipo" value="s"hidden>
+                    <input type="text" name="pro" id="pro" value = 's' hidden>
                     <input type="submit" class="btn btn-success" value="Solicitar en sala">
                 </form>
             </div>
@@ -51,12 +52,13 @@
             </div>
             
             <div class="form-sala">
-                <form action="{% url 'proceso_prestamo' %}" method="post" enctype="multipart/form-data">
+                <form action="{% url 'proceso_solicitud' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="text" name="rut" id="rut" value="{{rut}}"hidden>
                     <input type="text" name="id_ejem" id="id_ejem" value="{{ejem.0.data.0}}"hidden>
                     <input type="text" name="isbn" id="isbn" value="{{doc.0.data.0}}"hidden>
                     <input type="text" name="tipo" id="tipo" value="d"hidden>
+                    <input type="text" name="pro" id="pro" value = 's' hidden>
                     <input type="submit" class="btn btn-success" value="Solicitar a domicilio">
                 </form>
             </div>

@@ -393,21 +393,31 @@ create or replace PROCEDURE p_solicitud_prestamo(
     v_ejem number,
     v_isbn VARCHAR2,
     v_tipo varchar2,
-    v_fecha VARCHAR2
+    v_fecha VARCHAR2,
+    v_proceso VARCHAR2
     )
     is
 BEGIN
-    INSERT INTO solicitud_prestamo VALUES (seq_solicitud.NEXTVAL,sysdate,sysdate,v_rut);
-    IF v_tipo = 'd' THEN
-        INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,1,seq_solicitud.NEXTVAL-1,'en prestamo');
-        INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,sysdate+5,sysdate+5,sysdate+6,sysdate+6,v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
-        UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
-      ELSE
-        INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,2,seq_solicitud.NEXTVAL-1,'en prestamo');
-        INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,(sysdate+3/24),(sysdate +3/24),(sysdate +4/24),(sysdate +4 / 24),v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
-        UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
-      END IF;
-    COMMIT;
+    IF v_proceso = 's' THEN
+        INSERT INTO solicitud_prestamo VALUES (seq_solicitud.NEXTVAL,sysdate,sysdate,v_rut);
+        IF v_tipo = 'd' THEN
+            INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,1,seq_solicitud.NEXTVAL-1,'solicitud');
+            INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,sysdate+5,sysdate+5,sysdate+6,sysdate+6,v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
+            UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
+          ELSE
+            INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,2,seq_solicitud.NEXTVAL-1,'solicitud');
+            INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,(sysdate+3/24),(sysdate +3/24),(sysdate +4/24),(sysdate +4 / 24),v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
+            UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
+          END IF;
+        COMMIT;
+    ELSIF v_proceso = 'p' THEN
+        UPDATE prestamo set estado = 'en prestamo' WHERE numero_pres = v_rut;
+        COMMIT;
+    ELSIF v_proceso = 'c' THEN
+        UPDATE prestamo set estado = 'canselado' WHERE numero_pres = v_rut;
+        UPDATE ejemplar set estado = 'disponible' WHERE id_ejem = v_ejem;
+        
+    END IF;
 end;
 
 -- procedimento para traer un ejemplar disponible
@@ -434,7 +444,7 @@ BEGIN
     u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
     c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
     to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
-    to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem
+    to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss')
     FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
     JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
     JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
@@ -442,7 +452,7 @@ BEGIN
     JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
     JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
     JOIN categoria c on(c.id_cate = l.categoria_id_cate)
-    WHERE p.estado = 'en prestamo';
+    WHERE p.estado = 'en prestamo' or p.estado = 'solicitud';
 END;
 
 --PROCEDIMIENTO PARA FILTRAR PRESTAMO POR NUMERO DE PRESTAMO
@@ -478,9 +488,10 @@ create or replace PROCEDURE sp_comprobante_pres(v_rut varchar2,v_fecha varchar,c
          
       BEGIN
           OPEN comprobante FOR SELECT
-                            p.numero_pres,u.correo, u.nombre,u.rut_usr,dsp.id_ejem,l.titulo, 
+                            p.numero_pres,u.correo, u.nombre,u.rut_usr,dsp.id_ejem,l.titulo,
                             to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
-                            to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion", tp.tipo
+                            to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion", tp.tipo,
+                            l.autor
                             FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
                             JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
                             JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
@@ -488,7 +499,7 @@ create or replace PROCEDURE sp_comprobante_pres(v_rut varchar2,v_fecha varchar,c
                             JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
                             JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
                             JOIN categoria c on(c.id_cate = l.categoria_id_cate)
-                            WHERE u.rut_usr = v_rut and p.fecha_prestamo = v_fecha ;
+                            WHERE u.rut_usr = v_rut and to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss') = v_fecha;
       END;
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA RESERVA

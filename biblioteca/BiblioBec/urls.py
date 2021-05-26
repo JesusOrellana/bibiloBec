@@ -27,7 +27,9 @@ urlpatterns = [
     path('cambiar_contrasena', views.cambiar_contrasena, name='cambiar_contrasena'),
     path('reserva/<str:isbn>', views.vista_reserva, name='reserva'),
     path('solicitud-prestamo', views.solicitud_prestamo, name='solicitud_pres'),
-    path('proceso-prestamo', views.proceso_prestamo, name='proceso_prestamo'),
+    path('proceso-solicitud', views.proceso_solicitud, name='proceso_solicitud'),
+    path('proceso-aprobacion/<str:pres>/<str:rut>/<str:fecha>', views.proceso_aprobacion, name='proceso_aprobacion'),
+    path('proceso-cancelar/<str:pres>/<str:id_ejem>', views.proceso_cancelar, name='proceso_cancelar'),
     path('recordatorio', views.enviar_correo_dev, name='correo_recordatorio'),
     path('devolucion/<str:id_ejem>/<str:num>', views.devolucion, name='devolucion')
 ]

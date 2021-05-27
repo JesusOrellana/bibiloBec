@@ -629,7 +629,8 @@ def logout(request):
 def vista_reserva(request,isbn):
     data = { 
         'form': ReservaForm(), 
-        "doc" : filtro_res(isbn)
+        "doc" : filtro_res(isbn),
+        "fecha": fecha_proxima(isbn)
     }
     return render(
     request,
@@ -643,6 +644,22 @@ def filtro_res(isbn):
     out_cur = django_cursor.connection.cursor()
 
     cursor.callproc("P_FITRO_RES", [isbn,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
+def fecha_proxima(isbn):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+
+    cursor.callproc("fecha_reserva_valida", [isbn,out_cur])
 
     lista = []
 

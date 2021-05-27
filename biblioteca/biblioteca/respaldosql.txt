@@ -511,6 +511,22 @@ create or replace PROCEDURE p_fitro_res(v_isbn VARCHAR2,documentos out SYS_REFCU
          open documentos for SELECT *FROM libro Where isbn = v_isbn;      
       END;
 
+--procedimiento para tener fecha mas proxima para reservar
+create or replace PROCEDURE fecha_reserva_valida(v_isbn VARCHAR2 ,prestamos out SYS_REFCURSOR)
+IS
+BEGIN
+ open prestamos for  SELECT
+MIN(to_char(dsp.fecha_devolucion,'yyyy-mm-dd'))as "fecha devolucion"
+    FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
+    JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
+    JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
+    JOIN usuario u on(u.rut_usr = sp.usuario_rut_usr)
+    JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
+    JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
+    JOIN categoria c on(c.id_cate = l.categoria_id_cate)
+    WHERE p.estado = 'en prestamo' or p.estado = 'solicitud' and l.isbn = v_isbn;
+END;
+
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA CATALOGO
 ---------------------------------------------------------------

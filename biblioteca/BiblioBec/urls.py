@@ -31,5 +31,6 @@ urlpatterns = [
     path('proceso-aprobacion/<str:pres>/<str:rut>/<str:fecha>', views.proceso_aprobacion, name='proceso_aprobacion'),
     path('proceso-cancelar/<str:pres>/<str:id_ejem>', views.proceso_cancelar, name='proceso_cancelar'),
     path('recordatorio', views.enviar_correo_dev, name='correo_recordatorio'),
-    path('devolucion/<str:id_ejem>/<str:num>', views.devolucion, name='devolucion')
+    path('devolucion/<str:id_ejem>/<str:num>', views.devolucion, name='devolucion'),
+    path('ayuda', views.ayuda, name="ayuda")
 ]

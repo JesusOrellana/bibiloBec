@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/cat.css' %}" />
     <script src="{% static 'js/doc.js' %}"></script>
     {%block title%}
-    <title>Catalogo</title>
+    <title>Catálogo</title>
     {%endblock%}
 </head>
 <body>
@@ -22,7 +22,7 @@
     <!-- Boton Agregar Libros -->
     <div class="p-4" style="width: 95%; height: 50px;">
         {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
-            <a class="btn btn-secondary" href="{% url 'form_doc' %}" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
+            <a class="btn btn-primary1" href="{% url 'form_doc' %}" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
         {%endif%}
         </div>
 
@@ -81,7 +81,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                ¿Qué operacion desea realizar?
+                ¿Qué operación desea realizar?
             </div>
             <div class="modal-footer">
                 <div class="oper-btn">

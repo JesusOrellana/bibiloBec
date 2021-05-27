@@ -88,6 +88,8 @@ def solicitudes(request):
     else:
         return redirect('index')
 
+def ayuda(request):
+    return render(request, 'preguntas_frec.html')
 
 # vistas de documentos
 

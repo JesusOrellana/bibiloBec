@@ -84,7 +84,7 @@
               </li>
             </ul>
             <div class="me-3">
-              <form class="d-flex" method="POST" >
+              <form class="d-flex" method="POST" action="catalogo">
                 {%csrf_token%}
                 <input
                   class="form-control me-2"
@@ -128,10 +128,9 @@
     <div class="footer-basic">
         <footer class ="footer">
             <ul class="list-inline">
-                <li class="list-inline-item"><a href="#">Inicio</a></li>
-                <li class="list-inline-item"><a href="#">Catálogo</a></li>
-                <li class="list-inline-item"><a href="#">Sobre BiblioBEC</a></li>
-                <li class="list-inline-item"><a href="#">Ayuda en línea</a></li>
+                <li class="list-inline-item"><a href="{% url 'index' %}">Inicio</a></li>
+                <li class="list-inline-item"><a href="{% url 'catalogo' %}">Catálogo</a></li>
+                <li class="list-inline-item"><a href="{% url 'ayuda' %}">Ayuda en línea</a></li>
             </ul>
             <p class="copyright">BiblioBEC © 2021</p>
         </footer>

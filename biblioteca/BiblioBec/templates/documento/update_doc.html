@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
 <div class="doc-center">
-    <div class="doc-titulo"><h2>Actualizar nuevo documento</h2></div>
+    <div class="doc-titulo"><h2>Actualizar documento</h2></div>
     <div class="doc-form">
         <form action="{% url 'update_doc' %}" method="post" enctype="multipart/form-data" onsubmit="return validarForm();">
             {% csrf_token %}

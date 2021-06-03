@@ -78,18 +78,19 @@
                 </li>
               </ul>
               <div class="me-3">
-                <form class="d-flex">
+                <form class="d-flex" method="POST" action="catalogo">
+                  {%csrf_token%}
                   <input
                     class="form-control me-2"
                     type="search"
                     placeholder="Buscar documento"
-                    aria-label="Search"
+                    name="titulo"
                   />
                   <button class="btn btn-maincolor" type="submit">
                     <i class="fas fa-search"></i>
                   </button>
                 </form>
-            </div>
+              </div>
             </div>
             {% if request.session.user_login %}
               <ul class="navbar-nav ml-auto">

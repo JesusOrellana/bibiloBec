@@ -440,11 +440,12 @@ END sp_num_ejemplar_disponible;
 create or replace PROCEDURE sp_prestamos(prestamos out SYS_REFCURSOR)
 IS
 BEGIN
- open prestamos for  SELECT
+ open prestamos for SELECT
     u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
     c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
     to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
-    to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss')
+    to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,
+    to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss'), trunc(dsp.fecha_devolucion - sysdate), l.isbn
     FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
     JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
     JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
@@ -595,6 +596,29 @@ CREATE OR REPLACE PROCEDURE SP_LISTAR_USUARIOS(usuarios OUT SYS_REFCURSOR)
 create or replace PROCEDURE SP_USUARIO_DELETE (v_rut_usr varchar2)
 AS 
 BEGIN
+
+    UPDATE ejemplar 
+    set estado = 'disponible' 
+    WHERE id_ejem IN (  SELECT e.id_ejem FROM ejemplar E
+                        INNER JOIN detalle_solicitud_prestamo DSP
+                        ON (e.id_ejem = dsp.id_ejem)
+                        WHERE numero_solicitud IN (   select dsp.numero_solicitud from detalle_solicitud_prestamo dsp
+                        inner join prestamo p
+                        on (dsp.numero_solicitud = p.numero_solicitud)
+                        where p.rut_usr = v_rut_usr));
+    
+    DELETE FROM detalle_solicitud_prestamo
+    WHERE numero_solicitud IN (   select dsp.numero_solicitud from detalle_solicitud_prestamo dsp
+                    inner join prestamo p
+                    on (dsp.numero_solicitud = p.numero_solicitud)
+                    where p.rut_usr = v_rut_usr);
+
+    DELETE FROM prestamo
+    WHERE rut_usr = v_rut_usr;
+    
+    DELETE FROM solicitud_prestamo 
+    WHERE usuario_rut_usr = v_rut_usr;
+    
     DELETE FROM usuario
     WHERE rut_usr = v_rut_usr;
     COMMIT;
@@ -664,5 +688,5 @@ END SP_USUARIO_UPDATE_PASSWORD;
 
 
 --SCRIPT PARA INSERTAR UN USUARIO ADMINISTRADOR
---INSERT INTO usuario VALUES('111111111','Administrador',' ',' ','Dirección 123',982013456,'correo@gmail.com',NULL,NULL,1,'1234',1,sysdate,1);
---COMMIT;
+--INSERT INTO usuario VALUES('111111111','Administrador',' ',' ','Dirección 123',999999999,'correo@gmail.com',NULL,NULL,1,'81dc9bdb52d04dc20036dbd8313ed055',1,sysdate,1);
+COMMIT;

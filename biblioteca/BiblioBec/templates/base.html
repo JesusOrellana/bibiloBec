@@ -84,7 +84,7 @@
               </li>
             </ul>
             <div class="me-3">
-              <form class="d-flex" method="POST" action="catalogo">
+              <form class="d-flex" method="POST">
                 {%csrf_token%}
                 <input
                   class="form-control me-2"
@@ -96,7 +96,7 @@
                   <i class="fas fa-search"></i>
                 </button>
               </form>
-          </div>
+            </div>
           </div>
           {% if request.session.user_login %}
             <ul class="navbar-nav ml-auto">

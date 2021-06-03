@@ -173,7 +173,7 @@ def create_doc(request):
                 "msj": "exi_create",
 
             }
-            messages.success(request, "Documento Creado Correctamente./success")
+            messages.success(request, "Documento creado correctamente./success")
             return redirect('catalogo')
     except:
         data = {
@@ -181,7 +181,7 @@ def create_doc(request):
                 #"msj": "error_create",
 
             }
-        messages.error(request, "lo sentimos ha ocurrido un error./error")
+        messages.error(request, "Lo sentimos, ha ocurrido un error./error")
         return redirect('form_doc')
     
 def agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,ubi,stock):
@@ -202,7 +202,7 @@ def delete_doc(request,isbn):
                 "msj": "exi_delete",
 
             }
-    messages.success(request, "Documento Eliminado./success")
+    messages.success(request, "Documento eliminado./success")
     return redirect('catalogo')
 
 def lista_doc():
@@ -251,10 +251,10 @@ def update_doc(request):
             #return HttpResponse(opcion)
 
             editar_documento(isbn,titulo ,autor ,editorial ,fecha ,cat,doc,medio,edi,imagen ,ubi,opcion)
-            messages.success(request, "Documento Editado Correctamente./success")
+            messages.success(request, "Documento editado correctamente./success")
             return redirect('catalogo')
     except:
-        messages.error(request, "lo sentimos ha ocurrido un error./error")
+        messages.error(request, "Lo sentimos, ha ocurrido un error./error")
         return redirect('catalogo')
     
 

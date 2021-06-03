@@ -21,7 +21,6 @@
     <script src='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js'></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="{% static 'js/utils.js' %}"></script>
-  <!-- Bot de chat -->
   
   {% block title %}{% endblock %}
   </head>
@@ -129,10 +128,9 @@
     <div class="footer-basic">
         <footer class ="footer">
             <ul class="list-inline">
-                <li class="list-inline-item"><a href="#">Inicio</a></li>
-                <li class="list-inline-item"><a href="#">Catálogo</a></li>
-                <li class="list-inline-item"><a href="#">Sobre BiblioBEC</a></li>
-                <li class="list-inline-item"><a href="#">Ayuda en línea</a></li>
+                <li class="list-inline-item"><a href="{% url 'index' %}">Inicio</a></li>
+                <li class="list-inline-item"><a href="{% url 'catalogo' %}">Catálogo</a></li>
+                <li class="list-inline-item"><a href="{% url 'ayuda' %}">Ayuda en línea</a></li>
             </ul>
             <p class="copyright">BiblioBEC © 2021</p>
         </footer>

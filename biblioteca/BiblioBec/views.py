@@ -16,11 +16,23 @@ from .utils import validarRut, cifrarPassword
 from datetime import datetime
 # Create your views here.
 
-def catalogo(request):
+def catalogo(request): 
     lista = lista_doc()
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        titulo_encontrado = []
+        for u in lista:
+            if u['data'][1].upper().find(titulo.upper()) != -1:
+                titulo_encontrado.append(u)
+                # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
+        if len(titulo_encontrado) < 1:
+            messages.error(request, "Documento no encontrado./error")            
+            return redirect('catalogo')
+        lista = titulo_encontrado
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     libros_page = paginator.get_page(page_number)
+
     data = { 
         'libros': libros_page,
         'page_obj' : libros_page
@@ -33,6 +45,17 @@ def catalogo(request):
 
 def catalogo_audio(request):
     lista = listado_audios()
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        titulo_encontrado = []
+        for u in lista:
+            if u['data'][1].upper().find(titulo.upper()) != -1:
+                titulo_encontrado.append(u)
+                # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
+        if len(titulo_encontrado) < 1:
+            messages.error(request, "Documento no encontrado./error")            
+            return redirect('catalogo_audio')
+        lista = titulo_encontrado
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     audios_page = paginator.get_page(page_number)
@@ -48,6 +71,17 @@ def catalogo_audio(request):
 
 def catalogo_video(request):
     lista = listado_videos()
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        titulo_encontrado = []
+        for u in lista:
+            if u['data'][1].upper().find(titulo.upper()) != -1:
+                titulo_encontrado.append(u)
+                # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
+        if len(titulo_encontrado) < 1:
+            messages.error(request, "Documento no encontrado./error")            
+            return redirect('catalogo_videos')
+        lista = titulo_encontrado
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     videos_page = paginator.get_page(page_number)
@@ -63,6 +97,17 @@ def catalogo_video(request):
 
 def catalogo_libro(request):
     lista = listado_libro()
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        titulo_encontrado = []
+        for u in lista:
+            if u['data'][1].upper().find(titulo.upper()) != -1:
+                titulo_encontrado.append(u)
+                # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
+        if len(titulo_encontrado) < 1:
+            messages.error(request, "Documento no encontrado./error")            
+            return redirect('catalogo_libros')
+        lista = titulo_encontrado
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     libro_page = paginator.get_page(page_number)
@@ -469,7 +514,6 @@ def enviar_correo_restablecer_contrasena(request):
         usuario = usuario_filtrado(rut_usr)
         correo = usuario[0]['data'][6]
         nombre = usuario[0]['data'][1]
-        print(nombre, correo)
         resp = enviar_email_restablecer_contrasena(correo, rut_usr, nombre)
         resp.send()
         messages.success(request, 'Por favor revise su correo para restablecer su contraseña./success')
@@ -606,8 +650,7 @@ def cambiar_contrasena(request):
     if not request.session._session:
         rut_usr = request.GET.get('rut_usr')
     else:
-        rut_usr = request.session['user_login']['user']['rut_usr'] 
-    print(rut_usr)
+        rut_usr = request.session['user_login']['user']['rut_usr']
     if request.method == 'POST':
         password1 = request.POST.get('password1')
         password_cifrada = cifrarPassword(password1)

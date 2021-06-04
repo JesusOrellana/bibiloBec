@@ -674,7 +674,8 @@ def logout(request):
 def vista_reserva(request,isbn):
     data = { 
         'form': ReservaForm(), 
-        "doc" : filtro_res(isbn),
+        'ejem': id_ejem(isbn),
+        'doc': filtro_doc(isbn),
         "fecha": fecha_proxima(isbn)
     }
     return render(
@@ -682,6 +683,24 @@ def vista_reserva(request,isbn):
     'reserva/reserva.html',
     data
     )
+
+def reserva_creada(isbn,id_ejem,fecha_d,fecha_h,rut):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+
+    cursor.callproc("reserva_creada", [isbn,id_ejem,fecha_d,fecha_h,rut])
+
+def accionar_res_cre(request):
+    isbn = request.POST.get('isbn','')
+    id_ejem = request.POST.get('id_ejem','')
+    fecha_d = request.POST.get('fecha_desde','')
+    fecha_h = request.POST.get('fecha_hasta','')
+    rut = request.POST.get('rut','')
+
+    reserva_creada(isbn,id_ejem, fecha_d, fecha_h, rut)
+    messages.success(request, "Reserva correctamente creada./success")
+    return redirect("catalogo")
 
 def filtro_res(isbn):
     django_cursor = connection.cursor()

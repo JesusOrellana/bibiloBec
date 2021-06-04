@@ -276,6 +276,14 @@ CREATE SEQUENCE seq_prestamo
   START WITH 1
   INCREMENT BY 1
   CACHE 20;
+
+-- secuencia para reserva
+
+CREATE SEQUENCE seq_reserva
+  MINVALUE 1
+  START WITH 1
+  INCREMENT BY 1
+  CACHE 20;
 ----------------------------------------------------------------
 ---------------------------------------------------------------
 --       INSERTE PROCEDIMIENTOS AQUI
@@ -509,7 +517,7 @@ create or replace PROCEDURE sp_comprobante_pres(v_rut varchar2,v_fecha varchar,c
 create or replace PROCEDURE p_fitro_res(v_isbn VARCHAR2,documentos out SYS_REFCURSOR)
       IS
       BEGIN
-         open documentos for SELECT *FROM libro Where isbn = v_isbn;      
+         open documentos for SELECT *FROM libro l join ejemplar e on(l.isbn=e.isbn) Where l.isbn = v_isbn;      
       END;
 
 --procedimiento para tener fecha mas proxima para reservar
@@ -527,6 +535,14 @@ MIN(to_char(dsp.fecha_devolucion,'yyyy-mm-dd'))as "fecha devolucion"
     JOIN categoria c on(c.id_cate = l.categoria_id_cate)
     WHERE p.estado = 'en prestamo' or p.estado = 'solicitud' and l.isbn = v_isbn;
 END;
+
+--procedimiento para confirmar reserva
+create or replace PROCEDURE reserva_creada(v_isbn VARCHAR2,v_id_ejem number, v_fecha_d date, v_fecha_h date, v_rut_u VARCHAR2)
+      IS
+      BEGIN
+         INSERT INTO reserva values (SEQ_RESERVA.nextval,sysdate,v_fecha_d,v_fecha_h,v_id_ejem,v_isbn,v_rut_u);
+         COMMIT;
+      END;
 
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA CATALOGO

@@ -8,7 +8,7 @@
         <br><hr>
         <div class="row">
             <div class="col-sm-6">
-                <form id="" action="update" method="post" autocomplete="on" enctype="multipart/form-data">
+                <form id="" action="update" method="post" autocomplete="on" enctype="multipart/form-data" onsubmit="return validarFormUsuario()">
                     {%csrf_token%}
                     <div class="form-group">
                         <label for="rut_usr">RUT Usuario:</label>

@@ -115,6 +115,13 @@
         </nav>
     </header>
     <section>
+      <select name="id_ejem" id="id_ejem" hidden>
+        {% for p in pres %}
+          {% if p.data.17 < 0 %}
+          <option data-ej="{{p.data.13}}" data-rut="{{p.data.0}}"data-isbn ="{{p.data.18}}" ></option>
+          {% endif %}
+        {% endfor %}
+      </select>
         {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
           <table id="example1" class="display text-center" style="width:100%">
             <thead>
@@ -237,7 +244,8 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-
+    {% load static %}
+    <script src="{% static 'js/bot_sansion.js'%}"></script>
 
     <script>
         $(document).ready(function() {

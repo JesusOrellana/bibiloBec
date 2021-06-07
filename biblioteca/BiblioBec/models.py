@@ -175,3 +175,16 @@ class Usuario(models.Model):
     def __str__(self):
         return self.rut_usr
         
+
+class Sancion(models.Model):
+    id_sansion = models.IntegerField(primary_key=True)
+    rut_usr = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='rut_usr')
+    estado = models.CharField(max_length=30)
+    fecha_devolucion = models.DateField() 
+
+    class Meta:
+        managed = False
+        db_table = 'sancion'
+        
+    def __str__(self):
+        return str(self.id_sansion) 

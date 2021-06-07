@@ -1,6 +1,6 @@
 from django.contrib import admin
 from . models import Libro, Categoria, TipoMedio, TipoDocumento , Ejemplar, Reserva , SolicitudPrestamo 
-from . models import TipoPrestamo, TipoUsuario, DetalleSolicitudPrestamo, Prestamo , Usuario
+from . models import TipoPrestamo, TipoUsuario, DetalleSolicitudPrestamo, Prestamo , Usuario, Sancion
 
 
 # Register your models here.
@@ -16,5 +16,6 @@ admin.site.register(Reserva)
 admin.site.register(SolicitudPrestamo)
 admin.site.register(Usuario)
 admin.site.register(TipoPrestamo)
+admin.site.register(Sancion)
 
 

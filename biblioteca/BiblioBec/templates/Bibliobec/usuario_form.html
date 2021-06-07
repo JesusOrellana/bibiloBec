@@ -8,7 +8,7 @@
         <div class="masthead container d-flex flex-column mt-2" style="max-width: 1140px;">
             <h2 class="text-center text-uppercase">Registrar usuario</h2>
             <hr>
-            <form id="" action="" method="post" autocomplete="on" enctype="multipart/form-data">
+            <form id="" action="" method="post" autocomplete="on" enctype="multipart/form-data" onsubmit="return validarFormUsuario()">
             {%csrf_token%}
                     <div class="form-group">
                         <label for="rut_usr">RUT Usuario:</label>

@@ -173,7 +173,7 @@ def create_doc(request):
                 "msj": "exi_create",
 
             }
-            messages.success(request, "Documento Creado Correctamente./success")
+            messages.success(request, "Documento creado correctamente./success")
             return redirect('catalogo')
     except:
         data = {
@@ -181,7 +181,7 @@ def create_doc(request):
                 #"msj": "error_create",
 
             }
-        messages.error(request, "lo sentimos ha ocurrido un error./error")
+        messages.error(request, "Lo sentimos, ha ocurrido un error./error")
         return redirect('form_doc')
     
 def agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,ubi,stock):
@@ -202,7 +202,7 @@ def delete_doc(request,isbn):
                 "msj": "exi_delete",
 
             }
-    messages.success(request, "Documento Eliminado./success")
+    messages.success(request, "Documento eliminado./success")
     return redirect('catalogo')
 
 def lista_doc():
@@ -251,10 +251,10 @@ def update_doc(request):
             #return HttpResponse(opcion)
 
             editar_documento(isbn,titulo ,autor ,editorial ,fecha ,cat,doc,medio,edi,imagen ,ubi,opcion)
-            messages.success(request, "Documento Editado Correctamente./success")
+            messages.success(request, "Documento editado correctamente./success")
             return redirect('catalogo')
     except:
-        messages.error(request, "lo sentimos ha ocurrido un error./error")
+        messages.error(request, "Lo sentimos, ha ocurrido un error./error")
         return redirect('catalogo')
     
 
@@ -674,7 +674,8 @@ def logout(request):
 def vista_reserva(request,isbn):
     data = { 
         'form': ReservaForm(), 
-        "doc" : filtro_res(isbn),
+        'ejem': id_ejem(isbn),
+        'doc': filtro_doc(isbn),
         "fecha": fecha_proxima(isbn)
     }
     return render(
@@ -682,6 +683,24 @@ def vista_reserva(request,isbn):
     'reserva/reserva.html',
     data
     )
+
+def reserva_creada(isbn,id_ejem,fecha_d,fecha_h,rut):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+
+    cursor.callproc("reserva_creada", [isbn,id_ejem,fecha_d,fecha_h,rut])
+
+def accionar_res_cre(request):
+    isbn = request.POST.get('isbn','')
+    id_ejem = request.POST.get('id_ejem','')
+    fecha_d = request.POST.get('fecha_desde','')
+    fecha_h = request.POST.get('fecha_hasta','')
+    rut = request.POST.get('rut','')
+
+    reserva_creada(isbn,id_ejem, fecha_d, fecha_h, rut)
+    messages.success(request, "Reserva correctamente creada./success")
+    return redirect("catalogo")
 
 def filtro_res(isbn):
     django_cursor = connection.cursor()

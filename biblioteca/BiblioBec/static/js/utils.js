@@ -13,7 +13,7 @@ function checkRut(rut) {
 
   // Si no cumple con el mínimo ej. (n.nnn.nnn)
   if (cuerpo.length < 8) {
-    rut.setCustomValidity("RUT Incompleto");
+    rut.setCustomValidity("RUT incompleto");
     return false;
   }
 
@@ -46,7 +46,7 @@ function checkRut(rut) {
 
   // Validar que el Cuerpo coincide con su Dígito Verificador
   if (dvEsperado != dv) {
-    rut.setCustomValidity("RUT Inválido");
+    rut.setCustomValidity("RUT inválido");
     return false;
   }
 
@@ -65,3 +65,222 @@ $(document).ready(() => {
     }
   });
 });
+
+function validarFormUsuario() {
+  rut_usr = $('#rut_usr').val()
+  nombre =  $('#nombre').val()
+  apellido_p =  $('#apellido_p').val()
+  apellido_m =  $('#apellido_m').val()
+  direccion =  $('#direccion').val()
+  telefono =  $('#telefono').val()
+  correo =  $('#correo').val()
+  password = $('#password').val()
+
+if (rut_usr == "")
+{
+  $('#rut_usr').focus()
+  toastr.error("Debe ingresar el RUT del usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+}
+
+if (nombre == "")
+{
+  $('#nombre').focus()
+  toastr.error("Debe ingresar el nombre del usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+} 
+
+if (apellido_p == "")
+{
+  $('#apellido_p').focus()
+  toastr.error("Debe ingresar el apellido paterno del usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+} 
+
+if (apellido_m == "")
+{
+  $('#apellido_m').focus()
+  toastr.error("Debe ingresar el apellido materno del usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+} 
+
+if (apellido_m == "")
+{
+  $('#apellido_m').focus()
+  toastr.error("Debe ingresar el apellido materno del usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+} 
+
+if (direccion == "")
+{
+  $('#direccion').focus()
+  toastr.error("Debe ingresar la dirección del usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+} 
+
+if (telefono == "")
+{
+  $('#telefono').focus()
+  toastr.error("Debe ingresar el teléfono del usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+} 
+
+if (correo == "")
+{
+  $('#correo').focus()
+  toastr.error("Debe ingresar el correo del usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+} 
+
+if (password == "")
+{
+  $('#password').focus()
+  toastr.error("Debe ingresar una password para el usuario","ERROR",{
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+  });
+  return false;
+} 
+
+}

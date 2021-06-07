@@ -18,6 +18,26 @@ $(document).ready(function() {
         $("#id_fecha_hasta").prop('value',fecha.getFullYear()+'-'+(fecha.getMonth()+1)+'-'+fecha.getDate())
   
     }
+    $(".Aceptar").click(function(){
+        fecha = $("#id_fecha_desde").val();
+        f=new Date(fecha)
+        $("#id_fecha_hasta").prop("min",fecha);
+        $("#idlabel").removeAttr("hidden");
+        $("#idlabel2").removeAttr("hidden");
+        fh=new Date(f)
+        fh.setDate(f.getDate()+6)
+        dia=fh.getDate()
+        mes=fh.getMonth()+1
+        ano=fh.getFullYear()
+        if (mes  <10) 
+        mes = '0' + mes;
+        if (dia  <10) 
+        dia = '0' + dia;
+        fh= [ano, mes, dia].join('-');
+        $("#id_fecha_hasta").prop("max",fh);
+       
+        
+    });
   });
   
   
@@ -54,3 +74,54 @@ $(document).ready(function() {
     }
     return false
   }
+  function validarForm()
+  {
+    fecha_d = $('#id_fecha_desde').val()
+    fecha_h = $('#id_fecha_hasta').val()
+    
+    var exr = new RegExp("^[0-9,$]");
+    if(fecha_d == "")
+    {
+        $('#id_fecha_desde').focus()
+        toastr.error("Debe Ingresar valida inicial","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(fecha_h == "")
+    {
+        $('#id_fecha_hasta').focus()
+        toastr.error("Debe Ingresar fecha valida de termino","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+}

@@ -83,20 +83,6 @@
                 <a class="nav-link" href="{% url 'ayuda' %}">Ayuda en línea</a>
               </li>
             </ul>
-            <div class="me-3">
-              <form class="d-flex" method="POST">
-                {%csrf_token%}
-                <input
-                  class="form-control me-2"
-                  type="search"
-                  placeholder="Buscar documento"
-                  name="titulo"
-                />
-                <button class="btn btn-maincolor" type="submit">
-                  <i class="fas fa-search"></i>
-                </button>
-              </form>
-            </div>
           </div>
           {% if request.session.user_login %}
             <ul class="navbar-nav ml-auto">

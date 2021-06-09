@@ -346,10 +346,13 @@ end;
 
 -- procedimiento para obtener todos los documentos
 
-CREATE or replace PROCEDURE p_lista_documentos(documentos out SYS_REFCURSOR)
+create or replace PROCEDURE p_lista_documentos(documentos out SYS_REFCURSOR)
 IS
 BEGIN
-    open documentos for SELECT * FROM libro;
+    open documentos for SELECT  L.*, 
+        c.descripcion 
+FROM libro L INNER JOIN categoria C 
+    ON (l.CATEGORIA_ID_CATE = c.ID_CATE);
 END;
 
 -- procedimiento para select filtro documento
@@ -580,7 +583,11 @@ create or replace procedure sp_listar_audios(audios out SYS_REFCURSOR)
 is
 
 begin
-    open audios for select * from libro where id_medio IN(2,6) ;
+    open audios for SELECT  L.*, 
+        c.descripcion 
+FROM libro L INNER JOIN categoria C 
+    ON (l.CATEGORIA_ID_CATE = c.ID_CATE)
+    where id_medio IN(2,6) ;
 end;
 
 -- Procedimiento para listar solo libros en video
@@ -588,7 +595,10 @@ create or replace procedure sp_listar_videos(videos out SYS_REFCURSOR)
 is
 
 begin
-    open videos for select * from libro where id_medio IN(3,4,5);
+    open videos for SELECT  L.*, 
+        c.descripcion 
+FROM libro L INNER JOIN categoria C 
+    ON (l.CATEGORIA_ID_CATE = c.ID_CATE) where id_medio IN(3,4,5);
 end;
 
 -- Procedimiento para listar solo libros de texto
@@ -596,7 +606,10 @@ create or replace procedure sp_listar_libro(libros out SYS_REFCURSOR)
 is
 
 begin
-    open libros for select * from libro where id_medio = 1;
+    open libros for SELECT  L.*, 
+        c.descripcion 
+FROM libro L INNER JOIN categoria C 
+    ON (l.CATEGORIA_ID_CATE = c.ID_CATE) where id_medio = 1;
 end;
 -----------------------------------------------------------------
 *****************************************************************

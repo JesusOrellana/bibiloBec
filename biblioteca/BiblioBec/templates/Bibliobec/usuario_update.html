@@ -6,10 +6,10 @@
     <div class="col-sm-6">
         <h2 class="text-center text-uppercase">Actualizar usuario</h2>
         <br><hr>
-        <div class="row">
-            <div class="col-sm-6">
-                <form id="" action="update" method="post" autocomplete="on" enctype="multipart/form-data" onsubmit="return validarFormUsuario()">
-                    {%csrf_token%}
+        <form id="" action="update" method="post" autocomplete="on" enctype="multipart/form-data" onsubmit="return validarFormUsuario()">
+            {%csrf_token%}
+            <div class="row">
+                <div class="col-sm-6">
                     <div class="form-group">
                         <label for="rut_usr">RUT Usuario:</label>
                         <input
@@ -89,12 +89,12 @@
                         <option value="3" {% if usuario.0.data.9 == 3 %} selected{% endif %}>Normal</option>
                         </select>
                     </div>
-            </div>
-            <div class="col-md-6 text-center">
-                <label for="foto">Foto:</label>
-                {% if usuario.0.data.7 %}
-                    <img class="rounded-circle ms-5 mb-2" width="200" height="200" src="data:imagen/png;base64, {{usuario.0.foto}}" data-holder-rendered="true">
-                {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="foto">Foto:</label>
+                    {% if usuario.0.data.7 %}
+                        <img class="rounded-circle ms-5 mb-2" width="200" height="200" src="data:imagen/png;base64, {{usuario.0.foto}}" data-holder-rendered="true">
+                    {% endif %}
                     <div class="form-group mb-1">
                         <input
                         type="file"
@@ -103,10 +103,10 @@
                         id="id_foto"
                         />
                     </div>
-                <label for="huella">Huella:</label>
-                {% if usuario.0.data.8 %}
-                    <img class="rounded-circle ms-5 mb-2" width="200" height="200" src="data:imagen/png;base64, {{usuario.0.huella}}" data-holder-rendered="true">
-                {% endif %}
+                    <label for="huella">Huella:</label>
+                    {% if usuario.0.data.8 %}
+                        <img class="rounded-circle ms-5 mb-2" width="200" height="200" src="data:imagen/png;base64, {{usuario.0.huella}}" data-holder-rendered="true">
+                    {% endif %}
                     <div class="form-group">
                         <input
                         type="file"
@@ -115,6 +115,7 @@
                         id="id_huella"
                         />
                     </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-sm-4"></div>
@@ -127,8 +128,7 @@
                 </div>
                 <div class="col-sm-4"></div>
             </div>
-                </form>
-        </div>
+        </form>
     </div>
     <div class="col-sm-3"></div>
 </div>

@@ -10,40 +10,51 @@ function hora()
     horaProgramada  = new Date();
     horaProgramada.setHours(horaActual.getHours());
     horaProgramada.setMinutes(horaActual.getMinutes());
-    horaProgramada.setSeconds(horaActual.getSeconds()+10);
+    horaProgramada.setSeconds(horaActual.getSeconds()+1);
     return horaProgramada.getTime() - horaActual.getTime(); 
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
 
 function calcularSancion()
 {
+
+    const csrftoken = getCookie('csrftoken');
+
     lista = []
+    cont = 0
     $('#id_ejem option').each(function()
     {
-        l = [$(this).attr('data-ej'),$(this).attr('data-rut'),$(this).attr('data-isbn')]
+        l = [$(this).attr('data-ej'),$(this).attr('data-rut'),$(this).attr('data-isbn')+'}']
         lista.push(l);
     });
+    cont = lista.length;
     console.log(lista);
     $.ajax({
-        url: '/producto/data',
+        url: 'http://127.0.0.1:8000/calcular-sansion/',
         method: 'POST',
         data:{
-            moroso: lista
-            //id:1,
-            //_token:$('input[name="_token"]').val()
+            'moroso[]': lista,
+            'cont': cont,
+            csrfmiddlewaretoken: csrftoken
+        },
+        async: false,
+        success: function(data){
+            console.log(data);
         }
-    }).done(function(res){
-        
-        var lista = JSON.parse(res);
-        for (var index = 0; index < lista.length; index++) {
-            nombres.push(lista[index].nombre);
-            stock.push(lista[index].rebaje);
-
-        }
-        alert(nombres);
-        alert(stock)
-        generarGrafico();
-        generarGraficoCir();
-        generarGraficoLine();
     })
-
 }

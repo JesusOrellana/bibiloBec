@@ -904,3 +904,68 @@ def sp_devolucion(id_ejem,num):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
     cursor.callproc("SP_DEVOLUCION_DOC", [id_ejem,num])
+
+def calcular_sansion(request):
+    morosos = request.POST.getlist('moroso[]')
+    cont = request.POST.get('cont')
+
+    if int(cont) > 0:
+        lista_cod = []
+        l = []
+        ejem = 0
+        rut = ""
+        isbn = ""
+        for mo in morosos:
+            codigos2 = mo
+            for cod in range(0,len(mo)):
+                pos_fin = codigos2.find(",")
+                if pos_fin != -1:
+                    codi = codigos2[0:pos_fin]
+                    codigos2 = codigos2[(pos_fin+1):(pos_fin+len(codigos2))]
+                    ejem = codi
+                    pos_fin = codigos2.find(",")
+                    if pos_fin != -1:
+                        codi = codigos2[0:pos_fin]
+                        codigos2 = codigos2[(pos_fin+1):(pos_fin+len(codigos2))]
+                        rut = codi
+                        pos_fin = codigos2.find("}")
+                        if pos_fin != -1:
+                            codi = codigos2[0:pos_fin]
+                            codigos2 = codigos2[(pos_fin+1):(pos_fin+len(codigos2))]
+                            isbn =codi
+        
+            l = [ejem,rut,isbn]
+            lista_cod.append(l)  
+        
+        for mo in lista_cod:
+            print(mo)
+            
+            cont2 = cont_sansion(int(mo[0]),mo[1])
+            if(cont2[0]['data'][0] > 0):
+                x = 2
+            else:
+                sp_snasion(mo[1],int(mo[0]),mo[2])
+                x = 3
+            
+    cosa = 1
+    print(lista_cod)
+    return HttpResponse(x)
+
+def cont_sansion(ejem,rut):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("sp_cont_sansion", [rut, ejem,out_cur]) 
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
+def sp_snasion(rut,id_ejem,isbn):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    cursor.callproc("sp_calcular_sansion", [rut,id_ejem,isbn])

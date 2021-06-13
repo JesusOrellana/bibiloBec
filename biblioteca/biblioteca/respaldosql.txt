@@ -184,7 +184,7 @@ ALTER TABLE libro
     ADD CONSTRAINT libro_tipo_medio_fk FOREIGN KEY ( id_medio )
         REFERENCES tipo_medio ( id_medio );
 
-CREATE TABLE sancion(
+CREATE TABLE sansion(
     id_sansion    NUMBER(9) not null,
     rut_usr       VARCHAR2(9) NOT NULL,
     id_ejem       NUMBER(6) NOT NULL,   
@@ -193,14 +193,14 @@ CREATE TABLE sancion(
     fecha_termino DATE   
 );
 
-ALTER TABLE sancion ADD CONSTRAINT sancion_pk PRIMARY KEY (id_sansion);
+ALTER TABLE sansion ADD CONSTRAINT sansion_pk PRIMARY KEY (id_sansion);
 
-ALTER TABLE sancion
-    ADD CONSTRAINT sancion_usuario_fk FOREIGN KEY ( rut_usr )
+ALTER TABLE sansion
+    ADD CONSTRAINT sansion_usuario_fk FOREIGN KEY ( rut_usr )
         REFERENCES usuario ( rut_usr  );
         
-ALTER TABLE sancion
-    ADD CONSTRAINT sancion_ejemplar_fk FOREIGN KEY ( id_ejem , isbn )
+ALTER TABLE sansion
+    ADD CONSTRAINT sansion_ejemplar_fk FOREIGN KEY ( id_ejem , isbn )
         REFERENCES ejemplar ( id_ejem,
         isbn );
 ----------------------------------------------------------------
@@ -298,14 +298,16 @@ CREATE SEQUENCE seq_prestamo
   INCREMENT BY 1
   CACHE 20;
 
-<<<<<<< HEAD
---secuencia para tabla sancion
-CREATE SEQUENCE seq_sancion
-=======
 -- secuencia para reserva
 
 CREATE SEQUENCE seq_reserva
->>>>>>> 552a6df50194e54da1adc64e9b5ecbba4f677924
+  MINVALUE 1
+  START WITH 1
+  INCREMENT BY 1
+  CACHE 20;
+
+--secuencia para tabla sancion
+CREATE SEQUENCE seq_sansion
   MINVALUE 1
   START WITH 1
   INCREMENT BY 1
@@ -409,9 +411,29 @@ BEGIN
   commit;
 END sp_delete_ejemplar;
 
+
+---------------------------------------------------------------
+--        PROCEDIMIENTOS PARA SANSION
+---------------------------------------------------------------
+create or replace PROCEDURE sp_cont_sansion(v_rut  VARCHAR2, v_ejem NUMBER, cont OUT SYS_REFCURSOR)
+      IS
+      BEGIN
+         OPEN cont FOR  SELECT
+            COUNT(id_sansion)
+        FROM sansion WHERE rut_usr = v_rut and id_ejem = v_ejem and estado = 'moroso';
+      END;
+
+create or replace PROCEDURE sp_calcular_sansion(v_rut VARCHAR2,v_ejem number,v_isbn VARCHAR2)
+    is
+BEGIN
+    INSERT INTO sansion VALUES(SEQ_SANSION.nextval,v_rut,v_ejem,v_isbn,'moroso',(sysdate+1));
+    COMMIT;
+end;
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA SOLICITUD_PRESTAMO
 ---------------------------------------------------------------
+
+
 -- devoluciones prestamos
 create or replace PROCEDURE SP_DEVOLUCION_DOC(v_id_ejem VARCHAR2,v_num_pres VARCHAR2)
       IS
@@ -730,9 +752,5 @@ END SP_USUARIO_UPDATE_PASSWORD;
 
 
 --SCRIPT PARA INSERTAR UN USUARIO ADMINISTRADOR
-<<<<<<< HEAD
-INSERT INTO usuario VALUES('111111111','Administrador',' ',' ','Dirección 123',982013456,'correo@gmail.com',NULL,NULL,1,'1234',1,sysdate,1);
-=======
 --INSERT INTO usuario VALUES('111111111','Administrador',' ',' ','Dirección 123',999999999,'correo@gmail.com',NULL,NULL,1,'81dc9bdb52d04dc20036dbd8313ed055',1,sysdate,1);
->>>>>>> 552a6df50194e54da1adc64e9b5ecbba4f677924
 COMMIT;

@@ -33,5 +33,6 @@ urlpatterns = [
     path('recordatorio', views.enviar_correo_dev, name='correo_recordatorio'),
     path('devolucion/<str:id_ejem>/<str:num>', views.devolucion, name='devolucion'),
     path('ayuda', views.ayuda, name="ayuda"),
-    path('reserva_creada', views.accionar_res_cre, name="reserva_creada")
+    path('reserva_creada', views.accionar_res_cre, name="reserva_creada"),
+    path('calcular-sansion/', views.calcular_sansion, name="calcular_sansion")
 ]

@@ -16,16 +16,34 @@
     <header class="masthead text-center">
         <div class="container">
             <h1 class="masthead-heading text-uppercase mb-0">DOCUMENTOS MÁS SOLICITADOS</h1>
+            <br>
+            <div class="row">
+              <div class="col-md-2"></div>
+              <div class="col-md-8">
+                <form class="d-flex" method="POST">
+                  {%csrf_token%}
+                  <input
+                    class="form-control me-2"
+                    type="search"
+                    placeholder="Buscar documento por título, autor o categoría"
+                    name="documento"
+                  />
+                  <button class="btn btn-maincolor" type="submit">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </form>
+              </div>
+              <!-- Boton Agregar Libros -->
+              <div class="col-md-2 ">
+                  {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
+                      <a class="btn btn-primary1" href="{% url 'form_doc' %}" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
+                  {%endif%}    
+              </div>
+            </div>
         </div>
     </header>
 
-    <!-- Boton Agregar Libros -->
-    <div class="p-4" style="width: 95%; height: 50px;">
-        {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
-            <a class="btn btn-primary1" href="{% url 'form_doc' %}" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
-        {%endif%}    
-    </div>
-
+  
     <!-- Catalogo -->
     <div class="div-cat container p-4">
         <div class="row">

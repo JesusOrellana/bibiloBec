@@ -19,16 +19,16 @@ from datetime import datetime
 def catalogo(request): 
     lista = lista_doc()
     if request.method == 'POST':
-        titulo = request.POST.get('titulo')
-        titulo_encontrado = []
-        for u in lista:
-            if u['data'][1].upper().find(titulo.upper()) != -1:
-                titulo_encontrado.append(u)
+        documento = request.POST.get('documento')
+        documento_encontrado = []
+        for d in lista:
+            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][10].upper().find(documento.upper()) != -1:
+                documento_encontrado.append(d)
                 # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
-        if len(titulo_encontrado) < 1:
+        if len(documento_encontrado) < 1:
             messages.error(request, "Documento no encontrado./error")            
             return redirect('catalogo')
-        lista = titulo_encontrado
+        lista = documento_encontrado
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     libros_page = paginator.get_page(page_number)
@@ -46,16 +46,16 @@ def catalogo(request):
 def catalogo_audio(request):
     lista = listado_audios()
     if request.method == 'POST':
-        titulo = request.POST.get('titulo')
-        titulo_encontrado = []
-        for u in lista:
-            if u['data'][1].upper().find(titulo.upper()) != -1:
-                titulo_encontrado.append(u)
+        documento = request.POST.get('documento')
+        documento_encontrado = []
+        for d in lista:
+            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][10].upper().find(documento.upper()) != -1:
+                documento_encontrado.append(d)
                 # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
-        if len(titulo_encontrado) < 1:
+        if len(documento_encontrado) < 1:
             messages.error(request, "Documento no encontrado./error")            
-            return redirect('catalogo_audio')
-        lista = titulo_encontrado
+            return redirect('catalogo')
+        lista = documento_encontrado
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     audios_page = paginator.get_page(page_number)
@@ -72,16 +72,16 @@ def catalogo_audio(request):
 def catalogo_video(request):
     lista = listado_videos()
     if request.method == 'POST':
-        titulo = request.POST.get('titulo')
-        titulo_encontrado = []
-        for u in lista:
-            if u['data'][1].upper().find(titulo.upper()) != -1:
-                titulo_encontrado.append(u)
+        documento = request.POST.get('documento')
+        documento_encontrado = []
+        for d in lista:
+            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][10].upper().find(documento.upper()) != -1:
+                documento_encontrado.append(d)
                 # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
-        if len(titulo_encontrado) < 1:
+        if len(documento_encontrado) < 1:
             messages.error(request, "Documento no encontrado./error")            
-            return redirect('catalogo_videos')
-        lista = titulo_encontrado
+            return redirect('catalogo')
+        lista = documento_encontrado
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     videos_page = paginator.get_page(page_number)
@@ -98,16 +98,16 @@ def catalogo_video(request):
 def catalogo_libro(request):
     lista = listado_libro()
     if request.method == 'POST':
-        titulo = request.POST.get('titulo')
-        titulo_encontrado = []
-        for u in lista:
-            if u['data'][1].upper().find(titulo.upper()) != -1:
-                titulo_encontrado.append(u)
+        documento = request.POST.get('documento')
+        documento_encontrado = []
+        for d in lista:
+            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][10].upper().find(documento.upper()) != -1:
+                documento_encontrado.append(d)
                 # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
-        if len(titulo_encontrado) < 1:
+        if len(documento_encontrado) < 1:
             messages.error(request, "Documento no encontrado./error")            
-            return redirect('catalogo_libros')
-        lista = titulo_encontrado
+            return redirect('catalogo')
+        lista = documento_encontrado
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     libro_page = paginator.get_page(page_number)
@@ -362,11 +362,15 @@ def usuarios(request):
         )
     else:
         rut_usr_a_buscar = request.POST.get('rut_usr')
+        nombre_a_buscar = request.POST.get('nombre_usr')
         usuario_encontrado = []
         for u in lista:
-            if u['data'][0] == rut_usr_a_buscar:
-                usuario_encontrado.append(u)
-                break
+            if rut_usr_a_buscar is not None:
+                if u['data'][0] == rut_usr_a_buscar:
+                    usuario_encontrado.append(u)
+            else:  
+                if u['data'][15].upper().find(nombre_a_buscar.upper()) != -1:
+                    usuario_encontrado.append(u)
 
         if len(usuario_encontrado) < 1:
             messages.error(request, "Usuario no encontrado./error")            

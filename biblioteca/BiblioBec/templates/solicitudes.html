@@ -102,6 +102,7 @@
         </nav>
     </header>
     <section>
+      {{res}}
       <form action="">
         <select name="id_ejem" id="id_ejem" hidden>
           {% for p in pres %}
@@ -115,14 +116,14 @@
           <table id="example1" class="display text-center" style="width:100%">
             <thead>
                 <tr>
-                    <th>N° Préstamo</th>
+                    <th>N° Movimiento</th>
                     <th>Rut</th>
                     <th>Nombre</th>
-                    <th>Préstamo</th>
+                    <th>Tipo Solicitud</th>
                     <th>Titulo</th>
                     <th>Autor</th>
                     <th>Documento</th>
-                    <th>Fecha Préstamo</th>
+                    <th>Fecha Inicio</th>
                     <th>Fecha Devolución</th>
                     <th>Acción</th>
                     <th>-</th>
@@ -185,6 +186,21 @@
                     <td><a href="devolucion/{{p.data.14}}/{{p.data.13}}" class="btn btn-warning">Registrar Devolución</a></td>
                     <td><a href="recordatorio?numero_pres={{p.data.13}}" class="btn btn-success">Enviar Recordatorio</a></td>
                   {% endif %} 
+                </tr>
+                {% endfor %}
+                {% for r in res %}
+                <tr>
+                  <td>{{r.data.0}}</td>
+                  <td>{{r.data.1}}</td>
+                  <td>{{r.data.2}}</td>
+                  <td>{{r.data.3}}</td>
+                  <td>{{r.data.4}}</td>
+                  <td>{{r.data.5}}</td>
+                  <td>{{r.data.6}}</td>
+                  <td>{{r.data.7}}</td>
+                  <td>{{r.data.8}}</td>
+                  <td></td>
+                  <td></td>
                 </tr>
                 {% endfor %}
             </tbody>

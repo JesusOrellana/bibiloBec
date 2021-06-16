@@ -32,16 +32,31 @@ def catalogo(request):
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     libros_page = paginator.get_page(page_number)
-
+    rut = request.session['user_login']['user']['rut_usr']
     data = { 
         'libros': libros_page,
-        'page_obj' : libros_page
+        'page_obj' : libros_page,
+        'sansion': catalogo_sansion(rut)
     }
     return render(
         request,
         'catalogo.html',
         data,
     )
+
+def catalogo_sansion(rut):
+    cursor_dj = connection.cursor()
+    cursor_ex = cursor_dj.connection.cursor() 
+    cursor_out= cursor_dj.connection.cursor() 
+    cursor_ex.callproc('sp_cont_sansionRut',[rut,cursor_out])
+
+    lista = []
+    for i in cursor_out:
+        lista.append({
+            'data':i,
+        })
+
+    return lista
 
 def catalogo_audio(request):
     lista = listado_audios()
@@ -59,9 +74,11 @@ def catalogo_audio(request):
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     audios_page = paginator.get_page(page_number)
+    rut = request.session['user_login']['user']['rut_usr']
     data = { 
         'audios': audios_page,
-        'page_obj': audios_page
+        'page_obj': audios_page,
+        'sansion': catalogo_sansion(rut)
     }
     return render(
         request,
@@ -85,9 +102,11 @@ def catalogo_video(request):
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     videos_page = paginator.get_page(page_number)
+    rut = request.session['user_login']['user']['rut_usr']
     data = { 
         'videos': videos_page,
-        'page_obj': videos_page
+        'page_obj': videos_page,
+        'sansion': catalogo_sansion(rut)
     }
     return render(
         request,
@@ -111,9 +130,11 @@ def catalogo_libro(request):
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     libro_page = paginator.get_page(page_number)
+    rut = request.session['user_login']['user']['rut_usr']
     data = { 
         'libro': libro_page,
-        'page_obj': libro_page
+        'page_obj': libro_page,
+        'sansion': catalogo_sansion(rut)
     }
     return render(
         request,

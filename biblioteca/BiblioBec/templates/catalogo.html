@@ -98,6 +98,15 @@
               <h5 class="modal-title text-center" id="staticBackdropLabel">Solicitud de documento</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            {% if sansion.0.data.0 > 0 %}
+            <div class="modal-body text-center bg-warning">
+              Usted tiene atrasos en la devolución de documentos
+              No tiene permitido realizar ningun tipo de prestamo
+              hasta regularizar su situación.
+            </div>
+            <div class="modal-footer">
+            </div>
+            {% else %}
             <div class="modal-body text-center">
                 ¿Qué operación desea realizar?
             </div>
@@ -114,6 +123,7 @@
                     <a href="" id="op-reserva" class="btn btn-success ">Reservar</a>
                 </div>
             </div>
+            {% endif %}
           </div>
         </div>
     </div>

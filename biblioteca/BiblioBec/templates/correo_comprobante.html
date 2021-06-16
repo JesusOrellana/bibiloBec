@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table style="width: 100%">
+        <tr>
+            <td style="background-color: #ffffff; padding: 0">
+                <a href="http://127.0.0.1:8000/">
+                    <img width="30%" style="display:block; margin: 1.5% 3%" src="https://i.postimg.cc/QNb6KZms/logo.png">
+                </a>
+            </td>
+        </tr>        
+        <tr style="width: 100%; height: 80px; background-color:#051F4A; color: white; text-align: center">
+            <td>Estimado/a {{nombre}}, se ha ingresado su préstamo con éxito.</td>
+        </tr>
+    </table>
+    <div style = "width: 100%; height:auto;">
+        <div style = "width: 100%; height:auto; text-align:center">
+            <div style = "display:inline-block; border:1px solid black; width:80%; height:40px; padding:10px">
+                <div style = "display:inline-block; width:30%; text-align:justify">
+                    <p>N° Prestamo:</p>
+                </div>
+                <div style = "display:inline-block; width:30% ; text-align:justify">
+                    {{numero_pres}} 
+                </div>
+            </div>
+        </div>
+        <div style = "width: 100%; height:auto; text-align:center">
+            <div style = "display:inline-block; border:1px solid black; width:80%; height:40px; padding:10px">
+                <div style = "display:inline-block; width:30%; text-align:justify">
+                    <p>Rut:</p>
+                </div>
+                <div style = "display:inline-block; width:30% ; text-align:justify">
+                    {{rut_usr}}
+                </div>
+            </div>
+        </div>
+        <div style = "width: 100%; height:auto; text-align:center">
+            <div style = "display:inline-block; border:1px solid black; width:80%; height:40px; padding:10px">
+                <div style = "display:inline-block; width:30%; text-align:justify">
+                    <p>Código Ejemplar:</p>
+                </div>
+                <div style = "display:inline-block; width:30% ; text-align:justify">
+                    {{id_ejem}}
+                </div>
+            </div>
+        </div>
+        <div style = "width: 100%; height:auto; text-align:center">
+            <div style = "display:inline-block; border:1px solid black; width:80%; height:40px; padding:10px">
+                <div style = "display:inline-block; width:30%; text-align:justify">
+                    <p>Documento:</p>
+                </div>
+                <div style = "display:inline-block; width:30%; text-align:justify">
+                    {{documento.title}} - {{autor.title}}
+                </div>
+            </div>
+        </div>
+        <div style = "width: 100%; height:auto; text-align:center">
+            <div style = "display:inline-block; border:1px solid black; width:80%; height:40px; padding:10px">
+                <div style = "display:inline-block; width:30%; text-align:justify">
+                    <p>Fecha Préstamo:</p>
+                </div>
+                <div style = "display:inline-block; width:30% ; text-align:justify">
+                    {{fecha_prestamo}}
+                </div>
+            </div>
+        </div>
+        <div style = "width: 100%; height:auto; text-align:center">
+            <div style = "display:inline-block; border:1px solid black; width:80%; height:40px; padding:10px">
+                <div style = "display:inline-block; width:30%; text-align:justify">
+                    <p>Fecha Devolución:</p>
+                </div>
+                <div style = "display:inline-block; width:30% ; text-align:justify">
+                    {{fecha_devolucion}}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

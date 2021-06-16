@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %} <title>Actualizar usuario</title> {% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <h2 class="text-center text-uppercase">Actualizar usuario</h2>
+        <br><hr>
+        <form id="" action="update" method="post" autocomplete="on" enctype="multipart/form-data" onsubmit="return validarFormUsuario()">
+            {%csrf_token%}
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="rut_usr">RUT Usuario:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="rut_usr"
+                        id="rut_usr"
+                        value="{{usuario.0.data.0}}"
+                        readonly
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="nombre"
+                        id="nombre"
+                        value="{{usuario.0.data.1}}"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido_p">Apellido paterno:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="apellido_p"
+                        id="apellido_p"
+                        value="{{usuario.0.data.2}}"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido_m">Apellido materno:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="apellido_m"
+                        id="apellido_m"
+                        value="{{usuario.0.data.3}}"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="direccion">Dirección:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="direccion"
+                        id="direccion"
+                        value="{{usuario.0.data.4}}"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono:</label>
+                        <input
+                        type="number"
+                        class="form-control"
+                        name="telefono"
+                        id="telefono"
+                        value="{{usuario.0.data.5}}"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Correo electrónico:</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        name="correo"
+                        id="correo"
+                        value="{{usuario.0.data.6}}"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_usuario_id_tipo">Tipo usuario:</label>
+                        <select class="form-control" id="tipo_usuario_id_tipo" name="tipo_usuario_id_tipo">
+                        <option value="1" {% if usuario.0.data.9 == 1 %} selected{% endif %}>Administrador</option>
+                        <option value="2" {% if usuario.0.data.9 == 2 %} selected{% endif %}>Bibliotecario</option>
+                        <option value="3" {% if usuario.0.data.9 == 3 %} selected{% endif %}>Normal</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="foto">Foto:</label>
+                    {% if usuario.0.data.7 %}
+                        <img class="rounded-circle ms-5 mb-2" width="200" height="200" src="data:imagen/png;base64, {{usuario.0.foto}}" data-holder-rendered="true">
+                    {% endif %}
+                    <div class="form-group mb-1">
+                        <input
+                        type="file"
+                        class="form-control"
+                        name="foto"
+                        id="id_foto"
+                        />
+                    </div>
+                    <label for="huella">Huella:</label>
+                    {% if usuario.0.data.8 %}
+                        <img class="rounded-circle ms-5 mb-2" width="200" height="200" src="data:imagen/png;base64, {{usuario.0.huella}}" data-holder-rendered="true">
+                    {% endif %}
+                    <div class="form-group">
+                        <input
+                        type="file"
+                        class="form-control"
+                        name="huella"
+                        id="id_huella"
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <br>
+                    <a class="btn btn-primary" href="{% url 'usuario_list' %}">Volver</a>
+                    <button type="submit" class="btn btn-primary1" href="{% url 'usuario_update' %}">Actualizar
+                        <i class="fas fa-sync"></i>
+                    </button>
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-3"></div>
+</div>
+<br>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}
+<title>BiblioBEC</title>
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <br><br>
+      <form method="POST">
+        <div class="masthead container d-flex flex-column mt-3" style="max-width: 1140px;">
+          <h2 class="text-center text-uppercase">Restablecer contraseña</h2>
+        {% csrf_token %}
+        <div class="form-group mt-4">
+            <label for="rut_usr">RUT Usuario:</label>
+            <input
+            type="text"
+            class="form-control"
+            name="rut_usr"
+            id="rut_usr"
+            value="{{usuario.0.data.0}}"
+            maxlength="9"
+            required
+            oninput="checkRut(this)"
+            />
+        </div>
+        <div class="text-center mt-4">
+          <button class="btn btn-primary1" type="submit">Enviar</button>
+        </div>
+        </form><br>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+{% endblock %}

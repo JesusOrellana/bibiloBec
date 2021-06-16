@@ -1,0 +1,118 @@
+.div-cat [class^="col-"]{
+  margin-left: auto;
+  margin-right: auto;
+  width: 200px;
+  padding-left:5px;
+  padding-right:5px;
+}
+.card-img-top{
+
+  height:250px;
+  width:100%;
+}
+.card{
+  transition:0.5s;
+  cursor:pointer;
+}
+
+.card-title{  
+  font-size:15px;
+  transition:1s;
+  cursor:pointer;
+}
+.card-title i{  
+  font-size:15px;
+  transition:1s;
+  cursor:pointer;
+}
+.card-title i:hover{
+  transform: scale(1.25) rotate(100deg); 
+  
+}
+.card:hover{
+  transform: scale(1.05);
+  box-shadow: 10px 10px 15px rgba(0,0,0,0.3);
+}
+.card::before, .card::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: scale3d(0, 0, 1);
+  transition: transform .3s ease-out 0s;
+  background: rgba(255, 255, 255, 0.1);
+  content: '';
+  pointer-events: none;
+}
+.card::before {
+  transform-origin: left top;
+}
+.card::after {
+  transform-origin: right bottom;
+}
+.card:hover::before, .card:hover::after, .card:focus::before, .card:focus::after {
+  transform: scale3d(1, 1, 1);
+}
+.masthead .masthead-heading {
+  margin-top: 30px;
+  font-size: 2.75rem;
+  line-height: 2.75rem;
+}
+
+@media (min-width: 992px) {
+  .masthead .masthead-heading {
+    margin-top: 30px;
+    font-size: 4rem;
+    line-height: 3.5rem;
+  }
+}
+
+.margin-btn{
+  padding: 0;
+  margin-top: 20px;
+}
+.btn-soli{
+  color: #fff;
+  background-color: #159a80;
+  border-color: #148f77;
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  width: 40%;
+  border: 0;
+  margin: 15px 0 5px;
+  box-sizing: border-box;
+}
+
+.btn-soli:hover {
+  color: #fff;
+  background-color: #159a80;
+  border-color: #148f77;
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  width: 40%;
+  border: 0;
+  margin: 15px 0 5px;
+  box-sizing: border-box;
+}
+
+.btn-edit{
+  font-family: "Roboto", sans-serif;
+  color: #fff;
+  width: 35%;
+  background-color: #3498DB;
+}
+
+/*estilos modal operacion solicitud documento*/
+
+.oper-btn
+{
+  width:48%;
+  height:80px;
+  display: inline-block;
+  text-align: center;
+}
+.oper-btn a
+{
+  width:80%;
+}

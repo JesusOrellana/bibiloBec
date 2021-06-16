@@ -69,7 +69,8 @@ CREATE TABLE reserva (
     fecha_hasta        DATE NOT NULL,
     id_ejem            NUMBER(6) NOT NULL,
     isbn               VARCHAR2(200) not null,
-    usuario_rut_usr    VARCHAR2(9) NOT NULL
+    usuario_rut_usr    VARCHAR2(9) NOT NULL,
+    estado             VARCHAR2(30) 
 );
 
 ALTER TABLE reserva ADD CONSTRAINT reserva_pk PRIMARY KEY ( numero_res );
@@ -588,12 +589,33 @@ MIN(to_char(dsp.fecha_devolucion,'yyyy-mm-dd'))as "fecha devolucion"
 END;
 
 --procedimiento para confirmar reserva
+--procedimiento para ver reserva en solicitud
+
 create or replace PROCEDURE reserva_creada(v_isbn VARCHAR2,v_id_ejem number, v_fecha_d date, v_fecha_h date, v_rut_u VARCHAR2)
       IS
       BEGIN
-         INSERT INTO reserva values (SEQ_RESERVA.nextval,sysdate,v_fecha_d,v_fecha_h,v_id_ejem,v_isbn,v_rut_u);
+         INSERT INTO reserva values (SEQ_RESERVA.nextval,sysdate,v_fecha_d,v_fecha_h,v_id_ejem,v_isbn,v_rut_u,'pendiente');
          COMMIT;
       END;
+      
+--procedimiento para mostrar en lista de solicitudes  
+      
+create or replace PROCEDURE sp_lista_reserva(reserva out SYS_REFCURSOR)
+IS
+BEGIN
+ open reserva for  
+        SELECT
+        r.numero_res,
+        u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,'reserva', l.titulo , l.autor, td.descripcion, 
+        to_char(r.fecha_desde,'dd/mm/yyyy HH24:MI:ss')as "fecha solicitud",
+        to_char(r.fecha_hasta,'dd/mm/yyyy HH24:MI:ss')as "fecha devolucion",r.estado
+    
+        FROM libro l join reserva r on(l.isbn = r.isbn)
+        JOIN usuario u on(u.rut_usr = r.usuario_rut_usr)
+        JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
+        JOIN categoria c on(c.id_cate = l.categoria_id_cate);
+   
+END;      
 
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA CATALOGO

@@ -146,7 +146,8 @@ def solicitudes(request):
    
     if request.session['user_login']['user']['tipo'] == 3 or request.session['user_login']['user']['tipo'] == 2 or request.session['user_login']['user']['tipo'] == 1:
         data = {
-            'pres': lista_pres()
+            'pres': lista_pres(),
+            'res' : lista_reserva()
         }
         return render(
             request,
@@ -749,6 +750,22 @@ def fecha_proxima(isbn):
     out_cur = django_cursor.connection.cursor()
 
     cursor.callproc("fecha_reserva_valida", [isbn,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
+def lista_reserva():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+
+    cursor.callproc("sp_lista_reserva", [out_cur])
 
     lista = []
 

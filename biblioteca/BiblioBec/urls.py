@@ -3,6 +3,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('api/usuario/<str:rut_usr>/<str:password>', views.APILogin, name='api_usuario'),
+    path('api/documentos/', views.APIDocumentos, name='api_documento'),
+    path('api/prestamos', views.APIPrestamos, name='api_prestamo'),
     path('', views.catalogo, name='index'),
     path('login', views.iniciar_sesion, name='login'),
     path('cambiar_contrasena', views.cambiar_contrasena, name='cambiar_contrasena'),

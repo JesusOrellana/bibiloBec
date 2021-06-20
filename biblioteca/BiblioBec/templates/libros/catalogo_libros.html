@@ -15,32 +15,30 @@
     <!-- Header-->
     <header class="masthead text-center">
         <div class="container">
-            <h1 class="masthead-heading text-uppercase mb-0">OBRAS LITERARIAS</h1>
-            <br>
-            <div class="row">
-              <div class="col-md-2"></div>
-              <div class="col-md-8">
-                <form class="d-flex" method="POST">
-                  {%csrf_token%}
-                  <input
-                    class="form-control me-2"
-                    type="search"
-                    placeholder="Buscar documento por título o autor"
-                    name="documento"
-                  />
-                  <button class="btn btn-maincolor" type="submit">
-                    <i class="fas fa-search"></i>
-                  </button>
-                </form>
+          <div class = "catalogo-head">
+            <h6 class="cat-titulo">OBRAS LITERARIAS</h6>
+            <form class="row cat-form" method="POST">
+              {%csrf_token%}
+              <div class="cat-1">
+                <input
+                class="form-control"
+                type="search"
+                placeholder="Buscar documento por título, autor o categoría"
+                name="documento"
+              />
               </div>
-              <!-- Boton Agregar Libros -->
-              <div class="col-md-2 ">
-                  {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
-                      <a class="btn btn-primary1" href="{% url 'form_doc' %}" style="float: right; font-size: 14px;">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
-                  {%endif%}    
+              <div class="cat-2">
+                <button class="btn btn-maincolor " type="submit">
+                  <i class="fas fa-search"></i>
+                </button>
               </div>
+            </form>
+            <div class="c-3">
+              {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
+              <a class="btn btn-primary1" href="{% url 'form_doc' %}">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
+              {%endif%}  
             </div>
-        </div>
+          </div>
     </header>
 
     <!-- Catalogo - textos -->
@@ -48,28 +46,34 @@
         <div class="row">
             {% for p in libro %}
             <div class="col-md-4 mt-4 text-center">
-                <div class="card mb-2 h-100">
-                    <img class="card-img-top" src="data:imagen/png;base64, {{p.imagen}}" alt="Card image cap">
-                    <div class="card-body margin-btn">
-                        <h6 class="card-title text-uppercase">{{p.data.1}}</h6>
-                        <h6 class="card-text">{{p.data.2}}</h6>
-                        {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %} 
-                            <a href="/documento-update/{{p.data.0}}" class="btn btn-sm btn-edit" style="float: center;">Editar</a>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="deleteDoc('{{p.data.0}}')">
-                                Eliminar 
-                            </button>
-                        {%endif%}
-                        {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 or request.session.user_login.user.tipo == 3 %} 
-                        <button type="button" class="btn btn-sm btn-soli" data-bs-toggle="modal" data-bs-target="#operacionDoc" onclick="opeDoc('{{request.session.user_login.user.rut_usr}}','{{p.data.0}}')">
+              <div class="card mb-2 h-100">
+                  <img class="card-img-top" src="data:imagen/png;base64, {{p.imagen}}" alt="Card image cap">
+                  <div class="card-body margin-btn">
+                      <h6 class="card-title text-uppercase">{{p.data.1}}</h6>
+                      <h6 class="card-text">{{p.data.2}}</h6>
+                      {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %} 
+                          <a href="/documento-update/{{p.data.0}}" class="btn btn-sm btn-edit" style="float: center;">Editar</a>
+                          <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="deleteDoc('{{p.data.0}}')">
+                              Eliminar 
+                          </button>
+                      {%endif%}
+                      {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 or request.session.user_login.user.tipo == 3 %} 
+                          {% if sansion.0.data.2 == fecha%}
+                          <button type="button" class="btn btn-sm btn-soli" data-bs-toggle="modal" data-bs-target="#operacionDoc" onclick="opeDoc('{{request.session.user_login.user.rut_usr}}','{{p.data.0}}',2)">
                             Solicitar
-                        </button>
-                    {%else%}
-                    <a href="{% url 'login' %}" class="btn btn-sm btn-soli" >Solicitar</a>
-                    {%endif%}
-                    </div>
-                    
-                </div>
-            </div>
+                          </button>
+                          {%else%}
+                            <button type="button" class="btn btn-sm btn-soli" data-bs-toggle="modal" data-bs-target="#operacionDoc" onclick="opeDoc('{{request.session.user_login.user.rut_usr}}','{{p.data.0}}',1)">
+                              Solicitar
+                            </button>
+                          {%endif%}
+                      {%else%}
+                      <a href="{% url 'login' %}" class="btn btn-sm btn-soli" >Solicitar</a>
+                      {%endif%}
+                  </div>
+                  
+              </div>
+          </div>
             {%endfor%}
         </div>
     </div>
@@ -91,30 +95,51 @@
         </div>
     </div>
     <div class="modal fade " id="operacionDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title text-center" id="staticBackdropLabel">Solicitud De Documento</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                ¿Qué operación desea realizar?
-            </div>
-            <div class="modal-footer">
-                <div class="oper-btn">
-                    <form action="{% url 'solicitud_pres' %}" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <input type="text" name="rut" id="id_rut_usu" value = "" hidden>
-                        <input type="text" name="isbn" id="id_isbn2" value="" hidden >
-                        <input type="submit" class="btn btn-primary " value="Préstamo">
-                    </form>
-                </div>
-                <div class="oper-btn">
-                    <a href="" id="" class="btn btn-success ">Reservar</a>
-                </div>
-            </div>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-center" id="staticBackdropLabel">Solicitud de documento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+          
+          {% if sansion.0.data.0 > 0 and sansion.0.data.1 == "moroso"%}
+          <div class="modal-body text-center bg-warning">
+            Usted tiene atrasos en la devolución de documentos
+            No tiene permitido realizar ningun tipo de prestamo
+            hasta regularizar su situación.
+          </div>
+          <div class="modal-footer">
+          </div>
+          {% elif sansion.0.data.1 == "devolucion" %}
+          <div class="modal-body text-center bg-warning">
+            Debido a su atraso en la devolución de documentos 
+            se ha asignado una sansion de 3 dias a partir de 
+            la fecha en la que devolvio el ejemplar. No podra solicitar 
+            ninguna documento de nuestro catalogo hasta el
+            {{sansion.0.data.2}}
+          </div>
+          <div class="modal-footer">
+          </div>
+          {% else %}
+          <div class="modal-body text-center">
+              ¿Qué operación desea realizar?
+          </div>
+          <div class="modal-footer">
+              <div class="oper-btn">
+                  <form action="{% url 'solicitud_pres' %}" method="POST" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="text" name="rut" id="id_rut_usu" value = "" hidden>
+                      <input type="text" name="isbn" id="id_isbn2" value="" hidden >
+                      <input type="submit" class="btn btn-primary " value="Préstamo">
+                  </form>
+              </div>
+              <div class="oper-btn">
+                  <a href="" id="op-reserva" class="btn btn-success ">Reservar</a>
+              </div>
+          </div>
+          {% endif %}
         </div>
+      </div>
     </div>
     <div class="row mb-3">
         <ul class="pagination justify-content-center">

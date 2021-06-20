@@ -22,70 +22,93 @@
   </head>
   <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'index' %}">
-              {% load static %}
-              <img class="img-fluid" src="{% static 'img/logo.png' %}" width="150"
-              height="80"
-              alt="logo">
-            </a>
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'index' %}">
+            {% load static %}
+            <img class="img-fluid" src="{% static 'img/logo.png' %}" width="150"
+            height="80"
+            alt="logo">
+          </a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'index' %}">Inicio</a>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="navbarDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Catálogo
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="{% url 'catalogo' %}">Mostrar todo</a></li>
+                  <li><a class="dropdown-item" href="{% url 'catalogo_libros' %}">Libros</a></li>
+                  <li><a class="dropdown-item" href="{% url 'catalogo_audio' %}">Audios</a></li>
+                  <li><a class="dropdown-item" href="{% url 'catalogo_videos' %}">Videos</a></li>
+                </ul>
+              </li>
+              {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 or request.session.user_login.user.tipo == 3 %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'solicitudes' %}">Solicitudes</a>
+              </li>
+              {% endif %}
+              {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Inicio</a>
+                  <a class="nav-link" href="{% url 'usuario_list' %}">Usuarios</a>
                 </li>
-                
-                <li class="nav-item dropdown">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="navbarDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    Catálogo
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="{% url 'catalogo' %}">Mostrar todo</a></li>
-                    <li><a class="dropdown-item" href="{% url 'catalogo_libros' %}">Libros</a></li>
-                    <li><a class="dropdown-item" href="{% url 'catalogo_audio' %}">Audios</a></li>
-                    <li><a class="dropdown-item" href="{% url 'catalogo_videos' %}">Videos</a></li>
-                  </ul>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'solicitudes' %}">Solicitudes</a>
-                </li>
-                {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'usuario_list' %}">Usuarios</a>
-                  </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'ayuda' %}">Ayuda en línea</a>
+              </li>
+              <li class="nav-item perfil-user-min">
+                {% if request.session.user_login %}
+                  <div class="row ">
+                    <div class="col-1">
+                      <img class="rounded-circle mt-2 me-2" src="data:imagen/png;base64, {{request.session.user_login.user.foto}}" width="43" height="43">
+                    </div>
+                    <div class="col-10">
+                      <h6 style="color: white">-------------------------------</h6>
+                      <h6 class="ms-1" style="color: #0c3a6d; font-size: 16px;">{{ request.session.user_login.user.nombre }} {{ request.session.user_login.user.apellido }} ( {{ request.session.user_login.user.tipo_desc }} )</h6>
+                    </div>
+                  </div>
+                {% else %}
+                  <a class="btn btn-primary1 me-3" href="{% url 'login' %}"> Ingresar </a>  
+              {% endif %}
+              </li>
+              <li class="nav-item perfil-user-min">
+                {% if request.session.user_login %}
+                <a class="btn me-1 mt-1" style="color: black; background-color: #f8f9fa;" href="{% url 'logout' %}">  <i class="fas fa-sign-out-alt"></i> cerrar sesión</a> 
                 {% endif %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'ayuda' %}">Ayuda en línea</a>
-                </li>
-              </ul>
-            </div>
-            {% if request.session.user_login %}
+              </li>
+            </ul>
+          </div>
+          {% if request.session.user_login %}
+            <div class = "perfil-user">
               <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                   <div class="row ">
                     <div class="col-md-2">
                       <img class="rounded-circle mt-2 me-2" src="data:imagen/png;base64, {{request.session.user_login.user.foto}}" width="43" height="43">
                     </div>
-                  <div class="col-md-7 text-center">
+                  <div class="col-md-7 mt-1 text-center">
                     <h6 class="ms-1" style="color: #0c3a6d; font-size: 16px;">{{ request.session.user_login.user.nombre }} {{ request.session.user_login.user.apellido }}</h6>
                     <h6 class="ms-1" style="color: #0c3a6d; font-size: 15px; ">{{ request.session.user_login.user.tipo_desc }}</h6>
                   </div>
@@ -95,19 +118,21 @@
                   </div>
                 </li>
               </ul>
-              {% else %}
-                <a class="btn btn-primary1 me-3" href="{% url 'login' %}"> Ingresar </a>  
-            {% endif %}
-          </div>
-        </nav>
+            </div>
+          {% else %}
+          <div class="perfil-user">
+            <a class="btn btn-primary1 me-3" href="{% url 'login' %}"> Ingresar </a> 
+          </div> 
+          {% endif %}
+        </div>
+      </nav>
     </header>
     <section>
-      {{res}}
       <form action="">
         <select name="id_ejem" id="id_ejem" hidden>
           {% for p in pres %}
             {% if p.data.17 < 0 %}
-            <option data-ej="{{p.data.14}}" data-rut="{{p.data.0}}"data-isbn ="{{p.data.18}}" ></option>
+            <option data-ej="{{p.data.14}}" data-rut="{{p.data.0}}"data-isbn ="{{p.data.18}}" data-pres = "{{p.data.13}}"></option>
             {% endif %}
           {% endfor %}
         </select>
@@ -254,12 +279,55 @@
 
     <script>
         $(document).ready(function() {
-            $('#example').DataTable();
-        } );
+            $('#example').DataTable({
+              language:{
+                  "decimal": "",
+                  "emptyTable": "No hay información",
+                  "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                  "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                  "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                  "infoPostFix": "",
+                  "thousands": ",",
+                  "lengthMenu": "Mostrar _MENU_ Entradas",
+                  "loadingRecords": "Cargando...",
+                  "processing": "Procesando...",
+                  "search": "Buscar:",
+                  "zeroRecords": "Sin resultados encontrados",
+                  "paginate": {
+                      "first": "Primero",
+                      "last": "Ultimo",
+                      "next": "Siguiente",
+                      "previous": "Anterior"
+                    }
+                },
+                responsive: true
+              })
+      });
     </script>
     <script>
       $(document).ready(function() {
-          $('#example1').DataTable();
+          $('#example1').DataTable({
+            language:{
+                  "decimal": "",
+                  "emptyTable": "No hay información",
+                  "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                  "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                  "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                  "infoPostFix": "",
+                  "thousands": ",",
+                  "lengthMenu": "Mostrar _MENU_ Entradas",
+                  "loadingRecords": "Cargando...",
+                  "processing": "Procesando...",
+                  "search": "Buscar:",
+                  "zeroRecords": "Sin resultados encontrados",
+                  "paginate": {
+                      "first": "Primero",
+                      "last": "Ultimo",
+                      "next": "Siguiente",
+                      "previous": "Anterior"
+                    }
+                }
+          });
       } );
   </script>
   </body>

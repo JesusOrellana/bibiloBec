@@ -39,7 +39,7 @@ function calcularSancion()
     cont = 0
     $('#id_ejem option').each(function()
     {
-        l = [$(this).attr('data-ej'),$(this).attr('data-rut'),$(this).attr('data-isbn')+'}']
+        l = [$(this).attr('data-ej'),$(this).attr('data-rut'),$(this).attr('data-isbn'),$(this).attr('data-pres')+'}']
         lista.push(l);
     });
     cont = lista.length;

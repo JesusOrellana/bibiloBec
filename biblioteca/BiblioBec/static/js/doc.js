@@ -411,11 +411,55 @@ $(document).ready(function() {
     //$("#eliminar_documento").prop("class",'btn-warning');
   }
 
-  function opeDoc(rut,isbn)
+  function opeDoc(rut,isbn,valor)
   {
-    $("#id_rut_usu").prop("value",rut);
-    $("#id_isbn2").prop("value",isbn);
-    $("#op-reserva").prop("href",'reserva/'+isbn);
-    //$("#eliminar_documento").prop("class",'btn-warning');
+    if(valor == 1)
+    {
+        $("#id_rut_usu").prop("value",rut);
+        $("#id_isbn2").prop("value",isbn);
+        $("#op-reserva").prop("href",'reserva/'+isbn);
+        //$("#eliminar_documento").prop("class",'btn-warning');
+    }
+    else if(valor == 2)
+    {
+        $("#id_rut_usu").prop("value",rut);
+        $("#id_isbn2").prop("value",isbn);
+        $("#op-reserva").prop("href",'reserva/'+isbn);
+        //$("#eliminar_documento").prop("class",'btn-warning');
+        fin_sansion(rut)
+    }
   }
 
+  function fin_sansion(rut)
+  {
+    const csrftoken = getCookie('csrftoken');
+
+    $.ajax({
+        url: 'http://127.0.0.1:8000/fin-sancion/',
+        method: 'POST',
+        data:{
+            'rut':rut,
+            csrfmiddlewaretoken: csrftoken
+        },
+        async: false,
+        success: function(data){
+            console.log(data);
+        }
+    })
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

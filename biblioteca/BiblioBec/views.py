@@ -15,6 +15,8 @@ from django.conf import settings
 from .utils import validarRut, cifrarPassword
 from datetime import datetime
 # Create your views here.
+#Fecha actual
+
 
 def catalogo(request): 
     lista = lista_doc()
@@ -32,16 +34,34 @@ def catalogo(request):
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     libros_page = paginator.get_page(page_number)
-
-    data = { 
-        'libros': libros_page,
-        'page_obj' : libros_page
-    }
-    return render(
-        request,
-        'catalogo.html',
-        data,
-    )
+    now = datetime.now().strftime('%d/%m/%Y')
+    try:
+        
+        rut = request.session['user_login']['user']['rut_usr']
+        data = { 
+            'libros': libros_page,
+            'page_obj' : libros_page,
+            'sansion': catalogo_sansion(rut),
+            'fecha': now
+        }
+        return render(
+            request,
+            'catalogo.html',
+            data,
+        )
+    except:
+        
+        data = { 
+            'libros': libros_page,
+            'page_obj' : libros_page,
+            'sansion': 'no',
+            'fecha': now
+        }
+        return render(
+            request,
+            'catalogo.html',
+            data,
+        )
 
 def catalogo_audio(request):
     lista = listado_audios()
@@ -59,15 +79,31 @@ def catalogo_audio(request):
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     audios_page = paginator.get_page(page_number)
-    data = { 
-        'audios': audios_page,
-        'page_obj': audios_page
-    }
-    return render(
-        request,
-        'libros/catalogo_audio.html',
-        data
-    )
+
+    try:
+        rut = request.session['user_login']['user']['rut_usr']
+        data = { 
+            'audios': audios_page,
+            'page_obj': audios_page,
+            'sansion': catalogo_sansion(rut)
+        }
+        return render(
+            request,
+            'libros/catalogo_audio.html',
+            data
+        )
+    except:
+    
+        data = { 
+            'audios': audios_page,
+            'page_obj': audios_page,
+            'sansion': 'no'
+        }
+        return render(
+            request,
+            'libros/catalogo_audio.html',
+            data
+        )
 
 def catalogo_video(request):
     lista = listado_videos()
@@ -85,15 +121,31 @@ def catalogo_video(request):
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     videos_page = paginator.get_page(page_number)
-    data = { 
-        'videos': videos_page,
-        'page_obj': videos_page
-    }
-    return render(
-        request,
-        'libros/catalogo_videos.html',
-        data
-    )
+
+    try:
+        rut = request.session['user_login']['user']['rut_usr']
+        data = { 
+            'videos': videos_page,
+            'page_obj': videos_page,
+            'sansion': catalogo_sansion(rut)
+        }
+        return render(
+            request,
+            'libros/catalogo_videos.html',
+            data
+        )
+    except:
+
+        data = { 
+            'videos': videos_page,
+            'page_obj': videos_page,
+            'sansion': 'no'
+        }
+        return render(
+            request,
+            'libros/catalogo_videos.html',
+            data
+        )
 
 def catalogo_libro(request):
     lista = listado_libro()
@@ -111,15 +163,31 @@ def catalogo_libro(request):
     paginator = Paginator(lista, 15) 
     page_number = request.GET.get('page')
     libro_page = paginator.get_page(page_number)
-    data = { 
-        'libro': libro_page,
-        'page_obj': libro_page
-    }
-    return render(
-        request,
-        'libros/catalogo_libros.html',
-        data
-    )
+    
+
+    try:
+        rut = request.session['user_login']['user']['rut_usr']
+        data = { 
+            'libro': libro_page,
+            'page_obj': libro_page,
+            'sansion': catalogo_sansion(rut)
+        }
+        return render(
+            request,
+            'libros/catalogo_libros.html',
+            data
+        )
+    except:
+        data = { 
+            'libro': libro_page,
+            'page_obj': libro_page,
+            'sansion': 'no'
+        }
+        return render(
+            request,
+            'libros/catalogo_libros.html',
+            data
+        )
 
 def solicitudes(request):
    
@@ -936,6 +1004,7 @@ def calcular_sansion(request):
         ejem = 0
         rut = ""
         isbn = ""
+        pres = 0
         for mo in morosos:
             codigos2 = mo
             for cod in range(0,len(mo)):
@@ -949,15 +1018,19 @@ def calcular_sansion(request):
                         codi = codigos2[0:pos_fin]
                         codigos2 = codigos2[(pos_fin+1):(pos_fin+len(codigos2))]
                         rut = codi
-                        pos_fin = codigos2.find("}")
+                        pos_fin = codigos2.find(",")
                         if pos_fin != -1:
                             codi = codigos2[0:pos_fin]
                             codigos2 = codigos2[(pos_fin+1):(pos_fin+len(codigos2))]
-                            isbn =codi
+                            isbn= codi
+                            pos_fin = codigos2.find("}")
+                            if pos_fin != -1:
+                                codi = codigos2[0:pos_fin]
+                                codigos2 = codigos2[(pos_fin+1):(pos_fin+len(codigos2))]
+                                pres =codi
         
-            l = [ejem,rut,isbn]
+            l = [ejem,rut,isbn,pres]
             lista_cod.append(l)  
-        
         for mo in lista_cod:
             print(mo)
             
@@ -965,11 +1038,10 @@ def calcular_sansion(request):
             if(cont2[0]['data'][0] > 0):
                 x = 2
             else:
-                sp_snasion(mo[1],int(mo[0]),mo[2])
+                sp_sansion(mo[1],int(mo[0]),mo[2],mo[3])
                 x = 3
             
     cosa = 1
-    print(lista_cod)
     return HttpResponse(x)
 
 def cont_sansion(ejem,rut):
@@ -986,7 +1058,29 @@ def cont_sansion(ejem,rut):
     
     return lista
 
-def sp_snasion(rut,id_ejem,isbn):
+def sp_sansion(rut,id_ejem,isbn,pres):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
-    cursor.callproc("sp_calcular_sansion", [rut,id_ejem,isbn])
+    cursor.callproc("sp_calcular_sansion", [rut,id_ejem,isbn,pres])
+
+def catalogo_sansion(rut):
+    cursor_dj = connection.cursor()
+    cursor_ex = cursor_dj.connection.cursor() 
+    cursor_out= cursor_dj.connection.cursor() 
+    cursor_ex.callproc('sp_cont_sansionRut',[rut,cursor_out])
+
+    lista = []
+    for i in cursor_out:
+        lista.append({
+            'data':i,
+        })
+
+    return lista
+
+def fin_sancion(request):
+    rut = request.POST.get('rut')
+    cursor_dj = connection.cursor()
+    cursor_ex = cursor_dj.connection.cursor() 
+    cursor_ex.callproc('sp_fin_sancion',[rut])
+    return 1
+

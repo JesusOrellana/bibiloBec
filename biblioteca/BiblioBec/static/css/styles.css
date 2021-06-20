@@ -87,3 +87,18 @@
 .mostrar {
   display: block;
 }
+.perfil-user
+{
+    display: none;
+}
+@media (min-width:992px){
+
+  .perfil-user
+  {
+      display: block;
+  }
+  .perfil-user-min
+  {
+    display: none;
+  }
+}

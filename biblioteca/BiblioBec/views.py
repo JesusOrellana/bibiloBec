@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from .forms import DocumentoForm , EjemplarForm, UsuarioForm, ReservaForm, formLogin
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Libro, Usuario, Ejemplar
 from django.db import connection
 import cx_Oracle
@@ -17,6 +17,46 @@ from datetime import datetime
 # Create your views here.
 #Fecha actual
 
+
+# API
+def APILogin(request, rut_usr, password):
+    usuarios = Usuario.objects.all()
+    print('entro')
+    if not rut_usr:
+        return JsonResponse({'success':False, 'error': "Debe ingresar el rut"})
+    if not password:
+        return JsonResponse({'success':False, 'error': "Debe ingresar la contraseña"})
+        
+    password_cifrada = cifrarPassword(password)
+    verificar = usuarios.filter(rut_usr__contains = rut_usr, password = password_cifrada).exists()
+
+    if verificar:
+        usuario = usuario_filtrado(rut_usr)
+        return JsonResponse({'success':True, 'data': {'rut_usr':usuario[0]['data'][0], 'nombre':usuario[0]['data'][1], 
+        'apellido_p':usuario[0]['data'][2], 'apellido_m':usuario[0]['data'][3], 'direccion':usuario[0]['data'][4], 
+        'telefono':usuario[0]['data'][5], 'correo':usuario[0]['data'][6], 'tipo_usuario':usuario[0]['data'][14], 
+        'password':usuario[0]['data'][10], 'foto': usuario[0]['foto'], 'huella':usuario[0]['huella']}})
+    else:
+        return JsonResponse({'success':False, 'error': "Usuario o contraseña incorrecto"})
+
+def APIDocumentos(request):
+    lista = lista_doc()
+    documentos = []
+    for documento in lista:
+        documentoJson = {'id': documento['data'][0], 'titulo': documento['data'][1], 
+        'autor': documento['data'][2], 'imagen': documento['imagen']}
+        documentos.append(documentoJson)
+    return JsonResponse({'data' : documentos})
+
+def APIPrestamos(request):
+    lista = lista_pres()
+    prestamos = []
+    for pres in lista:
+        prestamoJson = {'rut_usr': pres['data'][0], 'nombre_usr': pres['data'][1], 'tipo_pres': pres['data'][2], 
+        'documento':pres['data'][3], 'autor':pres['data'][4], 'Editorial':pres['data'][5], 'tipo_doc':pres['data'][6],
+        'fecha_pres':pres['data'][8], 'fecha_dev':pres['data'][10]}
+        prestamos.append(prestamoJson)
+    return JsonResponse({'data' : prestamos})
 
 def catalogo(request): 
     lista = lista_doc()

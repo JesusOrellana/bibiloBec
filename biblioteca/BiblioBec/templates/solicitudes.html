@@ -224,8 +224,20 @@
                   <td>{{r.data.6}}</td>
                   <td>{{r.data.7}}</td>
                   <td>{{r.data.8}}</td>
-                  <td></td>
-                  <td></td>
+                  {% if fecha == r.data.10 %}
+                  <td><form action="{% url 'preserva' %}" method = "POST">
+                    {% csrf_token %}
+                    <input hidden type="text" name="rut" value={{r.data.1}}>
+                    <input hidden type="text" name="id_ejem" value={{r.data.12}}>
+                    <input hidden type="text" name="isbn"value={{r.data.11}}>
+                    <input hidden type="text" name="pro"value="r">
+                    <input hidden type="text" name="res"value={{r.data.0}}>
+                    <input hidden type="text" name="fecha_desde"value={{r.data.7}}>
+                    <input hidden type="text" name="fecha_hasta"value={{r.data.8}}>
+                    <button class="btn btn-primary">Aprobar Solicitud</button>
+                  </form></td>
+                  <td><a href="proceso-cancelar-reserva/{{p.data.13}}/{{p.data.14}}" class="btn btn-danger">Cancelar Solicitud</a></td>
+                  {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>

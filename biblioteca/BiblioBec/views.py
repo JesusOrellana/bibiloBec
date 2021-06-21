@@ -232,10 +232,12 @@ def catalogo_libro(request):
 def solicitudes(request):
    
     if request.session['user_login']['user']['tipo'] == 3 or request.session['user_login']['user']['tipo'] == 2 or request.session['user_login']['user']['tipo'] == 1:
+        now = datetime.now().strftime('%d/%m/%Y')
         data = {
             'pres': lista_pres(),
-            'res' : lista_reserva()
-        }
+            'res' : lista_reserva(),
+            'fecha': now
+            }
         return render(
             request,
             'solicitudes.html',data)
@@ -862,6 +864,27 @@ def lista_reserva():
         })
     
     return lista
+def  sr(rut, id_ejem, isbn,fecha,pro,res,fecha_desde,fecha_hasta) :
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("p_solicitud_reserva", [rut,id_ejem,isbn,fecha,pro,res,fecha_desde,fecha_hasta])
+
+def proceso_solicitud_reserva(request):
+    rut = request.POST.get('rut','')
+    id_ejem = request.POST.get('id_ejem','')
+    isbn = request.POST.get('isbn','')
+    pro = request.POST.get('pro','')
+    fecha = datetime.now()
+    res = request.POST.get('res','')
+    fecha_desde = request.POST.get('fecha_desde','')
+    fecha_hasta = request.POST.get('fecha_hasta','')
+    print (fecha_desde)
+    print (fecha_hasta)
+    sr(rut, id_ejem, isbn,fecha,pro,res,fecha_desde,fecha_hasta)
+    messages.success(request, "Solicitud procesada correctamente. Diríjase al mesón para retirar el documento./success")
+    return redirect('catalogo')
+
 
 # VISTAS DE SOLICITUD DOCUMENTO
 

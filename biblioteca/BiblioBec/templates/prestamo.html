@@ -67,9 +67,13 @@
 </div>
 {% elif num.0.data.0 == null %}
 <div class="soli-center">
-    <h1>
+    <h3>
         No hay ejemplares disponibles en este momento.
-    </h1>
+    </h3>
+    <div class="container text-center p-5">
+        {% load static %}
+        <img src="{% static 'img/404-libro.jpg' %}" alt="" class="col-10">
+    </div>
 </div>
 {% endif %}
 {%endblock%}

@@ -299,20 +299,51 @@ def agregar_documento(isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_
     salida = cursor_ex.var(cx_Oracle.NUMBER)
     cursor_ex.callproc('P_AGREGAR_DOCUMENTO',[isbn,titulo,autor,editorial,fecha,categoria,tipo_doc,tipo_me,edi,imagen,ubi,stock,salida])
 
+def num_ejem(isbn):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("SP_NUM_EJEM", [isbn,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
 def delete_doc(request,isbn):
 
-    doc = get_object_or_404(Libro,isbn=isbn)
-    cursor_dj = connection.cursor()
-    cursor_ex = cursor_dj.connection.cursor() 
-    cursor_ex.callproc('SP_DELETE_EJEMPLAR',[isbn])
-    doc.delete()
-    data = {
-                'libros': lista_doc(),
-                "msj": "exi_delete",
 
-            }
-    messages.success(request, "Documento eliminado./success")
-    return redirect('catalogo')
+    try:
+        cont = num_ejem_dis(isbn)
+        cont = cont[0]['data'][0]
+        contTotal = num_ejem(isbn)
+        contTotal = contTotal[0]['data'][0]
+        if(contTotal == cont):
+            doc = get_object_or_404(Libro,isbn=isbn)
+            cursor_dj = connection.cursor()
+            cursor_ex = cursor_dj.connection.cursor() 
+            cursor_ex.callproc('SP_DELETE_EJEMPLAR',[isbn])
+            doc.delete()
+            data = {
+                        'libros': lista_doc(),
+                        "msj": "exi_delete",
+
+                    }
+            messages.success(request, "Documento eliminado./success")
+            return redirect('catalogo')
+        else:
+           messages.error(request, "El proceso no se pudo realizar debido a que hay ejemplares de este documento en prestamo./error")
+           return redirect('catalogo') 
+    except:
+        messages.error(request, "El proceso no se pudo realizar debido a que hay ejemplares de este documento en prestamo./error")
+        return redirect('catalogo')
+
+        
+
 
 def lista_doc():
 
@@ -695,8 +726,8 @@ def editar_usuario(request):
             return render(request, 'Bibliobec/usuario_update.html', data)
 
 def eliminar_usuario(request):
-    rut_usr = request.GET.get('rut_usr')
 
+    rut_usr = request.GET.get('rut_usr')
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
     cursor.callproc('SP_USUARIO_DELETE',[rut_usr])

@@ -1,6 +1,7 @@
 window.onload = function calculo()
 {
     setTimeout('calcularSancion()', hora());
+    console.log('calculando Sancion...')
 }
 
 
@@ -44,17 +45,25 @@ function calcularSancion()
     });
     cont = lista.length;
     console.log(lista);
-    $.ajax({
-        url: 'http://127.0.0.1:8000/calcular-sansion/',
-        method: 'POST',
-        data:{
-            'moroso[]': lista,
-            'cont': cont,
-            csrfmiddlewaretoken: csrftoken
-        },
-        async: false,
-        success: function(data){
-            console.log(data);
-        }
-    })
+    if(cont > 0)
+    {
+        $.ajax({
+            url: 'http://127.0.0.1:8000/calcular-sansion/',
+            method: 'POST',
+            data:{
+                'moroso[]': lista,
+                'cont': cont,
+                csrfmiddlewaretoken: csrftoken
+            },
+            async: false,
+            success: function(data){
+                console.log(data);
+            }
+        })
+    }
+    else
+    {
+        console.log("No hay clientes con demoras")
+    }
+
 }

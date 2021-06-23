@@ -619,14 +619,46 @@
             r.numero_res,
             u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,'reserva', l.titulo , l.autor, td.descripcion, 
             to_char(r.fecha_desde,'dd/mm/yyyy HH24:MI:ss')as "fecha solicitud",
-            to_char(r.fecha_hasta,'dd/mm/yyyy HH24:MI:ss')as "fecha devolucion",r.estado
-        
+            to_char(r.fecha_hasta,'dd/mm/yyyy HH24:MI:ss')as "fecha devolucion",r.estado,
+            to_char(r.fecha_desde,'dd/mm/yyyy')as "fecha",
+            r.isbn,r.id_ejem
+            
+
             FROM libro l join reserva r on(l.isbn = r.isbn)
             JOIN usuario u on(u.rut_usr = r.usuario_rut_usr)
             JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
-            JOIN categoria c on(c.id_cate = l.categoria_id_cate);
+            JOIN categoria c on(c.id_cate = l.categoria_id_cate)
+            WHERE r.estado ='pendiente';
+
+    END;  
+
+    --procedimiento de botones aceptar reserva  
+    create or replace PROCEDURE p_solicitud_reserva(
+        v_rut VARCHAR2,
+        v_ejem number,
+        v_isbn VARCHAR2,
+        v_fecha VARCHAR2,
+        v_proceso VARCHAR2,
+        v_res number,
+        v_fecha_desde date,
+        v_fecha_hasta date
+        )
+        is
+    BEGIN
+        IF v_proceso = 'r' THEN
+            INSERT INTO solicitud_prestamo VALUES (seq_solicitud.NEXTVAL,sysdate,sysdate,v_rut);
+            INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,1,seq_solicitud.NEXTVAL-1,'en prestamo');
+            INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,sysdate+5,sysdate+5,sysdate+6,sysdate+6,v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
+            UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
+            UPDATE reserva SET estado = 'reserva activa' WHERE numero_res = v_res;
+            COMMIT;
+            
+        ELSIF v_proceso = 'c' THEN
+            UPDATE reserva set estado = 'cancelado' WHERE numero_res = v_res;
+            COMMIT;
     
-    END;      
+        END IF;
+    end; 
 
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA CATALOGO

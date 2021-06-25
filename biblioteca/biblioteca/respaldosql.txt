@@ -811,18 +811,6 @@ create or replace PROCEDURE SP_PRESTAMO_FILTRADO_RUT_USR(v_rut_usr VARCHAR2, pre
       END;
 
         
-
-    --procedimiento para cancelar reserva
-    
-    create or replace PROCEDURE sp_cancelar_res(v_res_can number)
-      IS
-         
-      BEGIN
-          UPDATE reserva SET estado = 'cancelado'
-          WHERE numero_res = v_res_can;
-          COMMIT;
-      END;
-
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA CATALOGO
 ---------------------------------------------------------------

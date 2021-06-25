@@ -660,6 +660,17 @@
         END IF;
     end; 
 
+    --procedimiento para cancelar reserva
+    
+    create or replace PROCEDURE sp_cancelar_res(v_res_can number)
+      IS
+         
+      BEGIN
+          UPDATE reserva SET estado = 'cancelado'
+          WHERE numero_res = v_res_can;
+          COMMIT;
+      END;
+
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA CATALOGO
 ---------------------------------------------------------------

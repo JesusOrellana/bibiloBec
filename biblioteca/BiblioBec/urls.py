@@ -40,4 +40,5 @@ urlpatterns = [
     path('calcular-sansion/', views.calcular_sansion, name="calcular_sansion"),
     path('fin-sancion/', views.fin_sancion, name="fin_sancion"),
     path('proceso-aprobacion-reserva', views.proceso_solicitud_reserva, name="preserva"),
+    path('proceso-cancelar-reserva', views.pro_cancelar_res, name="creserva"),
 ]

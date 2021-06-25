@@ -818,11 +818,14 @@ def logout(request):
 
     #vista para reserva 
 def vista_reserva(request,isbn):
+    now = datetime.now().strftime('%Y-%m-%d')
     data = { 
         'form': ReservaForm(), 
         'ejem': id_ejem(isbn),
         'doc': filtro_doc(isbn),
-        "fecha": fecha_proxima(isbn)
+        "fecha": fecha_proxima(isbn),
+        "disp": num_ejem_dis(isbn),
+        "fecha_2" :now
     }
     return render(
     request,
@@ -916,6 +919,15 @@ def proceso_solicitud_reserva(request):
     messages.success(request, "Solicitud procesada correctamente. Diríjase al mesón para retirar el documento./success")
     return redirect('catalogo')
 
+def pro_cancelar_res(request):
+    num= request.POST.get('num','')
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("sp_cancelar_res", [num])
+    return redirect('solicitudes')
+    
+    
 
 # VISTAS DE SOLICITUD DOCUMENTO
 

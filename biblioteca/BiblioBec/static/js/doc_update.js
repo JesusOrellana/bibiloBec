@@ -290,3 +290,193 @@ function validarForm()
       $('#id_opcion').prop('value','b')
   }
 }
+
+$(".eliminarEjem").click(function(){
+    eliminarEjemplar($(this).attr("data-ejem"));
+});
+
+function eliminarEjemplar(id_ejem){
+    
+
+    const csrftoken = getCookie('csrftoken');
+
+    $.ajax({
+        url: 'http://192.168.0.13:8000/ejemplar/delete/',
+        method: 'POST',
+        data:{
+            'ejem': id_ejem,
+            csrfmiddlewaretoken: csrftoken
+        },
+        async: false,
+        success: function(data){
+            count = 0
+            if(data == 1)
+            {
+                
+                toastr.success("Ejemplar "+id_ejem+" eliminado con exito","EXITO",{
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-bottom-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                });
+
+                $("#ejem-"+id_ejem).css("display","none")
+            
+               
+            }
+            else
+            {
+                toastr.error("Ha ocurrido un problema, no se pudo eliminar el ejemplar","ERROR",{
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-bottom-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                });
+            }
+        }
+    })
+
+    setTimeout('cambiarHecho()', hora());
+
+} 
+
+
+function cambiarHecho()
+{
+    $("#hecho").prop("value","0")
+}
+function cambiarHecho2()
+{
+    console.log("recargando...")
+    location.reload()
+}
+function hora()
+{
+horaActual  = new Date();
+horaProgramada  = new Date();
+horaProgramada.setHours(horaActual.getHours());
+horaProgramada.setMinutes(horaActual.getMinutes());
+horaProgramada.setSeconds(horaActual.getSeconds()+2);
+return horaProgramada.getTime() - horaActual.getTime(); 
+}
+
+function hora2()
+{
+horaActual  = new Date();
+horaProgramada  = new Date();
+horaProgramada.setHours(horaActual.getHours());
+horaProgramada.setMinutes(horaActual.getMinutes());
+horaProgramada.setSeconds(horaActual.getSeconds()+2);
+return horaProgramada.getTime() - horaActual.getTime(); 
+}
+
+//actualizar stock
+$("#actualizarStock").click(function(){
+    isbn = $(this).attr("data-isbn")
+    stock = $('#stock').val()
+    ubi = $(this).attr("data-ubi")
+    actualizarStock(isbn,stock,ubi)
+})
+
+function actualizarStock(isbn,stock,ubi) {
+    
+
+    const csrftoken = getCookie('csrftoken');
+
+    $.ajax({
+        url: 'http://192.168.0.13:8000/ejemplar/update/',
+        method: 'POST',
+        data:{
+            'isbn': isbn,
+            'stock': stock,
+            'ubi':ubi,
+            csrfmiddlewaretoken: csrftoken
+        },
+        async: false,
+        success: function(data){
+            if(data == 1)
+            {
+                
+                toastr.success("Operación realizada con exito","EXITO",{
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-bottom-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                });
+                
+                setTimeout('cambiarHecho2()',hora2());
+               
+            }
+            else
+            {
+                toastr.error("Ha ocurrido un problema, no se pudo actualizar el stock","ERROR",{
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-bottom-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                });
+            }
+        }
+    })
+
+} 
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

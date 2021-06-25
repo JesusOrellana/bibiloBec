@@ -435,7 +435,7 @@ $(document).ready(function() {
     const csrftoken = getCookie('csrftoken');
 
     $.ajax({
-        url: 'http://127.0.0.1:8000/fin-sancion/',
+        url: 'http://192.168.0.13:8000/fin-sancion/',
         method: 'POST',
         data:{
             'rut':rut,

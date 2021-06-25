@@ -26,7 +26,7 @@
         isbn                         VARCHAR2(200) NOT NULL,
         titulo                       VARCHAR2(250) NOT NULL,
         autor                        VARCHAR2(250) NOT NULL,
-        editorial                    VARCHAR2(250) NOT NULL,
+        editorial                    NUMBER(9) NOT NULL,
         fecha_publicacion            DATE NOT NULL,
         edicion                      NUMBER(6) NOT NULL,
         categoria_id_cate            NUMBER(5) NOT NULL,
@@ -37,15 +37,35 @@
 
     ALTER TABLE libro ADD CONSTRAINT libro_pk PRIMARY KEY ( isbn );
 
+    CREATE TABLE editorial(
+        id_editorial                    NUMBER(9) NOT NULL,
+        editorial                    VARCHAR2(250) NOT NULL
+    );
+
+    ALTER TABLE editorial ADD CONSTRAINT editorial_pk PRIMARY KEY ( id_editorial  );
+    
+    ALTER TABLE libro
+    ADD CONSTRAINT libro_editorial_fk FOREIGN KEY ( editorial )
+        REFERENCES editorial(id_editorial);
 
     CREATE TABLE ejemplar (
         id_ejem            NUMBER(6) NOT NULL,
         isbn               VARCHAR2(200) NOT NULL,
-        estado             VARCHAR2(100) NOT NULL,
+        estado             NUMBER(1) NOT NULL,
         ubicacion          VARCHAR2(100) NOT NULL
     );
 
     ALTER TABLE ejemplar ADD CONSTRAINT ejemplar_pk PRIMARY KEY (id_ejem ,isbn);
+
+    CREATE TABLE estado_ejem(
+        id_estado          NUMBER(1) not null,
+        estado             VARCHAR2(30) not null);
+        
+    ALTER TABLE estado_ejem ADD CONSTRAINT estado_ejem_pk PRIMARY KEY ( id_estado );
+         
+    ALTER TABLE ejemplar
+    ADD CONSTRAINT ejemplar_estado_fk FOREIGN KEY ( estado )
+    REFERENCES estado_ejem ( id_estado );
 
     ALTER TABLE ejemplar
         ADD CONSTRAINT ejemplar_libro_fk FOREIGN KEY ( isbn )
@@ -57,10 +77,21 @@
         rut_usr            VARCHAR2(9) NOT NULL,
         tipo_prestamo      NUMBER(5) NOT NULL,
         numero_solicitud   NUMBER(6) NOT NULL,
-        estado             VARCHAR2(50) NOT NULL
+        estado             NUMBER(1) NOT NULL
     );
 
     ALTER TABLE prestamo ADD CONSTRAINT prestamo_pk PRIMARY KEY ( numero_pres );
+
+    CREATE TABLE estado_pres (
+        id_estado NUMBER(1) NOT NULL,
+        estado    VARCHAR2(30) NOT NULL
+    );
+
+    ALTER TABLE estado_pres ADD CONSTRAINT estado_pres_pk PRIMARY KEY ( id_estado );
+
+    ALTER TABLE prestamo
+        ADD CONSTRAINT prestamo_estado_fk FOREIGN KEY ( estado )
+            REFERENCES estado_pres( id_estado );
 
     CREATE TABLE reserva (
         numero_res         NUMBER(6) NOT NULL,
@@ -70,10 +101,20 @@
         id_ejem            NUMBER(6) NOT NULL,
         isbn               VARCHAR2(200) not null,
         usuario_rut_usr    VARCHAR2(9) NOT NULL,
-        estado             VARCHAR2(30) 
+        estado             NUMBER(1) 
     );
 
     ALTER TABLE reserva ADD CONSTRAINT reserva_pk PRIMARY KEY ( numero_res );
+
+    CREATE TABLE estado_res(
+            id_estado          NUMBER(1) not null,
+            estado             VARCHAR2(30) not null);
+            
+            ALTER TABLE estado_res ADD CONSTRAINT estado_res_pk PRIMARY KEY ( id_estado );
+            
+    ALTER TABLE reserva
+    ADD CONSTRAINT reserva_estado_fk FOREIGN KEY ( estado )
+    REFERENCES estado_res ( id_estado );
 
     CREATE TABLE solicitud_prestamo (
         numero_solicitud   NUMBER(6) NOT NULL,
@@ -190,12 +231,23 @@
         rut_usr       VARCHAR2(9) NOT NULL,
         id_ejem       NUMBER(6) NOT NULL,   
         isbn          VARCHAR2(200) NOT NULL,
-        estado        VARCHAR2(30) NOT NULL,
+        estado        NUMBER(1) NOT NULL,
         fecha_termino DATE,
-        numero_pres   NUMBER(6) NOT NULL, 
+        numero_pres   NUMBER(6) NOT NULL
     );
 
     ALTER TABLE sancion ADD CONSTRAINT sancion_pk PRIMARY KEY (id_sancion);
+
+    CREATE TABLE estado_san (
+        id_estado NUMBER(1) NOT NULL,
+        estado    VARCHAR2(30) NOT NULL
+    );
+
+    ALTER TABLE estado_san ADD CONSTRAINT estado_san_pk PRIMARY KEY ( id_estado );
+
+    ALTER TABLE sancion
+        ADD CONSTRAINT sancion_estado_fk FOREIGN KEY ( estado )
+            REFERENCES estado_san( id_estado );
 
     ALTER TABLE sancion
         ADD CONSTRAINT sancion_usuario_fk FOREIGN KEY ( rut_usr )
@@ -225,7 +277,23 @@
 ----------------------------------------------------------------
 ---------------------------------------------------------------
 --       INSERTE TABLAS MAESTRAS AQUI
+    INSERT INTO editorial VALUES (1,'Aguilar');
 
+    INSERT INTO estado_res VALUES (1,'reserva activa');
+    INSERT INTO estado_res VALUES (2,'pendiente');
+    INSERT INTO estado_res VALUES (3,'cancelado');
+
+    INSERT INTO estado_ejem VALUES (1,'disponible');
+    INSERT INTO estado_ejem VALUES (2,'prestamo');
+
+    INSERT INTO estado_san VALUES (1,'moroso');
+    INSERT INTO estado_san VALUES (2,'devolucion');
+    INSERT INTO estado_san VALUES (3,'fin sancion');
+
+    INSERT INTO estado_pres VALUES (1,'solicitud');
+    INSERT INTO estado_pres VALUES (2,'en prestamo');
+    INSERT INTO estado_pres VALUES (3,'cancelado');
+    INSERT INTO estado_pres VALUES (4,'devolucion');
     INSERT INTO tipo_usuario VALUES (1,'administrador');
     INSERT INTO tipo_usuario VALUES (2,'bibliotecario');
     INSERT INTO tipo_usuario VALUES (3,'normal');
@@ -342,7 +410,7 @@
         INSERT INTO libro VALUES (v_isbn,v_titulo,v_autor,v_editorial,v_fecha,v_edi,v_cat,v_doc ,v_medio,v_imagen);
         v_salida:=1;
         FOR i IN 1..v_stock LOOP
-            INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_isbn,'disponible',v_ubi);
+            INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_isbn,1,v_ubi);
         END LOOP;
         COMMIT;
     end;
@@ -416,33 +484,64 @@
     commit;
     END sp_delete_ejemplar;
 
+    -- PROCEDIMIENTO PARA CONTAR EL NUMERO DE EJEMPLARES
+    create or replace PROCEDURE sp_num_ejem(v_isbn VARCHAR2 ,disponible out SYS_REFCURSOR)
+        IS
+        BEGIN
+            open disponible for SELECT count(id_ejem) as stock FROM ejemplar WHERE isbn = v_isbn;
+        END;
 
+    -- PROCEDURE PARA ACTUALIZAR STOCK --
+    create or replace PROCEDURE sp_update_stock(
+    v_isbn VARCHAR2,
+    v_stock NUMBER,
+    v_ubi VARCHAR2
+    ) 
+    IS
+    BEGIN
+        FOR i IN 1..v_stock LOOP
+            INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_isbn,1,v_ubi);
+        END LOOP;
+    END;
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA SANSION
 ---------------------------------------------------------------
     --procedimiento conteo de prestamos con sancion
     create or replace PROCEDURE sp_cont_sansion(v_rut  VARCHAR2, v_ejem NUMBER, cont OUT SYS_REFCURSOR)
-        IS
-        BEGIN
-            OPEN cont FOR  SELECT
-                COUNT(id_sancion)
-            FROM sancion WHERE rut_usr = v_rut and id_ejem = v_ejem and estado = 'moroso';
-        END;
+      IS
+      BEGIN
+         OPEN cont FOR  SELECT
+            COUNT(id_sancion)
+        FROM sancion WHERE rut_usr = v_rut and id_ejem = v_ejem and estado = 1;
+      END;
+
+
     --procedimiento calculo de sancion
     create or replace PROCEDURE sp_calcular_sansion(v_rut VARCHAR2,v_ejem number,v_isbn VARCHAR2,v_num number)
         is
     BEGIN
-        INSERT INTO sancion VALUES(SEQ_SANSION.nextval,v_rut,v_ejem,v_isbn,'moroso',(sysdate+1),v_num);
+        INSERT INTO sancion VALUES(SEQ_SANSION.nextval,v_rut,v_ejem,v_isbn,1,(sysdate+1),v_num);
         COMMIT;
     end;
+
+
     --procedimiento conteo prestamos con snacion por rut
     create or replace PROCEDURE sp_cont_sansionRut(v_rut  VARCHAR2,cont OUT SYS_REFCURSOR)
       IS
       BEGIN
          OPEN cont FOR  SELECT COUNT(id_sancion), estado,MAX(to_char(fecha_termino,'dd/mm/yyyy'))
         FROM sancion WHERE rut_usr = v_rut
-        GROUP BY rut_usr, estado;
+        GROUP BY rut_usr, estado
+        ORDER BY MAX(to_char(fecha_termino,'dd/mm/yyyy')) DESC;
 
+      END;
+
+    -- PROCEDURE PARA TERMINAR SANCION --
+    create or replace PROCEDURE sp_fin_sancion(v_rut  VARCHAR2)
+      IS
+      BEGIN
+        UPDATE sancion set estado = 3 WHERE rut_usr = v_rut;
+        COMMIT;
       END;
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA SOLICITUD_PRESTAMO
@@ -451,11 +550,11 @@
 
     -- devoluciones prestamos
     create or replace PROCEDURE SP_DEVOLUCION_DOC(v_id_ejem VARCHAR2,v_num_pres VARCHAR2)
-        IS
-        BEGIN
-                UPDATE ejemplar set estado = 'disponible'WHERE id_ejem = v_id_ejem;
-                UPDATE prestamo set estado = 'devolucion' WHERE numero_pres = v_num_pres;
-        END;
+      IS
+      BEGIN
+            UPDATE ejemplar set estado = 1 WHERE id_ejem = v_id_ejem;
+            UPDATE prestamo set estado = 3 WHERE numero_pres = v_num_pres;
+      END;
 
 
     -- proceso solicitud
@@ -472,37 +571,43 @@
         IF v_proceso = 's' THEN
             INSERT INTO solicitud_prestamo VALUES (seq_solicitud.NEXTVAL,sysdate,sysdate,v_rut);
             IF v_tipo = 'd' THEN
-                INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,1,seq_solicitud.NEXTVAL-1,'solicitud');
+                INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,1,seq_solicitud.NEXTVAL-1,1);
                 INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,sysdate+5,sysdate+5,sysdate+6,sysdate+6,v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
-                UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
+                UPDATE ejemplar SET estado = 2 WHERE id_ejem = v_ejem;
             ELSE
-                INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,2,seq_solicitud.NEXTVAL-1,'solicitud');
+                INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,2,seq_solicitud.NEXTVAL-1,1);
                 INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,(sysdate+3/24),(sysdate +3/24),(sysdate +4/24),(sysdate +4 / 24),v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
-                UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
+                UPDATE ejemplar SET estado = 2 WHERE id_ejem = v_ejem;
             END IF;
             COMMIT;
         ELSIF v_proceso = 'p' THEN
-            UPDATE prestamo set estado = 'en prestamo' WHERE numero_pres = v_rut;
+            UPDATE prestamo set estado = 2 WHERE numero_pres = v_rut;
             COMMIT;
         ELSIF v_proceso = 'c' THEN
-            UPDATE prestamo set estado = 'canselado' WHERE numero_pres = v_rut;
-            UPDATE ejemplar set estado = 'disponible' WHERE id_ejem = v_ejem;
-            
+            UPDATE prestamo set estado = 3 WHERE numero_pres = v_rut;
+            UPDATE ejemplar set estado = 1 WHERE id_ejem = v_ejem;
+
         END IF;
     end;
 
     -- procedimento para traer un ejemplar disponible
-    CREATE or replace PROCEDURE sp_ejemplar(v_isbn varchar2,disponible out SYS_REFCURSOR)
+    create or replace PROCEDURE sp_ejemplar(v_isbn varchar2,v_opcion NUMBER,disponible out SYS_REFCURSOR)
     IS
     BEGIN
-    open disponible for SELECT id_ejem FROM ejemplar where estado ='disponible' and rownum <= 1 and isbn = v_isbn;
+        IF v_opcion = 1
+        THEN
+            open disponible for SELECT id_ejem FROM ejemplar where estado = 1 and rownum <= 1 and isbn = v_isbn;
+        ELSIF v_opcion = 2
+        THEN
+            open disponible for SELECT id_ejem,estado FROM ejemplar where isbn = v_isbn;
+        END IF;
     END sp_ejemplar;
 
     -- procedimento para contar los ejemplares disponibles --
     create or replace PROCEDURE sp_num_ejemplar_disponible(v_isbn varchar2,disponible out SYS_REFCURSOR)
     IS
     BEGIN
-    open disponible for SELECT count(id_ejem) as stock FROM ejemplar WHERE estado = 'disponible' and isbn = v_isbn
+    open disponible for SELECT count(id_ejem) as stock FROM ejemplar WHERE estado = 1 and isbn = v_isbn
     GROUP BY isbn;
     END sp_num_ejemplar_disponible;
 
@@ -515,8 +620,7 @@
         u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
         c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
         to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
-        to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,
-        to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss'), dsp.fecha_devolucion - sysdate, l.isbn
+        to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss')
         FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
         JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
         JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
@@ -524,7 +628,7 @@
         JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
         JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
         JOIN categoria c on(c.id_cate = l.categoria_id_cate)
-        WHERE p.estado = 'en prestamo' or p.estado = 'solicitud';
+        WHERE p.estado = 2 or p.estado = 1;
     END;
 
     --PROCEDIMIENTO PARA FILTRAR PRESTAMO POR NUMERO DE PRESTAMO
@@ -573,6 +677,7 @@
                                 JOIN categoria c on(c.id_cate = l.categoria_id_cate)
                                 WHERE u.rut_usr = v_rut and to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss') = v_fecha;
         END;
+
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA RESERVA
 ---------------------------------------------------------------
@@ -596,7 +701,7 @@
         JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
         JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
         JOIN categoria c on(c.id_cate = l.categoria_id_cate)
-        WHERE p.estado = 'en prestamo' or p.estado = 'solicitud' and l.isbn = v_isbn;
+        WHERE p.estado = 2 or p.estado = 1 and l.isbn = v_isbn;
     END;
 
     --procedimiento para confirmar reserva
@@ -605,7 +710,7 @@
     create or replace PROCEDURE reserva_creada(v_isbn VARCHAR2,v_id_ejem number, v_fecha_d date, v_fecha_h date, v_rut_u VARCHAR2)
         IS
         BEGIN
-            INSERT INTO reserva values (SEQ_RESERVA.nextval,sysdate,v_fecha_d,v_fecha_h,v_id_ejem,v_isbn,v_rut_u,'pendiente');
+            INSERT INTO reserva values (SEQ_RESERVA.nextval,sysdate,v_fecha_d,v_fecha_h,v_id_ejem,v_isbn,v_rut_u,2);
             COMMIT;
         END;
         
@@ -622,15 +727,15 @@
             to_char(r.fecha_hasta,'dd/mm/yyyy HH24:MI:ss')as "fecha devolucion",r.estado,
             to_char(r.fecha_desde,'dd/mm/yyyy')as "fecha",
             r.isbn,r.id_ejem
-            
+
 
             FROM libro l join reserva r on(l.isbn = r.isbn)
             JOIN usuario u on(u.rut_usr = r.usuario_rut_usr)
             JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
             JOIN categoria c on(c.id_cate = l.categoria_id_cate)
-            WHERE r.estado ='pendiente';
+            WHERE r.estado = 2 ;
 
-    END;  
+    END;
 
     --procedimiento de botones aceptar reserva  
     create or replace PROCEDURE p_solicitud_reserva(
@@ -647,18 +752,31 @@
     BEGIN
         IF v_proceso = 'r' THEN
             INSERT INTO solicitud_prestamo VALUES (seq_solicitud.NEXTVAL,sysdate,sysdate,v_rut);
-            INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,1,seq_solicitud.NEXTVAL-1,'en prestamo');
+            INSERT INTO prestamo VALUES(SEQ_PRESTAMO.nextval, v_fecha,v_rut,1,seq_solicitud.NEXTVAL-1,2);
             INSERT INTO detalle_solicitud_prestamo VALUES (SEQ_DETA_SOLICITUD.nextval,sysdate+5,sysdate+5,sysdate+6,sysdate+6,v_ejem,v_isbn,seq_solicitud.NEXTVAL-2);
-            UPDATE ejemplar SET estado = 'prestamo' WHERE id_ejem = v_ejem;
-            UPDATE reserva SET estado = 'reserva activa' WHERE numero_res = v_res;
+            UPDATE ejemplar SET estado = 2 WHERE id_ejem = v_ejem;
+            UPDATE reserva SET estado = 1 WHERE numero_res = v_res;
             COMMIT;
-            
+
         ELSIF v_proceso = 'c' THEN
-            UPDATE reserva set estado = 'cancelado' WHERE numero_res = v_res;
+            UPDATE reserva set estado = 3 WHERE numero_res = v_res;
             COMMIT;
-    
+
         END IF;
-    end; 
+    end;
+
+    --procedimiento para cancelar reserva
+    
+    create or replace PROCEDURE sp_cancelar_res(v_res_can number)
+      IS
+         
+      BEGIN
+          UPDATE reserva SET estado = 3
+          WHERE numero_res = v_res_can;
+          COMMIT;
+      END;
+
+        
 
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA CATALOGO

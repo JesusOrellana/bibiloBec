@@ -50,7 +50,7 @@ class Libro(models.Model):
     isbn = models.CharField(primary_key=True, max_length=200)
     titulo = models.CharField(max_length=250)
     autor = models.CharField(max_length=250)
-    editorial = models.CharField(max_length=250)
+    editorial = models.ForeignKey('Editorial', models.DO_NOTHING, db_column='id_editorial')
     fecha_publicacion = models.DateField()
     edicion = models.IntegerField()
     imagen = models.ImageField(upload_to="imagenes", null=True, blank=True)
@@ -188,3 +188,63 @@ class Sancion(models.Model):
         
     def __str__(self):
         return str(self.id_sansion) 
+
+class Editorial(models.Model):
+    id_editorial = models.IntegerField(primary_key=True)
+    editorial = models.CharField(max_length=250)
+
+
+    class Meta:
+        managed = False
+        db_table = 'editorial'
+
+    def __str__(self):
+        return self.editorial
+
+class Estado_res(models.Model):
+    id_estado = models.IntegerField(primary_key=True)
+    estado = models.CharField(max_length=30)
+
+
+    class Meta:
+        managed = False
+        db_table = 'estado_res'
+
+    def __str__(self):
+        return self.estado
+
+class Estado_pres(models.Model):
+    id_estado = models.IntegerField(primary_key=True)
+    estado = models.CharField(max_length=30)
+
+
+    class Meta:
+        managed = False
+        db_table = 'estado_pres'
+
+    def __str__(self):
+        return self.estado
+
+class Estado_ejem(models.Model):
+    id_estado = models.IntegerField(primary_key=True)
+    estado = models.CharField(max_length=30)
+
+
+    class Meta:
+        managed = False
+        db_table = 'estado_ejem'
+
+    def __str__(self):
+        return self.estado
+
+class Estado_san(models.Model):
+    id_estado = models.IntegerField(primary_key=True)
+    estado = models.CharField(max_length=30)
+
+
+    class Meta:
+        managed = False
+        db_table = 'estado_san'
+
+    def __str__(self):
+        return self.estado

@@ -247,7 +247,7 @@ def solicitudes(request):
 def ayuda(request):
     return render(request, 'preguntas_frec.html')
 
-# vistas de documentos
+# vistas de documentos y ejemplares
 
 def form_cr_doc(request):
     data = {
@@ -328,7 +328,7 @@ def delete_doc(request,isbn):
             doc = get_object_or_404(Libro,isbn=isbn)
             cursor_dj = connection.cursor()
             cursor_ex = cursor_dj.connection.cursor() 
-            cursor_ex.callproc('SP_DELETE_EJEMPLAR',[isbn])
+            cursor_ex.callproc('SP_DELETE_EJEMPLAR',[isbn,0,1])
             doc.delete()
             data = {
                         'libros': lista_doc(),
@@ -344,8 +344,27 @@ def delete_doc(request,isbn):
         messages.error(request, "El proceso no se pudo realizar debido a que hay ejemplares de este documento en prestamo./error")
         return redirect('catalogo')
 
-        
+def delete_ejemplar(request):
+    id_ejem = request.POST.get('ejem')
+    try:
+        cursor_dj = connection.cursor()
+        cursor_ex = cursor_dj.connection.cursor() 
+        cursor_ex.callproc('SP_DELETE_EJEMPLAR',["sin isbn",id_ejem,2])
+        return HttpResponse(1)
+    except:
+        return HttpResponse(2)
 
+def update_stock(request):
+    isbn = request.POST.get('isbn')
+    stock = request.POST.get('stock')
+    ubi = request.POST.get('ubi')
+    try:
+        cursor_dj = connection.cursor()
+        cursor_ex = cursor_dj.connection.cursor() 
+        cursor_ex.callproc('sp_update_stock',[isbn,stock,ubi])
+        return HttpResponse(1)
+    except:
+        return HttpResponse(2)
 
 def lista_doc():
 
@@ -366,7 +385,8 @@ def lista_doc():
 def form_up_doc(request,isbn):
     data = {
         'form': DocumentoForm(),
-        'doc': filtro_doc(isbn)
+        'doc': filtro_doc(isbn),
+        'ej': id_ejem(isbn,2)
     }
     return render(request, 'documento/update_doc.html', data)
 
@@ -820,7 +840,7 @@ def logout(request):
 def vista_reserva(request,isbn):
     data = { 
         'form': ReservaForm(), 
-        'ejem': id_ejem(isbn),
+        'ejem': id_ejem(isbn,1),
         'doc': filtro_doc(isbn),
         "fecha": fecha_proxima(isbn)
     }
@@ -957,7 +977,7 @@ def solicitud_prestamo(request):
     
     data={
         'num' : num_ejem_dis(isbn),
-        'ejem': id_ejem(isbn),
+        'ejem': id_ejem(isbn,1),
         'doc': filtro_doc(isbn),
         'rut': rut,
     }
@@ -1008,11 +1028,11 @@ def num_ejem_dis(isbn):
     
     return lista
 
-def id_ejem(isbn):
+def id_ejem(isbn,opcion):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
     out_cur = django_cursor.connection.cursor()
-    cursor.callproc("sp_ejemplar", [isbn,out_cur])
+    cursor.callproc("sp_ejemplar", [isbn,opcion,out_cur])
 
     lista = []
 

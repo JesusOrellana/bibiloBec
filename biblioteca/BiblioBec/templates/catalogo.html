@@ -96,7 +96,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         
-        {% if sansion.0.data.0 > 0 and sansion.0.data.1 == "moroso"%}
+        {% if sansion.0.data.0 > 0 and sansion.0.data.1 == 1%}
         <div class="modal-body text-center bg-warning">
           Usted tiene atrasos en la devolución de documentos
           No tiene permitido realizar ningun tipo de prestamo
@@ -104,10 +104,10 @@
         </div>
         <div class="modal-footer">
         </div>
-        {% elif sansion.0.data.1 == "devolucion" %}
+        {% elif sansion.0.data.1 == 2 %}
         <div class="modal-body text-center bg-warning">
           Debido a su atraso en la devolución de documentos 
-          se ha asignado una sansion de 3 dias a partir de 
+          se ha asignado una sansion de 2 dias a partir de 
           la fecha en la que devolvio el ejemplar. No podra solicitar 
           ninguna documento de nuestro catalogo hasta el
           {{sansion.0.data.2}}

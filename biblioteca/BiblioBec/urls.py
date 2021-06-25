@@ -40,4 +40,6 @@ urlpatterns = [
     path('calcular-sansion/', views.calcular_sansion, name="calcular_sansion"),
     path('fin-sancion/', views.fin_sancion, name="fin_sancion"),
     path('proceso-aprobacion-reserva', views.proceso_solicitud_reserva, name="preserva"),
+    path('ejemplar/delete/', views.delete_ejemplar, name="ejemplar_delete"),
+    path('ejemplar/update/', views.update_stock, name="ejemplar_update")
 ]

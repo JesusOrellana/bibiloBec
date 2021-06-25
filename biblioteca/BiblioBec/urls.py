@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     path('api/usuario/<str:rut_usr>/<str:password>', views.APILogin, name='api_usuario'),
     path('api/documentos/', views.APIDocumentos, name='api_documento'),
-    path('api/prestamos', views.APIPrestamos, name='api_prestamo'),
+    path('api/prestamos/<str:rut_usr>/', views.APIPrestamos, name='api_prestamo'),
     path('', views.catalogo, name='index'),
     path('login', views.iniciar_sesion, name='login'),
     path('cambiar_contrasena', views.cambiar_contrasena, name='cambiar_contrasena'),
@@ -40,6 +40,7 @@ urlpatterns = [
     path('calcular-sansion/', views.calcular_sansion, name="calcular_sansion"),
     path('fin-sancion/', views.fin_sancion, name="fin_sancion"),
     path('proceso-aprobacion-reserva', views.proceso_solicitud_reserva, name="preserva"),
+    path('proceso-cancelar-reserva', views.pro_cancelar_res, name="creserva"),
     path('ejemplar/delete/', views.delete_ejemplar, name="ejemplar_delete"),
     path('ejemplar/update/', views.update_stock, name="ejemplar_update")
 ]

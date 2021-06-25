@@ -21,7 +21,6 @@ from datetime import datetime
 # API
 def APILogin(request, rut_usr, password):
     usuarios = Usuario.objects.all()
-    print('entro')
     if not rut_usr:
         return JsonResponse({'success':False, 'error': "Debe ingresar el rut"})
     if not password:
@@ -32,9 +31,9 @@ def APILogin(request, rut_usr, password):
 
     if verificar:
         usuario = usuario_filtrado(rut_usr)
-        return JsonResponse({'success':True, 'data': {'rut_usr':usuario[0]['data'][0], 'nombre':usuario[0]['data'][1], 
-        'apellido_p':usuario[0]['data'][2], 'apellido_m':usuario[0]['data'][3], 'direccion':usuario[0]['data'][4], 
-        'telefono':usuario[0]['data'][5], 'correo':usuario[0]['data'][6], 'tipo_usuario':usuario[0]['data'][14], 
+        return JsonResponse({'success':True, 'data': {'rut_usr':usuario[0]['data'][0], 'nombre':usuario[0]['data'][1].title(), 
+        'apellido_p':usuario[0]['data'][2].title(), 'apellido_m':usuario[0]['data'][3].title(), 'direccion':usuario[0]['data'][4].title(), 
+        'telefono':usuario[0]['data'][5], 'correo':usuario[0]['data'][6], 'tipo_usuario':usuario[0]['data'][14].title(), 
         'password':usuario[0]['data'][10], 'foto': usuario[0]['foto'], 'huella':usuario[0]['huella']}})
     else:
         return JsonResponse({'success':False, 'error': "Usuario o contraseña incorrecto"})
@@ -43,19 +42,29 @@ def APIDocumentos(request):
     lista = lista_doc()
     documentos = []
     for documento in lista:
-        documentoJson = {'id': documento['data'][0], 'titulo': documento['data'][1], 
-        'autor': documento['data'][2], 'imagen': documento['imagen']}
+        documentoJson = {'id': documento['data'][0], 'titulo': documento['data'][1].title(), 
+        'autor': documento['data'][2].title(), 'editorial': documento['data'][3].title(), 'imagen': documento['imagen']}
         documentos.append(documentoJson)
     return JsonResponse({'data' : documentos})
 
-def APIPrestamos(request):
-    lista = lista_pres()
+def APIPrestamos(request, rut_usr):
+    usuario = usuario_filtrado(rut_usr)
+    tipo_usuario = usuario[0]['data'][9]
+    lista = None
+    
+    if tipo_usuario == 1 or tipo_usuario == 2:
+        lista = lista_pres()
+    else:
+        lista = pres_filtrado_rut_usr(rut_usr)
+
     prestamos = []
     for pres in lista:
-        prestamoJson = {'rut_usr': pres['data'][0], 'nombre_usr': pres['data'][1], 'tipo_pres': pres['data'][2], 
-        'documento':pres['data'][3], 'autor':pres['data'][4], 'Editorial':pres['data'][5], 'tipo_doc':pres['data'][6],
-        'fecha_pres':pres['data'][8], 'fecha_dev':pres['data'][10]}
+        prestamoJson = {'numero_pres':pres['data'][13],'rut_usr': pres['data'][0], 'nombre_usr': pres['data'][1].title(), 'tipo_pres': pres['data'][2].title(), 
+        'documento':pres['data'][3].title(), 'autor':pres['data'][4].title(), 'editorial':pres['data'][5].title(), 'tipo_doc':pres['data'][6].title(),
+        'fecha_pres':pres['data'][8], 'fecha_dev':pres['data'][10], 'estado': pres['data'][15].title()}
         prestamos.append(prestamoJson)
+
+
     return JsonResponse({'data' : prestamos})
 
 def catalogo(request): 
@@ -838,11 +847,14 @@ def logout(request):
 
     #vista para reserva 
 def vista_reserva(request,isbn):
+    now = datetime.now().strftime('%Y-%m-%d')
     data = { 
         'form': ReservaForm(), 
         'ejem': id_ejem(isbn,1),
         'doc': filtro_doc(isbn),
-        "fecha": fecha_proxima(isbn)
+        "fecha": fecha_proxima(isbn),
+        "disp": num_ejem_dis(isbn),
+        "fecha_2" :now
     }
     return render(
     request,
@@ -936,6 +948,15 @@ def proceso_solicitud_reserva(request):
     messages.success(request, "Solicitud procesada correctamente. Diríjase al mesón para retirar el documento./success")
     return redirect('catalogo')
 
+def pro_cancelar_res(request):
+    num= request.POST.get('num','')
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("sp_cancelar_res", [num])
+    return redirect('solicitudes')
+    
+    
 
 # VISTAS DE SOLICITUD DOCUMENTO
 
@@ -1087,6 +1108,22 @@ def pres_filtrado(numero_pres):
         })
     
     return lista
+
+def pres_filtrado_rut_usr(rut_usr):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("SP_PRESTAMO_FILTRADO_RUT_USR", [rut_usr, out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
 
 def enviar_correo_dev(request): 
     numero_pres = request.GET.get('numero_pres')

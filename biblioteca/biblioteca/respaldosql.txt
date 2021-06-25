@@ -658,6 +658,40 @@
                                 WHERE p.numero_pres = v_numero_pres;
         END SP_PRESTAMO_FILTRADO;
 
+
+-- SP FILTRA PRESTAMO POR RUT (API)
+create or replace PROCEDURE SP_PRESTAMO_FILTRADO_RUT_USR(v_rut_usr VARCHAR2, prestamo OUT SYS_REFCURSOR)
+      IS
+      BEGIN
+         OPEN prestamo FOR  SELECT
+                            u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre 
+                            ,tp.tipo, 
+                            l.titulo , 
+                            l.autor, 
+                            l.editorial , 
+                            td.descripcion, 
+                            c.descripcion , 
+                            to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
+                            to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",
+                            to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
+                            to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", 
+                            dsp.fecha_devolucion - sp.fecha_solicitud , 
+                            p.numero_pres, 
+                            dsp.id_ejem, 
+                            p.estado,
+                            to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss'), 
+                            trunc(dsp.fecha_devolucion - sysdate), 
+                            l.isbn
+                        FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
+                        JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
+                        JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
+                        JOIN usuario u on(u.rut_usr = sp.usuario_rut_usr)
+                        JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
+                        JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
+                        JOIN categoria c on(c.id_cate = l.categoria_id_cate)
+                        WHERE u.rut_usr = v_rut_usr;
+      END SP_PRESTAMO_FILTRADO_RUT_USR;
+
     -------------------- comprobante solicitud 
     create or replace PROCEDURE sp_comprobante_pres(v_rut varchar2,v_fecha varchar,comprobante out SYS_REFCURSOR)
         IS
@@ -778,6 +812,17 @@
 
         
 
+    --procedimiento para cancelar reserva
+    
+    create or replace PROCEDURE sp_cancelar_res(v_res_can number)
+      IS
+         
+      BEGIN
+          UPDATE reserva SET estado = 'cancelado'
+          WHERE numero_res = v_res_can;
+          COMMIT;
+      END;
+
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA CATALOGO
 ---------------------------------------------------------------
@@ -846,6 +891,7 @@
         BEGIN
             OPEN usuarios FOR  SELECT U.*
                                         , TU.tipo
+                                        , u. nombre ||' '|| u.apellido_p ||' '|| u.apellido_m as nombre_completo
                                 FROM usuario U
                                 INNER JOIN tipo_usuario TU
                                     ON (u.tipo_usuario_id_tipo = tu.id_tipo)

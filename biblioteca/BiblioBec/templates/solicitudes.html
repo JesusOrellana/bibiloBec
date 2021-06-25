@@ -236,7 +236,11 @@
                     <input hidden type="text" name="fecha_hasta"value={{r.data.8}}>
                     <button class="btn btn-primary">Aprobar Solicitud</button>
                   </form></td>
-                  <td><a href="proceso-cancelar-reserva/{{p.data.13}}/{{p.data.14}}" class="btn btn-danger">Cancelar Solicitud</a></td>
+                  <td><form action="{% url 'creserva' %}" method = "POST">
+                    {% csrf_token %}
+                    <input hidden type="text" name="num" value={{r.data.0}}>
+                    <button class="btn btn-danger">cancelar Solicitud</button>
+                  </form></td>
                   {% endif %}
                 </tr>
                 {% endfor %}

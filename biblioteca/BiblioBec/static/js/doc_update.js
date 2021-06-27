@@ -4,13 +4,21 @@ $(document).ready(function() {
   $('#id_tipo_documento_id_tipo_doc').prop('class','form-control')
   $('#id_categoria_id_cate').prop('class','form-control')
   $('#id_tipo_medio').prop('class','form-control')
+  $('#id_editorial').prop('class','form-control')
   t_doc = $('#t_doc').val()
   $("#id_tipo_documento_id_tipo_doc option[value="+t_doc+"]").attr("selected",true);
   t_cat = $('#t_cat').val()
   $("#id_categoria_id_cate option[value="+t_cat+"]").attr("selected",true);
   t_med = $('#t_med').val()
   $("#id_tipo_medio option[value="+t_med+"]").attr("selected",true);
-
+  t_edit = $('#t_edit').val()
+  $("#id_editorial option[value="+t_edit+"]").attr("selected",true);
+  $('#id_fecha_publicacion').removeAttr("required");
+  $('#id_tipo_medio').removeAttr("required");
+  $('#id_edicion').removeAttr("required");
+  $('#id_categoria_id_cate').removeAttr("required");
+  $('#id_tipo_documento_id_tipo_doc').removeAttr("required");
+  $('#id_editorial').removeAttr("required");
 });
 
 function validarForm()
@@ -26,8 +34,6 @@ function validarForm()
   medio = $('#id_tipo_medio').val()
   imagen = $('#id_imagen').val()
   ubi = $('#id_ubicacion').val()
-  estado = $('#id_estado').val()
-  stock = $('#id_stock').val()
 
   var exr = new RegExp("^[0-9,$]");
   if(isbn == "")
@@ -301,7 +307,7 @@ function eliminarEjemplar(id_ejem){
     const csrftoken = getCookie('csrftoken');
 
     $.ajax({
-        url: 'http://192.168.0.13:8000/ejemplar/delete/',
+        url: '/ejemplar/delete/',
         method: 'POST',
         data:{
             'ejem': id_ejem,
@@ -310,6 +316,7 @@ function eliminarEjemplar(id_ejem){
         async: false,
         success: function(data){
             count = 0
+            console.log(data)
             if(data == 1)
             {
                 
@@ -404,65 +411,66 @@ function actualizarStock(isbn,stock,ubi) {
     
 
     const csrftoken = getCookie('csrftoken');
-
-    $.ajax({
-        url: 'http://192.168.0.13:8000/ejemplar/update/',
-        method: 'POST',
-        data:{
-            'isbn': isbn,
-            'stock': stock,
-            'ubi':ubi,
-            csrfmiddlewaretoken: csrftoken
-        },
-        async: false,
-        success: function(data){
-            if(data == 1)
-            {
-                
-                toastr.success("Operación realizada con exito","EXITO",{
-                    "closeButton": true,
-                    "debug": false,
-                    "newestOnTop": false,
-                    "progressBar": true,
-                    "positionClass": "toast-bottom-right",
-                    "preventDuplicates": false,
-                    "onclick": null,
-                    "showDuration": "300",
-                    "hideDuration": "1000",
-                    "timeOut": "5000",
-                    "extendedTimeOut": "1000",
-                    "showEasing": "swing",
-                    "hideEasing": "linear",
-                    "showMethod": "fadeIn",
-                    "hideMethod": "fadeOut"
-                });
-                
-                setTimeout('cambiarHecho2()',hora2());
-               
+    if(validarStock())
+    {
+        $.ajax({
+            url: '/ejemplar/update/',
+            method: 'POST',
+            data:{
+                'isbn': isbn,
+                'stock': stock,
+                'ubi':ubi,
+                csrfmiddlewaretoken: csrftoken
+            },
+            async: false,
+            success: function(data){
+                if(data == 1)
+                {
+                    
+                    toastr.success("Operación realizada con exito","EXITO",{
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    });
+                    
+                    setTimeout('cambiarHecho2()',hora2());
+                   
+                }
+                else
+                {
+                    toastr.error("Ha ocurrido un problema, no se pudo actualizar el stock","ERROR",{
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    });
+                }
             }
-            else
-            {
-                toastr.error("Ha ocurrido un problema, no se pudo actualizar el stock","ERROR",{
-                    "closeButton": true,
-                    "debug": false,
-                    "newestOnTop": false,
-                    "progressBar": true,
-                    "positionClass": "toast-bottom-right",
-                    "preventDuplicates": false,
-                    "onclick": null,
-                    "showDuration": "300",
-                    "hideDuration": "1000",
-                    "timeOut": "5000",
-                    "extendedTimeOut": "1000",
-                    "showEasing": "swing",
-                    "hideEasing": "linear",
-                    "showMethod": "fadeIn",
-                    "hideMethod": "fadeOut"
-                });
-            }
-        }
-    })
-
+        })
+    }
 } 
 
 function getCookie(name) {
@@ -479,4 +487,59 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+function validarStock()
+{
+  stock = $('#stock').val()
+  console.log(stock)
+  var exr = new RegExp("^[0-9,$]");
+  if(stock == "")
+  {
+      $('#stock').focus()
+      toastr.error("Debe Ingresar una cantidad para registrar el nuevo stock","ERROR",{
+          "closeButton": true,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": true,
+          "positionClass": "toast-bottom-right",
+          "preventDuplicates": false,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": "5000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+      });
+      return false;
+  }
+  if(!exr.test(stock))
+    {
+        $('#id_edicion').focus()
+        toastr.error("Solo puede ingresar numeros en el stock del documento","ERROR",{
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        });
+        return false;
+    }
+    if(stock > 0)
+  {
+      return true;
+  }
 }

@@ -48,7 +48,7 @@ function calcularSancion()
     if(cont > 0)
     {
         $.ajax({
-            url: 'http://192.168.0.13:8000/calcular-sansion/',
+            url: '/calcular-sansion/',
             method: 'POST',
             data:{
                 'moroso[]': lista,

@@ -14,7 +14,7 @@ $(document).ready(function() {
     $("#id_autor").prop('placeholder','Nombre autor del documento')
     $('#id_editorial').prop('class','form-control')
     $('#id_editorial').removeAttr("required");
-    $("#id_editorial").prop('placeholder','Editorial del documento')
+    $("#id_editorial option[selected]").html('Selecciona Una editorial')
     $('#id_fecha_publicacion').prop('class','form-control')
     $('#id_fecha_publicacion').prop('type','date')
     $('#id_fecha_publicacion').removeAttr("required");
@@ -52,8 +52,6 @@ $(document).ready(function() {
     medio = $('#id_tipo_medio').val()
     imagen = $('#id_imagen').val()
     ubi = $('#id_ubicacion').val()
-    estado = $('#id_estado').val()
-    stock = $('#id_stock').val()
 
     var exr = new RegExp("^[0-9,$]");
     if(isbn == "")
@@ -435,7 +433,7 @@ $(document).ready(function() {
     const csrftoken = getCookie('csrftoken');
 
     $.ajax({
-        url: 'http://192.168.0.13:8000/fin-sancion/',
+        url: '/fin-sancion/',
         method: 'POST',
         data:{
             'rut':rut,

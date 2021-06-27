@@ -334,11 +334,9 @@ def delete_doc(request,isbn):
         contTotal = num_ejem(isbn)
         contTotal = contTotal[0]['data'][0]
         if(contTotal == cont):
-            doc = get_object_or_404(Libro,isbn=isbn)
             cursor_dj = connection.cursor()
             cursor_ex = cursor_dj.connection.cursor() 
             cursor_ex.callproc('SP_DELETE_EJEMPLAR',[isbn,0,1])
-            doc.delete()
             data = {
                         'libros': lista_doc(),
                         "msj": "exi_delete",
@@ -428,7 +426,6 @@ def update_doc(request):
         messages.error(request, "Lo sentimos, ha ocurrido un error./error")
         return redirect('catalogo')
     
-
 def editar_documento(isbn,titulo ,autor ,editorial ,fecha ,cat,doc,medio,edi,imagen ,ubi,opcion):
     cursor_dj = connection.cursor()
     cursor_ex = cursor_dj.connection.cursor() 

@@ -475,14 +475,28 @@
 
     -- PROCEDIMIENTO ELIMINAR EJEMPLARES--
     create or replace PROCEDURE sp_delete_ejemplar(
-    v_isbn VARCHAR2
-    ) 
-    IS
-    BEGIN
-        DELETE FROM detalle_solicitud_prestamo WHERE isbn = v_isbn;
-        DELETE FROM ejemplar WHERE isbn = v_isbn;
-    commit;
-    END sp_delete_ejemplar;
+        v_isbn VARCHAR2,
+        v_ejem NUMBER,
+        v_opcion NUMBER
+        ) 
+        IS
+        BEGIN
+            IF v_opcion = 1 
+            THEN
+                DELETE FROM detalle_solicitud_prestamo WHERE isbn = v_isbn;
+                DELETE FROM sancion WHERE isbn = v_isbn;
+                DELETE FROM ejemplar WHERE isbn = v_isbn;
+                DELETE from reserva WHERE isbn = v_isbn;
+                DELETE FROM libro WHERE isbn = v_isbn;
+            ELSIF v_opcion = 2
+            THEN
+                DELETE FROM detalle_solicitud_prestamo WHERE id_ejem = v_ejem;
+                DELETE FROM sancion WHERE id_ejem = v_ejem;
+                DELETE from reserva WHERE id_ejem = v_ejem;
+                DELETE FROM ejemplar WHERE id_ejem = v_ejem;
+            END IF;
+        commit;
+        END sp_delete_ejemplar;
 
     -- PROCEDIMIENTO PARA CONTAR EL NUMERO DE EJEMPLARES
     create or replace PROCEDURE sp_num_ejem(v_isbn VARCHAR2 ,disponible out SYS_REFCURSOR)
@@ -549,11 +563,13 @@
 
 
     -- devoluciones prestamos
-    create or replace PROCEDURE SP_DEVOLUCION_DOC(v_id_ejem VARCHAR2,v_num_pres VARCHAR2)
+    create or replace PROCEDURE SP_DEVOLUCION_DOC(v_id_ejem VARCHAR2,v_num_pres VARCHAR2)   
       IS
       BEGIN
             UPDATE ejemplar set estado = 1 WHERE id_ejem = v_id_ejem;
             UPDATE prestamo set estado = 3 WHERE numero_pres = v_num_pres;
+            UPDATE sancion set estado = 2 WHERE numero_pres = v_num_pres;
+            COMMIT;
       END;
 
 
@@ -599,7 +615,9 @@
             open disponible for SELECT id_ejem FROM ejemplar where estado = 1 and rownum <= 1 and isbn = v_isbn;
         ELSIF v_opcion = 2
         THEN
-            open disponible for SELECT id_ejem,estado FROM ejemplar where isbn = v_isbn;
+            open disponible for SELECT e.id_ejem,e.estado,ee.estado FROM ejemplar e 
+            JOIN estado_ejem ee on(ee.id_estado = e.estado)
+            where isbn = v_isbn;
         END IF;
     END sp_ejemplar;
 
@@ -620,7 +638,8 @@
         u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
         c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
         to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
-        to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss')
+        to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,
+        to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss'),dsp.fecha_devolucion - sysdate , l.isbn
         FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
         JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
         JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)

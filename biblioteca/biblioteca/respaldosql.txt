@@ -641,7 +641,8 @@
         u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
         c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
         to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
-        to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss'),
+        to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,
+        to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss'),dsp.fecha_devolucion - sysdate , l.isbn,
         edit.editorial, ep.estado
         FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
         JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
@@ -688,33 +689,21 @@ create or replace PROCEDURE SP_PRESTAMO_FILTRADO_RUT_USR(v_rut_usr VARCHAR2, pre
       IS
       BEGIN
          OPEN prestamo FOR  SELECT
-                            u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre 
-                            ,tp.tipo, 
-                            l.titulo , 
-                            l.autor, 
-                            l.editorial , 
-                            td.descripcion, 
-                            c.descripcion , 
-                            to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
-                            to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",
-                            to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
-                            to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", 
-                            dsp.fecha_devolucion - sp.fecha_solicitud , 
-                            p.numero_pres, 
-                            dsp.id_ejem, 
-                            p.estado,
-                            to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss'), 
-                            edit.editorial,
-                            ep.estado
-                        FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
-                        JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
-                        JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
-                        JOIN usuario u on(u.rut_usr = sp.usuario_rut_usr)
-                        JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
-                        JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
-                        JOIN categoria c on(c.id_cate = l.categoria_id_cate)
-                        JOIN editorial edit on (l.editorial = edit.id_editorial)
-                        JOIN estado_pres ep on (p.estado = ep.id_estado)
+        u.rut_usr, u.nombre || ' ' || u.apellido_p as nombre ,tp.tipo, l.titulo , l.autor, l.editorial , td.descripcion, 
+        c.descripcion , to_char(sp.fecha_solicitud,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora solicitud",
+        to_char(sp.fecha_solicitud,'HH24:MI:ss') as "hora solicitud",to_char(dsp.fecha_devolucion,'dd/mm/yyyy HH24:MI:ss')as "fecha y hora devolucion",
+        to_char(dsp.fecha_devolucion,'HH24:MI:ss') as "hora devolucion", dsp.fecha_devolucion - sp.fecha_solicitud , p.numero_pres, dsp.id_ejem, p.estado,
+        to_char(p.fecha_prestamo,'ddmmyyyyHH24MIss'),dsp.fecha_devolucion - sysdate , l.isbn,
+        edit.editorial, ep.estado
+        FROM libro l join detalle_solicitud_prestamo dsp on(l.isbn = dsp.isbn)
+        JOIN solicitud_prestamo sp on(sp.numero_solicitud = dsp.numero_solicitud)
+        JOIN prestamo p on(p.numero_solicitud = sp.numero_solicitud)
+        JOIN usuario u on(u.rut_usr = sp.usuario_rut_usr)
+        JOIN tipo_prestamo tp on(tp.tipo_prestamo_id = p.tipo_prestamo)
+        JOIN tipo_documento td on(td.id_tipo_doc = l.tipo_documento_id_tipo_doc)
+        JOIN categoria c on(c.id_cate = l.categoria_id_cate)
+        JOIN editorial edit on (l.editorial = edit.id_editorial)
+        JOIN estado_pres ep on (p.estado = ep.id_estado)
                         WHERE u.rut_usr = v_rut_usr;
       END SP_PRESTAMO_FILTRADO_RUT_USR;
       

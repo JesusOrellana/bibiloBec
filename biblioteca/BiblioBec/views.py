@@ -17,8 +17,7 @@ from datetime import datetime
 # Create your views here.
 #Fecha actual
 
-
-# API
+#API
 def APILogin(request, rut_usr, password):
     usuarios = Usuario.objects.all()
     if not rut_usr:
@@ -60,10 +59,9 @@ def APIPrestamos(request, rut_usr):
     prestamos = []
     for pres in lista:
         prestamoJson = {'numero_pres':pres['data'][13],'rut_usr': pres['data'][0], 'nombre_usr': pres['data'][1].title(), 'tipo_pres': pres['data'][2].title(), 
-        'documento':pres['data'][3].title(), 'autor':pres['data'][4].title(), 'editorial':pres['data'][17].title(), 'tipo_doc':pres['data'][6].title(),
-        'fecha_pres':pres['data'][8], 'fecha_dev':pres['data'][10], 'estado': pres['data'][18].title()}
+        'documento':pres['data'][3].title(), 'autor':pres['data'][4].title(), 'editorial':pres['data'][19].title(), 'tipo_doc':pres['data'][6].title(),
+        'fecha_pres':pres['data'][8], 'fecha_dev':pres['data'][10], 'estado': pres['data'][20].title()}
         prestamos.append(prestamoJson)
-
 
     return JsonResponse({'data' : prestamos})
 

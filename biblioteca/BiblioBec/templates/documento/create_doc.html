@@ -153,11 +153,152 @@
                 </div>
             </div>
             <div class="df-btn">
-                <a href="{% url 'catalogo' %}" class="btn btn-primary">Volver</a>
-                <input type="submit" value="Agregar Documento" class="btn btn-success">
+                <a href="{% url 'catalogo' %}" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
+                        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
+                      </svg>
+                    Volver
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                      </svg>
+                    Agregar
+                </button>
             </div>
         </form>
     </div>
     
+</div>
+<button type="button" class="btn btn-primary" hidden id="btn_modal" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Open modal for @mdo</button>
+
+<style>
+    .modal-body #estante
+    {
+        display:inline-block; 
+        text-align:center;
+    }
+    #estante div
+    {
+        display:inline-block; 
+        border:1px solid black;
+    }
+    #estante div p
+    {
+        background:#096f91;
+        display:inline-block; 
+        border: solid 1px black;
+        color:white;
+    }
+    #estante div p,#estante div input
+    {
+        display:inline-block; 
+    }
+</style>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+            {% load static %}
+            <img class="img-fluid" src="{% static 'img/logo.png' %}" width="180"
+            height="110"
+            alt="logo">
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row col-12 " id="estante">
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="A1"><p class="col-5">A1</p><input type="radio" class="col-5" value="A1" name ="estan"></div>
+                <div class="col-5 p-2 " id="A2"><p class="col-5">A2</p><input type="radio" class="col-5" value="A2" name ="estan"></div>
+                <div class="col-5 p-2 " id="A3"><p class="col-5">A3</p><input type="radio" class="col-5" value="A3" name ="estan"></div>
+                <div class="col-5 p-2 " id="A4"><p class="col-5">A4</p><input type="radio" class="col-5" value="A4" name ="estan"></div>
+                <div class="col-5 p-2 " id="A5"><p class="col-5">A5</p><input type="radio" class="col-5" value="A5" name ="estan"></div>
+                <div class="col-5 p-2 " id="A6"><p class="col-5">A6</p><input type="radio" class="col-5" value="A6" name ="estan"></div>
+            </div>
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="B1"><p class="col-5">B1</p><input type="radio" class="col-5" value="B1" name ="estan"></div>
+                <div class="col-5 p-2 " id="B2"><p class="col-5">B2</p><input type="radio" class="col-5" value="B2" name ="estan"></div>
+                <div class="col-5 p-2 " id="B3"><p class="col-5">B3</p><input type="radio" class="col-5" value="B3" name ="estan"></div>
+                <div class="col-5 p-2 " id="B4"><p class="col-5">B4</p><input type="radio" class="col-5" value="B4" name ="estan"></div>
+                <div class="col-5 p-2 " id="B5"><p class="col-5">B5</p><input type="radio" class="col-5" value="B5" name ="estan"></div>
+                <div class="col-5 p-2 " id="B6"><p class="col-5">B6</p><input type="radio" class="col-5" value="B6" name ="estan"></div>
+            </div>
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="C1"><p class="col-5">C1</p><input type="radio" class="col-5" value="C1" name ="estan"></div>
+                <div class="col-5 p-2 " id="C2"><p class="col-5">C2</p><input type="radio" class="col-5" value="C2" name ="estan"></div>
+                <div class="col-5 p-2 " id="C3"><p class="col-5">C3</p><input type="radio" class="col-5" value="C3" name ="estan"></div>
+                <div class="col-5 p-2 " id="C4"><p class="col-5">C4</p><input type="radio" class="col-5" value="C4" name ="estan"></div>
+                <div class="col-5 p-2 " id="C5"><p class="col-5">C5</p><input type="radio" class="col-5" value="C5" name ="estan"></div>
+                <div class="col-5 p-2 " id="C6"><p class="col-5">C6</p><input type="radio" class="col-5" value="C6" name ="estan"></div>
+            </div>
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="D1"><p class="col-5">D1</p><input type="radio" class="col-5" value="D1" name ="estan"></div>
+                <div class="col-5 p-2 " id="D2"><p class="col-5">D2</p><input type="radio" class="col-5" value="D2" name ="estan"></div>
+                <div class="col-5 p-2 " id="D3"><p class="col-5">D3</p><input type="radio" class="col-5" value="D3" name ="estan"></div>
+                <div class="col-5 p-2 " id="D4"><p class="col-5">D4</p><input type="radio" class="col-5" value="D4" name ="estan"></div>
+                <div class="col-5 p-2 " id="D5"><p class="col-5">D5</p><input type="radio" class="col-5" value="D5" name ="estan"></div>
+                <div class="col-5 p-2 " id="D6"><p class="col-5">D6</p><input type="radio" class="col-5" value="D6" name ="estan"></div>
+            </div>
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="E1"><p class="col-5">E1</p><input type="radio" class="col-5" value="E1" name ="estan"></div>
+                <div class="col-5 p-2 " id="E2"><p class="col-5">E2</p><input type="radio" class="col-5" value="E2" name ="estan"></div>
+                <div class="col-5 p-2 " id="E3"><p class="col-5">E3</p><input type="radio" class="col-5" value="E3" name ="estan"></div>
+                <div class="col-5 p-2 " id="E4"><p class="col-5">E4</p><input type="radio" class="col-5" value="E4" name ="estan"></div>
+                <div class="col-5 p-2 " id="E5"><p class="col-5">E5</p><input type="radio" class="col-5" value="E5" name ="estan"></div>
+                <div class="col-5 p-2 " id="E6"><p class="col-5">E6</p><input type="radio" class="col-5" value="E6" name ="estan"></div>
+            </div>
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="F1"><p class="col-5">F1</p><input type="radio" class="col-5" value="F1" name ="estan"></div>
+                <div class="col-5 p-2 " id="F2"><p class="col-5">F2</p><input type="radio" class="col-5" value="F2" name ="estan"></div>
+                <div class="col-5 p-2 " id="F3"><p class="col-5">F3</p><input type="radio" class="col-5" value="F3" name ="estan"></div>
+                <div class="col-5 p-2 " id="F4"><p class="col-5">F4</p><input type="radio" class="col-5" value="F4" name ="estan"></div>
+                <div class="col-5 p-2 " id="F5"><p class="col-5">F5</p><input type="radio" class="col-5" value="F5" name ="estan"></div>
+                <div class="col-5 p-2 " id="F6"><p class="col-5">F6</p><input type="radio" class="col-5" value="F6" name ="estan"></div>
+            </div>
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="G1"><p class="col-5">G1</p><input type="radio" class="col-5" value="G1" name ="estan"></div>
+                <div class="col-5 p-2 " id="G2"><p class="col-5">G2</p><input type="radio" class="col-5" value="G2" name ="estan"></div>
+                <div class="col-5 p-2 " id="G3"><p class="col-5">G3</p><input type="radio" class="col-5" value="G3" name ="estan"></div>
+                <div class="col-5 p-2 " id="G4"><p class="col-5">G4</p><input type="radio" class="col-5" value="G4" name ="estan"></div>
+                <div class="col-5 p-2 " id="G5"><p class="col-5">G5</p><input type="radio" class="col-5" value="G5" name ="estan"></div>
+                <div class="col-5 p-2 " id="G6"><p class="col-5">G6</p><input type="radio" class="col-5" value="G6" name ="estan"></div>
+            </div>
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="H1"><p class="col-5">H1</p><input type="radio" class="col-5" value="H1" name ="estan"></div>
+                <div class="col-5 p-2 " id="H2"><p class="col-5">H2</p><input type="radio" class="col-5" value="H2" name ="estan"></div>
+                <div class="col-5 p-2 " id="H3"><p class="col-5">H3</p><input type="radio" class="col-5" value="H3" name ="estan"></div>
+                <div class="col-5 p-2 " id="H4"><p class="col-5">H4</p><input type="radio" class="col-5" value="H4" name ="estan"></div>
+                <div class="col-5 p-2 " id="H5"><p class="col-5">H5</p><input type="radio" class="col-5" value="H5" name ="estan"></div>
+                <div class="col-5 p-2 " id="H6"><p class="col-5">H6</p><input type="radio" class="col-5" value="H6" name ="estan"></div>
+            </div>
+            <div class="col-lg-3 m-1" >
+                <div class="col-5 p-2 " id="I1"><p class="col-5">I1</p><input type="radio" class="col-5" value="I1" name ="estan"></div>
+                <div class="col-5 p-2 " id="I2"><p class="col-5">I2</p><input type="radio" class="col-5" value="I2" name ="estan"></div>
+                <div class="col-5 p-2 " id="I3"><p class="col-5">I3</p><input type="radio" class="col-5" value="I3" name ="estan"></div>
+                <div class="col-5 p-2 " id="I4"><p class="col-5">I4</p><input type="radio" class="col-5" value="I4" name ="estan"></div>
+                <div class="col-5 p-2 " id="I5"><p class="col-5">I5</p><input type="radio" class="col-5" value="I5" name ="estan"></div>
+                <div class="col-5 p-2 " id="I6"><p class="col-5">I6</p><input type="radio" class="col-5" value="I6" name ="estan"></div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancel_ubi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
+                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
+            </svg>
+            Volver
+        </button>
+        <button type="button" class="btn btn-success" id="select_ubi" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1h-2z"/>
+                <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708l3-3z"/>
+            </svg>
+            Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

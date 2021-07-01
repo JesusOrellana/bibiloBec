@@ -37,6 +37,29 @@ $(document).ready(function() {
     $("#id_tipo_medio option[selected]").html('Selecciona Un tipo medio')
     btn_estado1 = true
     btn_estado2 = true
+
+    $("#id_ubicacion").click(function(){
+        $("#btn_modal").trigger("click");
+    });
+    lista = ["NO"]
+    $('input[type="radio"]').on('change', this, function(){
+        //alert($(this).val());
+        id = $(this).val();
+        lista.push(id);
+        $("#"+lista[(lista.length-2)]).css("background","white");
+        $("#"+id).css("background","green");
+        $("#select_ubi").removeAttr("hidden");
+    });
+
+    $("#select_ubi").click(function(){
+        valor= $('input:radio[name=estan]:checked').val()
+        console.log(valor)
+        $("#"+valor).css("background","white");
+        $("#id_ubicacion").prop("value",valor);
+        $("#cancel_ubi").trigger("click");
+        $('input:radio[name=estan]:checked').prop("checked",false) 
+
+    })
   });
   
   function validarForm()

@@ -42,5 +42,6 @@ urlpatterns = [
     path('proceso-aprobacion-reserva', views.proceso_solicitud_reserva, name="preserva"),
     path('proceso-cancelar-reserva', views.pro_cancelar_res, name="creserva"),
     path('ejemplar/delete/', views.delete_ejemplar, name="ejemplar_delete"),
-    path('ejemplar/update/', views.update_stock, name="ejemplar_update")
+    path('ejemplar/update/', views.update_stock, name="ejemplar_update"),
+    path('ejemplar/desactivar/', views.desactivar_ejemplar, name="ejemplar_desactivar")
 ]

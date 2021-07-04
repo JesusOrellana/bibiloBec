@@ -43,6 +43,11 @@ $(document).ready(function() {
 
     })
 
+    $(".desEjem").click(function(){
+        $("#ejem_des").prop("value",$(this).attr("data-ejem"))
+        $("#btn_modal2").trigger("click");
+    })
+
 });
 
 function validarForm()
@@ -567,3 +572,78 @@ function validarStock()
       return true;
   }
 }
+
+//deshabilitar  ejemplar
+
+function desEjemplar(){
+    
+
+    const csrftoken = getCookie('csrftoken');
+    motivo = $("#motivo").val();
+    id_ejem = $("#ejem_des").val();
+    $.ajax({
+        url: '/ejemplar/desactivar/',
+        method: 'POST',
+        data:{
+            'ejem': id_ejem,
+            'motivo': motivo,
+            csrfmiddlewaretoken: csrftoken
+        },
+        async: false,
+        success: function(data){
+            count = 0
+            console.log(data)
+            if(data == 1)
+            {
+                
+                toastr.success("Ejemplar "+id_ejem+" Deshabilitado","EXITO",{
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-bottom-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                });
+
+                setTimeout('cambiarHecho2()',hora2());
+               
+            }
+            else
+            {
+                toastr.error("Ha ocurrido un problema, no se pudo deshabilitar el ejemplar","ERROR",{
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-bottom-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                });
+            }
+        }
+    })
+
+    setTimeout('cambiarHecho()', hora());
+
+} 
+
+$("#btnDesEjem").click(function(){
+    desEjemplar();
+})

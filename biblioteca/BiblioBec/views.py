@@ -323,15 +323,30 @@ def num_ejem(isbn):
     
     return lista
 
+def num_ejem_pres(isbn):
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+    cursor.callproc("sp_num_presta", [isbn,out_cur])
+
+    lista = []
+
+    for i in out_cur:
+        lista.append({
+            'data':i
+        })
+    
+    return lista
+
 def delete_doc(request,isbn):
-
-
-    try:
-        cont = num_ejem_dis(isbn)
-        cont = cont[0]['data'][0]
-        contTotal = num_ejem(isbn)
-        contTotal = contTotal[0]['data'][0]
-        if(contTotal == cont):
+    pres = num_ejem_pres(isbn)
+    pres = pres[0]['data'][0]
+    cont = num_ejem_dis(isbn)
+    cont = cont[0]['data'][0]
+    contTotal = num_ejem(isbn)
+    contTotal = contTotal[0]['data'][0]
+    if(contTotal == cont):
+        if(pres <= 0):
             cursor_dj = connection.cursor()
             cursor_ex = cursor_dj.connection.cursor() 
             cursor_ex.callproc('SP_DELETE_EJEMPLAR',[isbn,0,1])
@@ -343,18 +358,71 @@ def delete_doc(request,isbn):
             messages.success(request, "Documento eliminado./success")
             return redirect('catalogo')
         else:
-           messages.error(request, "El proceso no se pudo realizar debido a que hay ejemplares de este documento en prestamo./error")
+            cursor_dj = connection.cursor()
+            cursor_ex = cursor_dj.connection.cursor() 
+            cursor_ex.callproc('sp_desactivar_ejemplar',[isbn,0,1,'sin motivo'])
+            data = {
+                        'libros': lista_doc(),
+                        "msj": "exi_delete",
+
+                    }
+            messages.success(request, "Documento deshabilitado./success")
+            return redirect('catalogo')
+    """"
+    try:
+        pres = num_ejem_pres(isbn)
+        pres = pres[0]['data'][0]
+        cont = num_ejem_dis(isbn)
+        cont = cont[0]['data'][0]
+        contTotal = num_ejem(isbn)
+        contTotal = contTotal[0]['data'][0]
+        if(contTotal == cont):
+            if(pres <= 0):
+                cursor_dj = connection.cursor()
+                cursor_ex = cursor_dj.connection.cursor() 
+                cursor_ex.callproc('SP_DELETE_EJEMPLAR',[isbn,0,1])
+                data = {
+                            'libros': lista_doc(),
+                            "msj": "exi_delete",
+
+                        }
+                messages.success(request, "Documento eliminado./success")
+                return redirect('catalogo')
+            else:
+                cursor_dj = connection.cursor()
+                cursor_ex = cursor_dj.connection.cursor() 
+                cursor_ex.callproc('sp_desactivar_ejemplar',[isbn,0,1,'sin motivo'])
+                data = {
+                            'libros': lista_doc(),
+                            "msj": "exi_delete",
+
+                        }
+                messages.success(request, "Documento deshabilitado./success")
+                return redirect('catalogo')
+        else:
+           messages.error(request, "El proceso no se pudo realizar debido a que hay ejemplares de este documento en préstamo./error")
            return redirect('catalogo') 
     except:
-        messages.error(request, "El proceso no se pudo realizar debido a que hay ejemplares de este documento en prestamo./error")
+        messages.error(request, "El proceso no se pudo realizar debido a que hay ejemplares de este documento en préstamo./error")
         return redirect('catalogo')
-
+    """
 def delete_ejemplar(request):
     id_ejem = request.POST.get('ejem')
     try:
         cursor_dj = connection.cursor()
         cursor_ex = cursor_dj.connection.cursor() 
         cursor_ex.callproc('SP_DELETE_EJEMPLAR',["sin isbn",id_ejem,2])
+        return HttpResponse(1)
+    except:
+        return HttpResponse(2)
+
+def desactivar_ejemplar(request):
+    id_ejem = request.POST.get('ejem')
+    motivo = request.POST.get('motivo')
+    try:
+        cursor_dj = connection.cursor()
+        cursor_ex = cursor_dj.connection.cursor() 
+        cursor_ex.callproc('sp_desactivar_ejemplar',["sin isbn",id_ejem,2,motivo])
         return HttpResponse(1)
     except:
         return HttpResponse(2)

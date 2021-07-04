@@ -32,7 +32,8 @@
         categoria_id_cate            NUMBER(5) NOT NULL,
         tipo_documento_id_tipo_doc   NUMBER(5) NOT NULL,
         id_medio                     NUMBER(5) NOT NULL,
-        imagen                       BLOB
+        imagen                       BLOB,
+        estado                       NUMBER(1),
     );
 
     ALTER TABLE libro ADD CONSTRAINT libro_pk PRIMARY KEY ( isbn );
@@ -52,9 +53,13 @@
         id_ejem            NUMBER(6) NOT NULL,
         isbn               VARCHAR2(200) NOT NULL,
         estado             NUMBER(1) NOT NULL,
-        ubicacion          VARCHAR2(100) NOT NULL
+        ubicacion          VARCHAR2(100) NOT NULL,
+        motivo_des         VARCHAR2(150) 
     );
-
+-------------------------------------
+    ALTER TABLE libro add estado NUMBER(1) ;
+    ALTER TABLE ejemplar add motivo_des VARCHAR2(150) ;
+    ----------------------------------------
     ALTER TABLE ejemplar ADD CONSTRAINT ejemplar_pk PRIMARY KEY (id_ejem ,isbn);
 
     CREATE TABLE estado_ejem(
@@ -285,6 +290,7 @@
 
     INSERT INTO estado_ejem VALUES (1,'disponible');
     INSERT INTO estado_ejem VALUES (2,'prestamo');
+    INSERT INTO estado_ejem VALUES (3,'desactivado');
 
     INSERT INTO estado_san VALUES (1,'moroso');
     INSERT INTO estado_san VALUES (2,'devolucion');
@@ -391,29 +397,29 @@
 ---------------------------------------------------------------
     -- procedimiento para insert documento
     create or replace PROCEDURE p_agregar_documento(
-        v_isbn VARCHAR2,
-        v_titulo VARCHAR2,
-        v_autor VARCHAR2,
-        v_editorial VARCHAR2,
-        v_fecha DATE,
-        v_cat NUMBER,
-        v_doc number,
-        v_medio number,
-        v_edi number,
-        v_imagen BLOB,
-        v_ubi VARCHAR2,
-        v_stock NUMBER,
-        v_salida out NUMBER
-        
-    )is
-    BEGIN
-        INSERT INTO libro VALUES (v_isbn,v_titulo,v_autor,v_editorial,v_fecha,v_edi,v_cat,v_doc ,v_medio,v_imagen);
-        v_salida:=1;
-        FOR i IN 1..v_stock LOOP
-            INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_isbn,1,v_ubi);
-        END LOOP;
-        COMMIT;
-    end;
+            v_isbn VARCHAR2,
+            v_titulo VARCHAR2,
+            v_autor VARCHAR2,
+            v_editorial VARCHAR2,
+            v_fecha DATE,
+            v_cat NUMBER,
+            v_doc number,
+            v_medio number,
+            v_edi number,
+            v_imagen BLOB,
+            v_ubi VARCHAR2,
+            v_stock NUMBER,
+            v_salida out NUMBER
+            
+        )is
+        BEGIN
+            INSERT INTO libro VALUES (v_isbn,v_titulo,v_autor,v_editorial,v_fecha,v_edi,v_cat,v_doc ,v_medio,v_imagen,1);
+            v_salida:=1;
+            FOR i IN 1..v_stock LOOP
+                INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_isbn,1,v_ubi,'Ingreso '||sysdate);
+            END LOOP;
+            COMMIT;
+        end;
 
 
     -- procedimiento para obtener todos los documentos
@@ -427,7 +433,8 @@
     FROM libro L INNER JOIN categoria C 
         ON (l.CATEGORIA_ID_CATE = c.ID_CATE)
         INNER JOIN editorial E
-        ON (l.editorial = e.id_editorial);
+        ON (l.editorial = e.id_editorial)
+        WHERE l.estado = 1;
     END;
 
     -- procedimiento para select filtro documento
@@ -478,28 +485,22 @@
 
     -- PROCEDIMIENTO ELIMINAR EJEMPLARES--
     create or replace PROCEDURE sp_delete_ejemplar(
-        v_isbn VARCHAR2,
-        v_ejem NUMBER,
-        v_opcion NUMBER
-        ) 
-        IS
-        BEGIN
-            IF v_opcion = 1 
-            THEN
-                DELETE FROM detalle_solicitud_prestamo WHERE isbn = v_isbn;
-                DELETE FROM sancion WHERE isbn = v_isbn;
-                DELETE FROM ejemplar WHERE isbn = v_isbn;
-                DELETE from reserva WHERE isbn = v_isbn;
-                DELETE FROM libro WHERE isbn = v_isbn;
-            ELSIF v_opcion = 2
-            THEN
-                DELETE FROM detalle_solicitud_prestamo WHERE id_ejem = v_ejem;
-                DELETE FROM sancion WHERE id_ejem = v_ejem;
-                DELETE from reserva WHERE id_ejem = v_ejem;
-                DELETE FROM ejemplar WHERE id_ejem = v_ejem;
-            END IF;
-        commit;
-        END sp_delete_ejemplar;
+    v_isbn VARCHAR2,
+    v_ejem NUMBER,
+    v_opcion NUMBER
+    ) 
+    IS
+    BEGIN
+        IF v_opcion = 1 
+        THEN
+            DELETE FROM ejemplar WHERE isbn = v_isbn;
+            DELETE FROM libro WHERE isbn = v_isbn;
+        ELSIF v_opcion = 2
+        THEN
+            DELETE FROM ejemplar WHERE id_ejem = v_ejem;
+        END IF;
+    commit;
+    END sp_delete_ejemplar;
 
     -- PROCEDIMIENTO PARA CONTAR EL NUMERO DE EJEMPLARES
     create or replace PROCEDURE sp_num_ejem(v_isbn VARCHAR2 ,disponible out SYS_REFCURSOR)
@@ -519,6 +520,28 @@
         FOR i IN 1..v_stock LOOP
             INSERT INTO ejemplar VALUES (seq_ejemplar.NEXTVAL,v_isbn,1,v_ubi);
         END LOOP;
+    END;
+
+    -- procedure para desactivar ejemplar
+    create or replace PROCEDURE sp_desactivar_ejemplar(
+    v_isbn VARCHAR2,
+    v_ejem NUMBER,
+    v_opcion NUMBER,
+    v_motivo VARCHAR2
+    ) 
+    IS
+    BEGIN
+        IF v_opcion = 1 
+        THEN
+            UPDATE libro SET estado = 2 WHERE isbn = v_isbn;
+            UPDATE ejemplar SET estado = 3, motivo_des = 'documento desactivado'
+            WHERE isbn = v_isbn;
+        ELSIF v_opcion = 2
+        THEN
+            UPDATE ejemplar SET estado = 3, motivo_des = v_motivo
+            WHERE id_ejem = v_ejem;
+        END IF;
+    commit;
     END;
 ---------------------------------------------------------------
 --        PROCEDIMIENTOS PARA SANSION
@@ -566,14 +589,15 @@
 
 
     -- devoluciones prestamos
-    create or replace PROCEDURE SP_DEVOLUCION_DOC(v_id_ejem VARCHAR2,v_num_pres VARCHAR2)   
-      IS
-      BEGIN
-            UPDATE ejemplar set estado = 1 WHERE id_ejem = v_id_ejem;
-            UPDATE prestamo set estado = 3 WHERE numero_pres = v_num_pres;
-            UPDATE sancion set estado = 2 WHERE numero_pres = v_num_pres;
-            COMMIT;
-      END;
+    create or replace PROCEDURE SP_DEVOLUCION_DOC(v_id_ejem VARCHAR2,v_num_pres VARCHAR2)
+        IS
+        BEGIN
+                UPDATE ejemplar set estado = 1 WHERE id_ejem = v_id_ejem;
+                UPDATE prestamo set estado = 3 WHERE numero_pres = v_num_pres;
+                UPDATE sancion set estado = 2 ,fecha_termino =(sysdate+2) 
+                WHERE numero_pres = v_num_pres;
+                COMMIT;
+        END;
 
 
     -- proceso solicitud
@@ -611,18 +635,34 @@
 
     -- procedimento para traer un ejemplar disponible
     create or replace PROCEDURE sp_ejemplar(v_isbn varchar2,v_opcion NUMBER,disponible out SYS_REFCURSOR)
-    IS
-    BEGIN
-        IF v_opcion = 1
-        THEN
-            open disponible for SELECT id_ejem FROM ejemplar where estado = 1 and rownum <= 1 and isbn = v_isbn;
-        ELSIF v_opcion = 2
-        THEN
-            open disponible for SELECT e.id_ejem,e.estado,ee.estado FROM ejemplar e 
-            JOIN estado_ejem ee on(ee.id_estado = e.estado)
-            where isbn = v_isbn;
-        END IF;
-    END sp_ejemplar;
+        IS
+        BEGIN
+            IF v_opcion = 1
+            THEN
+                open disponible for SELECT id_ejem FROM ejemplar where estado = 1 and rownum <= 1 and isbn = v_isbn;
+            ELSIF v_opcion = 2
+            THEN
+                open disponible for SELECT e.id_ejem,e.estado,ee.estado ,(COUNT(d.id_solicitud) + COUNT(r.numero_res))
+                FROM ejemplar e 
+                JOIN estado_ejem ee on(ee.id_estado = e.estado)
+                left JOIN detalle_solicitud_prestamo d on(e.id_ejem = d.id_ejem)
+                left JOIN reserva r on(r.id_ejem = e.id_ejem)
+                where e.isbn = v_isbn
+                GROUP BY e.id_ejem,e.estado,ee.estado;
+            END IF;
+        END sp_ejemplar;
+
+    -- procedimiento ejemplares que estubieron en prestamos 
+    create or replace PROCEDURE sp_num_presta(v_isbn VARCHAR2 ,disponible out SYS_REFCURSOR)
+        IS
+        BEGIN
+            open disponible for SELECT
+            (COUNT(d.id_solicitud) + COUNT(r.numero_res)) as Esprestamo
+            FROM libro l 
+            JOIN detalle_solicitud_prestamo d on(l.isbn = d.isbn)
+            left JOIN reserva r on(r.isbn = l.isbn)
+            where d.isbn = v_isbn or r.isbn = v_isbn;
+        END;
 
     -- procedimento para contar los ejemplares disponibles --
     create or replace PROCEDURE sp_num_ejemplar_disponible(v_isbn varchar2,disponible out SYS_REFCURSOR)
@@ -684,8 +724,8 @@
         END SP_PRESTAMO_FILTRADO;
 
 
--- SP FILTRA PRESTAMO POR RUT (API)
-create or replace PROCEDURE SP_PRESTAMO_FILTRADO_RUT_USR(v_rut_usr VARCHAR2, prestamo OUT SYS_REFCURSOR)
+    -- SP FILTRA PRESTAMO POR RUT (API)
+    create or replace PROCEDURE SP_PRESTAMO_FILTRADO_RUT_USR(v_rut_usr VARCHAR2, prestamo OUT SYS_REFCURSOR)
       IS
       BEGIN
          OPEN prestamo FOR  SELECT
@@ -840,18 +880,20 @@ create or replace PROCEDURE SP_PRESTAMO_FILTRADO_RUT_USR(v_rut_usr VARCHAR2, pre
             c.descripcion 
     FROM libro L INNER JOIN categoria C 
         ON (l.CATEGORIA_ID_CATE = c.ID_CATE)
-        where id_medio IN(2,6) ;
+        where id_medio IN(2,6) and 
+        l.estado = 1;
     end;
 
     -- Procedimiento para listar solo libros en video
-    create or replace procedure sp_listar_videos(videos out SYS_REFCURSOR)
+        create or replace procedure sp_listar_videos(videos out SYS_REFCURSOR)
     is
 
     begin
         open videos for SELECT  L.*, 
             c.descripcion 
     FROM libro L INNER JOIN categoria C 
-        ON (l.CATEGORIA_ID_CATE = c.ID_CATE) where id_medio IN(3,4,5);
+        ON (l.CATEGORIA_ID_CATE = c.ID_CATE) where id_medio IN(3,4,5) and 
+        l.estado = 1;
     end;
 
     -- Procedimiento para listar solo libros de texto
@@ -862,7 +904,8 @@ create or replace PROCEDURE SP_PRESTAMO_FILTRADO_RUT_USR(v_rut_usr VARCHAR2, pre
         open libros for SELECT  L.*, 
             c.descripcion 
     FROM libro L INNER JOIN categoria C 
-        ON (l.CATEGORIA_ID_CATE = c.ID_CATE) where id_medio = 1;
+        ON (l.CATEGORIA_ID_CATE = c.ID_CATE) where id_medio = 1 and 
+        l.estado = 1;
     end;
 -----------------------------------------------------------------
 *****************************************************************
@@ -997,5 +1040,5 @@ create or replace PROCEDURE SP_PRESTAMO_FILTRADO_RUT_USR(v_rut_usr VARCHAR2, pre
 
 
 --SCRIPT PARA INSERTAR UN USUARIO ADMINISTRADOR
---INSERT INTO usuario VALUES('111111111','Administrador',' ',' ','Dirección 123',999999999,'correo@gmail.com',NULL,NULL,1,'81dc9bdb52d04dc20036dbd8313ed055',1,sysdate,1);
+INSERT INTO usuario VALUES('111111111','Administrador',' ',' ','Dirección 123',999999999,'correo@gmail.com',NULL,NULL,1,'81dc9bdb52d04dc20036dbd8313ed055',1,sysdate,1);
 COMMIT;

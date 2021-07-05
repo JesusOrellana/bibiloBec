@@ -69,6 +69,11 @@
     text-align: center;
 }
 
+.cat-titulo
+{
+  padding:5px;
+}
+
 
 @media (min-width:800px){
     .doc-form

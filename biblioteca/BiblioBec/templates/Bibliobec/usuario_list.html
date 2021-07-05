@@ -23,7 +23,10 @@
 </script>
 <br>
 <div class="masthead container d-flex flex-column" style="max-width: 1140px;">
-  <h2 class="text-center text-uppercase">Usuarios</h2>
+  <div class="container text-center">
+    <h2>USUARIOS</h2>
+    <hr>
+  </div>
   <div class="row">
     <div class="col-md-5">
       <form id="formRut" class="d-flex" method="POST" >
@@ -70,7 +73,7 @@
       {% if u.data.14 == 1 %}
         <div class="col-md-1"></div>
           <div class="col-md-10">
-            <div class="card mb-3" >
+            <div class="card mb-4 p-1" >
               <div class="row g-0">
                 <div class="col-md-3">
                   {% if u.foto %}
@@ -96,9 +99,9 @@
                       </div>
                       {% if request.session.user_login.user.tipo == 1 %}
                         <div class="col-md-2">
-                            <a class="btn btn-celeste mt-5" href="usuario/update?rut_usr={{ u.data.0 }}" >Editar <i class="fas fa-user-edit"></i></a>
+                            <a class="btn btn-celeste mt-4 mb-4" href="usuario/update?rut_usr={{ u.data.0 }}" >Editar <i class="fas fa-user-edit"></i></a>
                             <br>
-                            <a class="btn btn-danger mt-2 mb-5" onclick="eliminarUsuario('{{u.data.0}}')">Desactivar <i class="fas fa-user-times"></i></a>
+                            <a class="btn btn-danger mb-4" onclick="eliminarUsuario('{{u.data.0}}')">Desactivar <i class="fas fa-user-times"></i></a>
                         </div>
                       {% endif %}
                     </div>

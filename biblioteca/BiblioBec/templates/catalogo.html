@@ -10,31 +10,37 @@
   <header class="masthead text-center">
       <div class="container">
         <div class = "catalogo-head">
-          <h6 class="cat-titulo">DOCUMENTOS MÁS SOLICITADOS</h6>
-          <form class="row cat-form" method="POST">
-            {%csrf_token%}
-            <div class="cat-1">
-              <input
-              class="form-control"
-              type="search"
-              placeholder="Buscar documento por título, autor o categoría"
-              name="documento"
-            />
+          <div class="container text-center p-1">
+            <h2 id="cat-titulo">DOCUMENTOS MÁS SOLICITADOS</h2>
+          </div>
+          <hr>
+          <div class="masthead container d-flex flex-column">
+            <div class="row">
+              <div class="col-sm-5">
+                <form class="d-flex" method="POST">
+                  {%csrf_token%}
+                    <input
+                    class="form-control me-2"
+                    type="search"
+                    placeholder="Buscar documento por título, autor o categoría"
+                    name="documento"
+                  />
+                    <button class="btn btn-maincolor " type="submit">
+                      <i class="fas fa-search"></i>
+                    </button>
+                </form>
             </div>
-            <div class="cat-2">
-              <button class="btn btn-maincolor " type="submit">
-                <i class="fas fa-search"></i>
-              </button>
+            <div class="col-sm-7">
+              {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
+                  <a class="btn btn-primary1" style="float: right; font-size: 14px;" href="{% url 'form_doc' %}">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
+              {%endif%}    
             </div>
-          </form>
-          <div class="c-3">
-            {% if request.session.user_login.user.tipo == 1 or request.session.user_login.user.tipo == 2 %}
-                <a class="btn btn-primary1" href="{% url 'form_doc' %}">Agregar Documento<span class="glyphicon glyphicon-plus"></span></a>        
-            {%endif%}    
-        </div>
+          </div>
         </div>
       </div>
+    </div>
   </header>
+
   <!-- Catalogo -->
   <div class="div-cat container p-4">
       <div class="row">
@@ -128,7 +134,7 @@
                 </form>
             </div>
             <div class="oper-btn">
-                <a href="" id="op-reserva" class="btn btn-success ">Reservar</a>
+              <a href="" id="op-reserva" class="btn btn-success " role="button">Reservar</a>
             </div>
         </div>
         {% endif %}

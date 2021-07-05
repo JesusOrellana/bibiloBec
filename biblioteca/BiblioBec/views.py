@@ -339,36 +339,6 @@ def num_ejem_pres(isbn):
     return lista
 
 def delete_doc(request,isbn):
-    pres = num_ejem_pres(isbn)
-    pres = pres[0]['data'][0]
-    cont = num_ejem_dis(isbn)
-    cont = cont[0]['data'][0]
-    contTotal = num_ejem(isbn)
-    contTotal = contTotal[0]['data'][0]
-    if(contTotal == cont):
-        if(pres <= 0):
-            cursor_dj = connection.cursor()
-            cursor_ex = cursor_dj.connection.cursor() 
-            cursor_ex.callproc('SP_DELETE_EJEMPLAR',[isbn,0,1])
-            data = {
-                        'libros': lista_doc(),
-                        "msj": "exi_delete",
-
-                    }
-            messages.success(request, "Documento eliminado./success")
-            return redirect('catalogo')
-        else:
-            cursor_dj = connection.cursor()
-            cursor_ex = cursor_dj.connection.cursor() 
-            cursor_ex.callproc('sp_desactivar_ejemplar',[isbn,0,1,'sin motivo'])
-            data = {
-                        'libros': lista_doc(),
-                        "msj": "exi_delete",
-
-                    }
-            messages.success(request, "Documento deshabilitado./success")
-            return redirect('catalogo')
-    """"
     try:
         pres = num_ejem_pres(isbn)
         pres = pres[0]['data'][0]
@@ -405,7 +375,7 @@ def delete_doc(request,isbn):
     except:
         messages.error(request, "El proceso no se pudo realizar debido a que hay ejemplares de este documento en préstamo./error")
         return redirect('catalogo')
-    """
+    
 def delete_ejemplar(request):
     id_ejem = request.POST.get('ejem')
     try:

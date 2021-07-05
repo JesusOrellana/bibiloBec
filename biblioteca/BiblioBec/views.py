@@ -33,7 +33,7 @@ def APILogin(request, rut_usr, password):
         return JsonResponse({'success':True, 'data': {'rut_usr':usuario[0]['data'][0], 'nombre':usuario[0]['data'][1].title(), 
         'apellido_p':usuario[0]['data'][2].title(), 'apellido_m':usuario[0]['data'][3].title(), 'direccion':usuario[0]['data'][4].title(), 
         'telefono':usuario[0]['data'][5], 'correo':usuario[0]['data'][6], 'tipo_usuario':usuario[0]['data'][15].title(), 
-        'password':usuario[0]['data'][10], 'foto': usuario[0]['foto'], 'huella':usuario[0]['huella']}})
+        'password':usuario[0]['data'][10], 'estado':usuario[0]['data'][14], 'foto': usuario[0]['foto'], 'huella':usuario[0]['huella']}})
     else:
         return JsonResponse({'success':False, 'error': "Usuario o contraseña incorrecto"})
 

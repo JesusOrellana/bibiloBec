@@ -30,7 +30,7 @@ DEBUG = True
 #ALLOWED_HOSTS = ['192.168.0.7','127.0.0.1'] IP CONI
 #ALLOWED_HOSTS = ['192.168.100.7','127.0.0.1'] IP MARI
 
-ALLOWED_HOSTS = ['192.168.0.7','127.0.0.1']
+ALLOWED_HOSTS = ['192.168.1.20','127.0.0.1']
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
 # Application definition

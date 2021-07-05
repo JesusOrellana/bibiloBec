@@ -71,7 +71,7 @@ def catalogo(request):
         documento = request.POST.get('documento')
         documento_encontrado = []
         for d in lista:
-            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][10].upper().find(documento.upper()) != -1:
+            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][11].upper().find(documento.upper()) != -1:
                 documento_encontrado.append(d)
                 # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
         if len(documento_encontrado) < 1:
@@ -116,7 +116,7 @@ def catalogo_audio(request):
         documento = request.POST.get('documento')
         documento_encontrado = []
         for d in lista:
-            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][10].upper().find(documento.upper()) != -1:
+            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][11].upper().find(documento.upper()) != -1:
                 documento_encontrado.append(d)
                 # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
         if len(documento_encontrado) < 1:
@@ -158,7 +158,7 @@ def catalogo_video(request):
         documento = request.POST.get('documento')
         documento_encontrado = []
         for d in lista:
-            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][10].upper().find(documento.upper()) != -1:
+            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][11].upper().find(documento.upper()) != -1:
                 documento_encontrado.append(d)
                 # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
         if len(documento_encontrado) < 1:
@@ -200,7 +200,7 @@ def catalogo_libro(request):
         documento = request.POST.get('documento')
         documento_encontrado = []
         for d in lista:
-            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][10].upper().find(documento.upper()) != -1:
+            if d['data'][1].upper().find(documento.upper()) != -1 or d['data'][2].upper().find(documento.upper()) != -1 or d['data'][11].upper().find(documento.upper()) != -1:
                 documento_encontrado.append(d)
                 # break / con este break solo muestra el primer resultado, no muestra si hay repetidos
         if len(documento_encontrado) < 1:

@@ -166,7 +166,8 @@
         password               VARCHAR2(40) NOT NULL,
         activo                 NUMBER(1) DEFAULT 0,
         fecha_activacion       DATE,
-        cambio_contrasena      NUMBER(1) DEFAULT 1
+        cambio_contrasena      NUMBER(1) DEFAULT 1,
+        estado                 NUMBER(1) NOT NULL;
     );
 
     ALTER TABLE usuario ADD CONSTRAINT usuario_pk PRIMARY KEY ( rut_usr );
@@ -922,7 +923,7 @@
     BEGIN
         INSERT INTO usuario
         VALUES (v_rut_usr, v_nombre, v_apellido_p, v_apellido_m, v_direccion, v_telefono, v_correo, v_foto, v_huella, 
-                v_tipo_usuario_id_tipo, v_password, 0, null, 1);
+                v_tipo_usuario_id_tipo, v_password, 0, null, 1, 1);
         COMMIT;
         v_salida:=1;
 
@@ -948,30 +949,8 @@
     create or replace PROCEDURE SP_USUARIO_DELETE (v_rut_usr varchar2)
     AS 
     BEGIN
-
-        UPDATE ejemplar 
-        set estado = 'disponible' 
-        WHERE id_ejem IN (  SELECT e.id_ejem FROM ejemplar E
-                            INNER JOIN detalle_solicitud_prestamo DSP
-                            ON (e.id_ejem = dsp.id_ejem)
-                            WHERE numero_solicitud IN (   select dsp.numero_solicitud from detalle_solicitud_prestamo dsp
-                            inner join prestamo p
-                            on (dsp.numero_solicitud = p.numero_solicitud)
-                            where p.rut_usr = v_rut_usr));
-        
-        DELETE FROM detalle_solicitud_prestamo
-        WHERE numero_solicitud IN (   select dsp.numero_solicitud from detalle_solicitud_prestamo dsp
-                        inner join prestamo p
-                        on (dsp.numero_solicitud = p.numero_solicitud)
-                        where p.rut_usr = v_rut_usr);
-
-        DELETE FROM prestamo
-        WHERE rut_usr = v_rut_usr;
-        
-        DELETE FROM solicitud_prestamo 
-        WHERE usuario_rut_usr = v_rut_usr;
-        
-        DELETE FROM usuario
+        UPDATE usuario
+        SET estado = 0
         WHERE rut_usr = v_rut_usr;
         COMMIT;
     END SP_USUARIO_DELETE;

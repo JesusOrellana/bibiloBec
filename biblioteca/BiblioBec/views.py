@@ -32,7 +32,7 @@ def APILogin(request, rut_usr, password):
         usuario = usuario_filtrado(rut_usr)
         return JsonResponse({'success':True, 'data': {'rut_usr':usuario[0]['data'][0], 'nombre':usuario[0]['data'][1].title(), 
         'apellido_p':usuario[0]['data'][2].title(), 'apellido_m':usuario[0]['data'][3].title(), 'direccion':usuario[0]['data'][4].title(), 
-        'telefono':usuario[0]['data'][5], 'correo':usuario[0]['data'][6], 'tipo_usuario':usuario[0]['data'][14].title(), 
+        'telefono':usuario[0]['data'][5], 'correo':usuario[0]['data'][6], 'tipo_usuario':usuario[0]['data'][15].title(), 
         'password':usuario[0]['data'][10], 'foto': usuario[0]['foto'], 'huella':usuario[0]['huella']}})
     else:
         return JsonResponse({'success':False, 'error': "Usuario o contraseña incorrecto"})
@@ -820,13 +820,30 @@ def editar_usuario(request):
             return render(request, 'Bibliobec/usuario_update.html', data)
 
 def eliminar_usuario(request):
-
+    
     rut_usr = request.GET.get('rut_usr')
+    pres = pres_filtrado_rut_usr(rut_usr)
+    if request.session['user_login']['user']['rut_usr'] == rut_usr:
+        messages.error(request, 'No se puede desactivar el usuario logueado./error')
+        return redirect('usuario_list')
+    if pres:
+        if pres[0]['data'][15] == 1 or pres[0]['data'][15] == 2:
+            messages.error(request, 'No se puede desactivar el usuario debido a que tiene préstamos en curso./error')
+            return redirect('usuario_list')
+        else:
+            resp = delete_usuario(rut_usr)
+            messages.success(request, "Usuario desactivado correctamente./success")
+            return redirect('usuario_list')
+    else:
+        resp = delete_usuario(rut_usr)
+        messages.success(request, "Usuario desactivado correctamente./success")
+        return redirect('usuario_list')
+        
+
+def delete_usuario(rut_usr):
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
     cursor.callproc('SP_USUARIO_DELETE',[rut_usr])
-    messages.success(request, "Usuario eliminado correctamente./success")
-    return redirect('usuario_list')
 
 # Inicio de sesión
 def iniciar_sesion(request):
@@ -844,15 +861,19 @@ def iniciar_sesion(request):
             
         if verificacion == True:
             usuario = usuario_filtrado(rut_usr)
+            estado = usuario[0]['data'][14]
             correo = usuario[0]['data'][6]
             nombre = usuario[0]['data'][1]
+            if estado == 0:
+                messages.error(request, "Su cuenta está desactivada, por favor acérquese a un administrativo de biblioteca para activarla./warning")
+                return render(request, 'session/login.html')
             if usuario[0]['data'][11] == 0: 
                 messages.warning(request, "Debe activar su cuenta para iniciar sesión en BiblioBEC, se enviará un correo para habilitarla./warning")
                 resp = enviar_email_habilitar(correo, rut_usr, nombre)
                 resp.send()
                 return render(request, 'session/login.html')
             request.session['user_login'] = {'user': {'foto':usuario[0]['foto'],'rut_usr':usuario[0]['data'][0], 
-            'nombre':usuario[0]['data'][1], 'apellido':usuario[0]['data'][2], 'tipo':usuario[0]['data'][9], 'tipo_desc':usuario[0]['data'][14].title()}}
+            'nombre':usuario[0]['data'][1], 'apellido':usuario[0]['data'][2], 'tipo':usuario[0]['data'][9], 'tipo_desc':usuario[0]['data'][15].title()}}
             if usuario[0]['data'][13] == 1:
                 return redirect('cambiar_contrasena')
             return redirect('index')

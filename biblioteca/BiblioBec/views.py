@@ -42,7 +42,7 @@ def APIDocumentos(request):
     documentos = []
     for documento in lista:
         documentoJson = {'id': documento['data'][0], 'titulo': documento['data'][1].title(), 
-        'autor': documento['data'][2].title(), 'editorial': documento['data'][11].title(), 'imagen': documento['imagen']}
+        'autor': documento['data'][2].title(), 'editorial': documento['data'][12].title(), 'imagen': documento['imagen']}
         documentos.append(documentoJson)
     return JsonResponse({'data' : documentos})
 
